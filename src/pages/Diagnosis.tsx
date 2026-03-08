@@ -283,3 +283,241 @@ export default function Diagnosis() {
             </motion.div>
           )}
         </motion.div>
+
+        {/* Results */}
+        <AnimatePresence>
+          {result && !isSoilResult && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="glass-card p-6 space-y-4">
+              <motion.h2 
+                className="text-xl font-display font-bold text-foreground flex items-center gap-2"
+                animate={{ y: [0, -3, 0] }}
+                transition={{ repeat: 2, duration: 0.3 }}
+              >
+                <motion.span animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+                  <CheckCircle size={24} className="text-primary" />
+                </motion.span>
+                {t.diagnosis.result}
+              </motion.h2>
+              <motion.div 
+                className="bg-secondary/50 rounded-2xl p-4"
+                whileHover={{ scale: 1.01 }}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <motion.h3 
+                    className="font-bold text-foreground text-lg"
+                    animate={{ y: [0, -2, 0] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                  >
+                    {result.disease}
+                  </motion.h3>
+                  <motion.span 
+                    className={`px-3 py-1 rounded-xl text-xs font-bold ${
+                      result.severity === "Critical" ? "bg-destructive/30 text-destructive" :
+                      result.severity === "High" ? "bg-destructive/20 text-destructive" :
+                      result.severity === "Medium" ? "bg-warning/20 text-warning" :
+                      "bg-success/20 text-success"
+                    }`}
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ repeat: Infinity, duration: 1.5 }}
+                  >
+                    {result.severity} {t.diagnosis.severity}
+                  </motion.span>
+                </div>
+                <p className="text-sm text-muted-foreground">{t.diagnosis.affected}: {result.affectedPart} • {t.diagnosis.confidence}: {result.confidence}%</p>
+                {result.cause && <p className="text-sm text-muted-foreground mt-1">{t.diagnosis.cause}: {result.cause}</p>}
+              </motion.div>
+              {result.symptoms && (
+                <motion.div 
+                  className="bg-warning/10 rounded-2xl p-4 border border-warning/20"
+                  whileHover={{ y: -2 }}
+                >
+                  <motion.h4 
+                    className="font-semibold text-warning mb-2 flex items-center gap-2"
+                    animate={{ y: [0, -2, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.5 }}
+                  >
+                    <Bug size={16} /> {t.diagnosis.symptoms}
+                  </motion.h4>
+                  <p className="text-sm text-foreground">{result.symptoms}</p>
+                </motion.div>
+              )}
+              <div className="space-y-3">
+                <motion.div 
+                  className="bg-success/10 rounded-2xl p-4 border border-success/20"
+                  whileHover={{ y: -2 }}
+                >
+                  <motion.h4 
+                    className="font-semibold text-success mb-2 flex items-center gap-2"
+                    animate={{ y: [0, -2, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.5, delay: 0.2 }}
+                  >
+                    <Pill size={16} /> {t.diagnosis.treatment}
+                  </motion.h4>
+                  <p className="text-sm text-foreground">{result.treatment}</p>
+                </motion.div>
+                {result.organicTreatment && (
+                  <motion.div 
+                    className="bg-success/5 rounded-2xl p-4 border border-success/10"
+                    whileHover={{ y: -2 }}
+                  >
+                    <motion.h4 
+                      className="font-semibold text-success mb-2 flex items-center gap-2"
+                      animate={{ y: [0, -2, 0] }}
+                      transition={{ repeat: Infinity, duration: 1.5, delay: 0.3 }}
+                    >
+                      <Leaf size={16} /> {t.diagnosis.organicTreatment}
+                    </motion.h4>
+                    <p className="text-sm text-foreground">{result.organicTreatment}</p>
+                  </motion.div>
+                )}
+                <motion.div 
+                  className="bg-info/10 rounded-2xl p-4 border border-info/20"
+                  whileHover={{ y: -2 }}
+                >
+                  <motion.h4 
+                    className="font-semibold text-info mb-2"
+                    animate={{ y: [0, -2, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.5, delay: 0.4 }}
+                  >
+                    🛡️ {t.diagnosis.prevention}
+                  </motion.h4>
+                  <p className="text-sm text-foreground">{result.prevention}</p>
+                </motion.div>
+                {result.soilCare && (
+                  <motion.div 
+                    className="bg-accent/10 rounded-2xl p-4 border border-accent/20"
+                    whileHover={{ y: -2 }}
+                  >
+                    <h4 className="font-semibold text-accent mb-2 flex items-center gap-2"><Mountain size={16} /> 🪨 Soil Maintenance</h4>
+                    <p className="text-sm text-foreground">{result.soilCare}</p>
+                  </motion.div>
+                )}
+              </div>
+              <motion.a 
+                whileTap={{ scale: 0.97 }}
+                whileHover={{ y: -4, scale: 1.02 }}
+                href={buildWhatsAppLink(`🔬 AI Disease Diagnosis:\n\nDisease: ${result.disease}\nSeverity: ${result.severity}\nPart: ${result.affectedPart}\nConfidence: ${result.confidence}%\n\nPlease advise on treatment.`)}
+                target="_blank" rel="noopener noreferrer"
+                className="w-full bg-success hover:bg-success/90 text-success-foreground py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-colors"
+              >
+                💬 {t.diagnosis.askExpert}
+              </motion.a>
+            </motion.div>
+          )}
+
+          {/* Soil Detection Results */}
+          {result && isSoilResult && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="glass-card p-6 space-y-4">
+              <motion.h2 
+                className="text-xl font-display font-bold text-foreground flex items-center gap-2"
+                animate={{ y: [0, -3, 0] }}
+                transition={{ repeat: 2, duration: 0.3 }}
+              >
+                <motion.span animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+                  <CheckCircle size={24} className="text-primary" />
+                </motion.span>
+                Soil Analysis Report
+              </motion.h2>
+
+              <motion.div 
+                className="bg-secondary/50 rounded-2xl p-4"
+                whileHover={{ scale: 1.01 }}
+              >
+                <motion.h3 
+                  className="font-bold text-foreground text-lg mb-1"
+                  animate={{ y: [0, -2, 0] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                >
+                  🪨 {result.soilType}
+                </motion.h3>
+                <p className="text-sm text-muted-foreground">{result.color}</p>
+                <p className="text-sm text-muted-foreground mt-1">Texture: {result.texture}</p>
+              </motion.div>
+
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: "💧 Moisture", value: result.moistureLevel, color: result.moistureLevel === "High" ? "text-info" : result.moistureLevel === "Low" ? "text-warning" : "text-foreground" },
+                  { label: "🧪 pH Estimate", value: result.phEstimate, color: "text-foreground" },
+                  { label: "🌱 Organic Matter", value: result.organicMatter, color: result.organicMatter === "High" ? "text-success" : result.organicMatter === "Low" ? "text-destructive" : "text-warning" },
+                  { label: "⭐ Fertility", value: result.fertility, color: result.fertility === "High" || result.fertility === "Very High" ? "text-success" : result.fertility === "Low" ? "text-destructive" : "text-warning" },
+                  { label: "💦 Water Retention", value: result.waterRetention, color: "text-foreground" },
+                  { label: "🚰 Drainage", value: result.drainage, color: "text-foreground" },
+                ].map((stat, i) => (
+                  <motion.div 
+                    key={stat.label} 
+                    className="bg-card border border-border/50 rounded-xl p-3"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    whileHover={{ y: -3, scale: 1.02 }}
+                  >
+                    <p className="text-xs text-muted-foreground">{stat.label}</p>
+                    <motion.p 
+                      className={`font-bold text-sm mt-0.5 ${stat.color}`}
+                      animate={{ scale: [1, 1.05, 1] }}
+                      transition={{ repeat: Infinity, duration: 2, delay: i * 0.1 }}
+                    >
+                      {stat.value}
+                    </motion.p>
+                  </motion.div>
+                ))}
+              </div>
+
+              <motion.div 
+                className="bg-success/10 rounded-2xl p-4 border border-success/20"
+                whileHover={{ y: -2 }}
+              >
+                <h4 className="font-semibold text-success mb-2 flex items-center gap-2"><Sprout size={16} /> Fertility Maintenance</h4>
+                <p className="text-sm text-foreground">{result.fertilityTips}</p>
+              </motion.div>
+
+              <motion.div 
+                className="bg-primary/10 rounded-2xl p-4 border border-primary/20"
+                whileHover={{ y: -2 }}
+              >
+                <h4 className="font-semibold text-primary mb-2 flex items-center gap-2"><Mountain size={16} /> Soil Maintenance</h4>
+                <p className="text-sm text-foreground">{result.soilMaintenance}</p>
+              </motion.div>
+
+              <motion.div 
+                className="bg-info/10 rounded-2xl p-4 border border-info/20"
+                whileHover={{ y: -2 }}
+              >
+                <h4 className="font-semibold text-info mb-2 flex items-center gap-2"><Leaf size={16} /> Suitable Crops</h4>
+                <p className="text-sm text-foreground">{result.suitableCrops}</p>
+              </motion.div>
+
+              <motion.div 
+                className="bg-accent/10 rounded-2xl p-4 border border-accent/20"
+                whileHover={{ y: -2 }}
+              >
+                <h4 className="font-semibold text-accent mb-2 flex items-center gap-2"><FlaskConical size={16} /> Recommended Improvements</h4>
+                <p className="text-sm text-foreground">{result.improvements}</p>
+              </motion.div>
+
+              {result.warnings && result.warnings !== "None" && result.warnings !== "None detected" && (
+                <motion.div 
+                  className="bg-warning/10 rounded-2xl p-4 border border-warning/20"
+                  whileHover={{ y: -2 }}
+                >
+                  <h4 className="font-semibold text-warning mb-2 flex items-center gap-2"><ShieldAlert size={16} /> ⚠️ Warnings</h4>
+                  <p className="text-sm text-foreground">{result.warnings}</p>
+                </motion.div>
+              )}
+
+              <motion.a 
+                whileTap={{ scale: 0.97 }}
+                whileHover={{ y: -4, scale: 1.02 }}
+                href={buildWhatsAppLink(`🪨 AI Soil Analysis:\n\nSoil Type: ${result.soilType}\nFertility: ${result.fertility}\npH: ${result.phEstimate}\nOrganic Matter: ${result.organicMatter}\n\nPlease advise on soil improvement.`)}
+                target="_blank" rel="noopener noreferrer"
+                className="w-full bg-success hover:bg-success/90 text-success-foreground py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-colors"
+              >
+                💬 Ask Expert on WhatsApp
+              </motion.a>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </PageTransition>
+  );
+}
