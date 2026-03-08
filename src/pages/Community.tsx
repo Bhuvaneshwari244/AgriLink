@@ -5,6 +5,7 @@ import { ThumbsUp, ThumbsDown, Share2, MessageSquare } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
+import { AnimatedLabel } from "@/components/AnimatedLabel";
 
 interface Answer { id: string; text: string; votes: number; date: string; }
 interface Question { id: string; text: string; category: string; votes: number; answers: Answer[]; date: string; }
