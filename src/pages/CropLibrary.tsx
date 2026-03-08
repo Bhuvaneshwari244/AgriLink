@@ -44,9 +44,22 @@ export default function CropLibrary() {
     return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
   };
 
+  const getReliableWikimediaUrl = (url: string) => {
+    if (!url.includes("wikimedia.org")) return url;
+
+    const lastSegment = url.split("/").pop() ?? "";
+    const decodedLast = decodeURIComponent(lastSegment);
+
+    // Thumb URLs end with "640px-File_Name.jpg"; recover original file name.
+    const fileName = decodedLast.replace(/^\d+px-/, "");
+    if (!fileName) return url;
+
+    return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(fileName)}`;
+  };
+
   const resolveCropImage = (image: string, name: string, cropCategory: string) => {
     if (!image || image.includes("source.unsplash.com")) return getCropFallbackImage(name, cropCategory);
-    return image;
+    return getReliableWikimediaUrl(image);
   };
 
   const handleImageError = (
