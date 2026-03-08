@@ -25,10 +25,13 @@ const PriceChange = ({ current, previous, label }: { current: number; previous?:
   return (
     <div className="flex items-center gap-1 text-[10px]">
       <span className="text-muted-foreground">{label}:</span>
-      {isUp && <TrendingUp size={10} className="text-green-600" />}
-      {isDown && <TrendingDown size={10} className="text-red-500" />}
+      {isUp && <TrendingUp size={10} className="text-accent" />}
+      {isDown && <TrendingDown size={10} className="text-destructive" />}
       {!isUp && !isDown && <Minus size={10} className="text-muted-foreground" />}
-      <span className={isUp ? "text-green-600 font-medium" : isDown ? "text-red-500 font-medium" : "text-muted-foreground"}>
+      <span className={isUp ? "text-accent font-medium" : isDown ? "text-destructive font-medium" : "text-muted-foreground"}>
+        {isUp ? "+" : ""}{percent}%
+      </span>
+    </div>
         {isUp ? "+" : ""}{percent}%
       </span>
     </div>
