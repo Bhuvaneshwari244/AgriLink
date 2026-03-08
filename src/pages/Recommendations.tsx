@@ -17,7 +17,7 @@ export default function Recommendations() {
 
   const soilData = soilRecommendations.find(s => s.soilType === selectedSoil);
   const locationData = locationRecommendations.find(l => l.region === selectedRegion);
-  const seasonData = seasonRecommendations.find(s => s.season === currentSeason);
+  const seasonData = seasonRecommendations.find(s => s.season === selectedSeason);
 
   const tabs = [
     { id: "soil" as const, label: t.recommendations.soilBased, icon: Layers },
