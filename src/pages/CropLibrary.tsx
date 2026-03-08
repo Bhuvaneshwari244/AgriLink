@@ -44,17 +44,41 @@ export default function CropLibrary() {
     return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
   };
 
-  const resolveCropImage = (image: string, name: string, cropCategory: string) => {
-    if (!image || image.includes("source.unsplash.com")) return getCropFallbackImage(name, cropCategory);
-    return image;
+  const getWikimediaOriginalUrl = (url: string) => {
+    if (!url.includes("upload.wikimedia.org/wikipedia/commons/thumb/")) return null;
+
+    const parts = url.split("/thumb/")[1]?.split("/") ?? [];
+    if (parts.length < 4) return null;
+
+    const [folder1, folder2, fileName] = parts;
+    return `https://upload.wikimedia.org/wikipedia/commons/${folder1}/${folder2}/${fileName}`;
   };
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>, cropName: string, cropCategory: string) => {
-    const img = e.currentTarget;
-    const hasRetried = img.dataset.retryFallback === "1";
+  const resolveCropImage = (image: string, name: string, cropCategory: string) => {
+    if (!image || image.includes("source.unsplash.com")) return getCropFallbackImage(name, cropCategory);
+    return getWikimediaOriginalUrl(image) ?? image;
+  };
 
-    if (!hasRetried) {
-      img.dataset.retryFallback = "1";
+  const handleImageError = (
+    e: React.SyntheticEvent<HTMLImageElement>,
+    cropName: string,
+    cropCategory: string,
+    originalImage: string,
+  ) => {
+    const img = e.currentTarget;
+    const retryStep = Number(img.dataset.retryStep ?? "0");
+
+    if (retryStep === 0) {
+      const wikimediaOriginal = getWikimediaOriginalUrl(originalImage);
+      if (wikimediaOriginal && img.src !== wikimediaOriginal) {
+        img.dataset.retryStep = "1";
+        img.src = wikimediaOriginal;
+        return;
+      }
+    }
+
+    if (retryStep <= 1) {
+      img.dataset.retryStep = "2";
       img.src = getCropFallbackImage(cropName, cropCategory);
       return;
     }
