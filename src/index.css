@@ -80,7 +80,7 @@
     transform: translateY(-2px);
   }
   .glow-red {
-    box-shadow: 0 0 20px hsl(142 60% 45% / 0.3), 0 0 60px hsl(142 60% 45% / 0.1);
+    box-shadow: 0 0 20px hsl(142 55% 42% / 0.15), 0 0 60px hsl(142 55% 42% / 0.05);
   }
   .stat-card {
     @apply relative overflow-hidden rounded-2xl p-5 border border-border/50;
