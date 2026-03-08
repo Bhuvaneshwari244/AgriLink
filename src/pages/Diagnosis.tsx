@@ -92,59 +92,121 @@ export default function Diagnosis() {
     <PageTransition>
       <div className="container mx-auto px-4 py-6 max-w-2xl">
         <div className="flex items-center gap-3 mb-6">
-          <motion.div animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-            className="w-12 h-12 bg-primary/15 rounded-2xl flex items-center justify-center">
+          <motion.div 
+            animate={{ rotate: [0, 10, -10, 0], y: [0, -5, 0] }} 
+            transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+            className="w-12 h-12 bg-primary/15 rounded-2xl flex items-center justify-center"
+          >
             <Sparkles size={24} className="text-primary" />
           </motion.div>
           <div>
-            <AnimatedLabel as="h1" variant="slide" delay={0.1} className="text-2xl font-display font-bold text-foreground">
+            <motion.h1 
+              className="text-2xl font-display font-bold text-foreground"
+              initial={{ opacity: 0, x: -15 }}
+              animate={{ opacity: 1, x: 0, y: [0, -4, 0] }}
+              transition={{ type: "spring", stiffness: 300, y: { repeat: 2, duration: 0.3 } }}
+            >
               {t.diagnosis.title}
-            </AnimatedLabel>
-            <AnimatedLabel as="p" variant="fade" delay={0.15} className="text-sm text-muted-foreground">
+            </motion.h1>
+            <motion.p 
+              className="text-sm text-muted-foreground"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.15 }}
+            >
               {t.diagnosis.poweredBy}
-            </AnimatedLabel>
+            </motion.p>
           </div>
         </div>
 
         {/* Mode Switcher */}
         <div className="flex gap-2 mb-6">
-          <button onClick={() => { setMode("disease"); setResult(null); }}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-semibold text-sm transition-all ${
-              mode === "disease" ? "bg-primary text-primary-foreground shadow-md" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-            }`}>
-            <Bug size={18} /> 🌿 Plant Disease
-          </button>
-          <button onClick={() => { setMode("soil"); setResult(null); }}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-semibold text-sm transition-all ${
-              mode === "soil" ? "bg-primary text-primary-foreground shadow-md" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-            }`}>
-            <Mountain size={18} /> 🪨 Soil Detection
-          </button>
+          {[
+            { id: "disease" as const, label: "🌿 Plant Disease", icon: Bug },
+            { id: "soil" as const, label: "🪨 Soil Detection", icon: Mountain },
+          ].map((m, i) => (
+            <motion.button 
+              key={m.id}
+              onClick={() => { setMode(m.id); setResult(null); }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 400, delay: i * 0.1 }}
+              whileHover={{ y: -4, scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-semibold text-sm transition-all ${
+                mode === m.id ? "bg-primary text-primary-foreground shadow-md" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              }`}
+            >
+              <motion.span
+                animate={mode === m.id ? { y: [0, -3, 0], rotate: [0, 10, -10, 0] } : {}}
+                transition={{ repeat: Infinity, duration: 1.5 }}
+              >
+                <m.icon size={18} />
+              </motion.span>
+              <motion.span
+                animate={mode === m.id ? { y: [0, -2, 0] } : {}}
+                transition={{ repeat: Infinity, duration: 1.2, delay: 0.1 }}
+              >
+                {m.label}
+              </motion.span>
+            </motion.button>
+          ))}
         </div>
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-6 mb-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ type: "spring", stiffness: 300 }}
+          whileHover={{ y: -3 }}
+          className="glass-card p-6 mb-6"
+        >
           <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={handleUpload} className="hidden" />
           <AnimatePresence mode="wait">
             {!image ? (
-              <motion.button key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              <motion.button 
+                key="upload" 
+                initial={{ opacity: 0, scale: 0.95 }} 
+                animate={{ opacity: 1, scale: 1 }} 
+                exit={{ opacity: 0, scale: 0.95 }}
                 onClick={() => fileRef.current?.click()}
-                className="w-full border-2 border-dashed border-border/50 rounded-2xl p-10 text-center hover:border-primary hover:bg-primary/5 transition-all group">
-                <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                whileHover={{ scale: 1.02, y: -3 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full border-2 border-dashed border-border/50 rounded-2xl p-10 text-center hover:border-primary hover:bg-primary/5 transition-all group"
+              >
+                <motion.div 
+                  className="w-16 h-16 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center"
+                  animate={{ y: [0, -6, 0], scale: [1, 1.1, 1] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                >
                   {mode === "soil" ? <Mountain size={32} className="text-primary" /> : <Camera size={32} className="text-primary" />}
-                </div>
-                <p className="text-foreground font-semibold text-lg">
+                </motion.div>
+                <motion.p 
+                  className="text-foreground font-semibold text-lg"
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{ repeat: Infinity, duration: 2, delay: 0.2 }}
+                >
                   {mode === "soil" ? "Upload Soil Photo" : t.diagnosis.upload}
-                </p>
+                </motion.p>
                 <p className="text-sm text-muted-foreground mt-1">
                   {mode === "soil" ? "Take a clear photo of your soil sample" : t.diagnosis.photoHint}
                 </p>
               </motion.button>
             ) : (
-              <motion.div key="preview" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
+              <motion.div key="preview" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
                 <div className="relative">
-                  <img src={image} alt="Uploaded" className="w-full max-h-64 object-contain rounded-2xl" />
-                  <motion.button whileTap={{ scale: 0.95 }} onClick={() => { setImage(null); setResult(null); }}
-                    className="absolute top-2 right-2 bg-destructive/90 text-destructive-foreground text-xs px-3 py-1.5 rounded-xl font-medium">
+                  <motion.img 
+                    src={image} 
+                    alt="Uploaded" 
+                    className="w-full max-h-64 object-contain rounded-2xl"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  />
+                  <motion.button 
+                    whileTap={{ scale: 0.9 }} 
+                    whileHover={{ scale: 1.1 }}
+                    onClick={() => { setImage(null); setResult(null); }}
+                    className="absolute top-2 right-2 bg-destructive/90 text-destructive-foreground text-xs px-3 py-1.5 rounded-xl font-medium"
+                  >
                     {t.diagnosis.remove}
                   </motion.button>
                 </div>
@@ -153,17 +215,43 @@ export default function Diagnosis() {
           </AnimatePresence>
 
           {image && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-5">
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="mt-5">
               {/* Plant part selector only for disease mode */}
               {mode === "disease" && (
                 <>
-                  <label className="text-sm font-medium text-foreground mb-2 block">🌿 {t.diagnosis.affectedPart}</label>
+                  <motion.label 
+                    className="text-sm font-medium text-foreground mb-2 block"
+                    animate={{ y: [0, -2, 0] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                  >
+                    🌿 {t.diagnosis.affectedPart}
+                  </motion.label>
                   <div className="grid grid-cols-4 gap-2 mb-5">
-                    {plantParts.map(part => (
-                      <motion.button key={part.name} whileTap={{ scale: 0.95 }} onClick={() => setPlantPart(part.name)}
-                        className={`relative flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-xs transition-all ${plantPart === part.name ? "text-primary-foreground font-medium shadow-lg" : "text-secondary-foreground hover:bg-muted"}`}>
-                        <span className="relative z-10 text-lg">{part.icon}</span>
-                        <span className="relative z-10">{translatePlantPart(part.name, lang)}</span>
+                    {plantParts.map((part, i) => (
+                      <motion.button 
+                        key={part.name} 
+                        whileTap={{ scale: 0.9 }} 
+                        whileHover={{ y: -4, scale: 1.08 }}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ type: "spring", stiffness: 400, delay: i * 0.04 }}
+                        onClick={() => setPlantPart(part.name)}
+                        className={`relative flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-xs transition-all ${plantPart === part.name ? "text-primary-foreground font-medium shadow-lg" : "text-secondary-foreground hover:bg-muted"}`}
+                      >
+                        <motion.span 
+                          className="relative z-10 text-lg"
+                          animate={plantPart === part.name ? { y: [0, -3, 0], scale: [1, 1.2, 1] } : {}}
+                          transition={{ repeat: Infinity, duration: 1.2 }}
+                        >
+                          {part.icon}
+                        </motion.span>
+                        <motion.span 
+                          className="relative z-10"
+                          animate={plantPart === part.name ? { y: [0, -2, 0] } : {}}
+                          transition={{ repeat: Infinity, duration: 1.2, delay: 0.1 }}
+                        >
+                          {translatePlantPart(part.name, lang)}
+                        </motion.span>
                         {plantPart === part.name && <motion.div layoutId="plant-part" className="absolute inset-0 bg-primary rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
                       </motion.button>
                     ))}
@@ -171,149 +259,27 @@ export default function Diagnosis() {
                 </>
               )}
 
-              <motion.button whileTap={{ scale: 0.98 }} onClick={analyze} disabled={loading}
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3.5 rounded-2xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50 transition-all animate-pulse-glow">
+              <motion.button 
+                whileTap={{ scale: 0.97 }} 
+                whileHover={{ y: -4, scale: 1.02 }}
+                onClick={analyze} 
+                disabled={loading}
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3.5 rounded-2xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
+              >
                 {loading ? (
                   <><Loader2 size={20} className="animate-spin" />{t.diagnosis.analyzing}</>
                 ) : (
-                  <><Sparkles size={20} />{mode === "soil" ? "Analyze Soil" : t.diagnosis.analyze}</>
+                  <>
+                    <motion.span
+                      animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
+                      transition={{ repeat: Infinity, duration: 1.5 }}
+                    >
+                      <Sparkles size={20} />
+                    </motion.span>
+                    {mode === "soil" ? "Analyze Soil" : t.diagnosis.analyze}
+                  </>
                 )}
               </motion.button>
             </motion.div>
           )}
         </motion.div>
-
-        {/* Results */}
-        <AnimatePresence>
-          {result && !isSoilResult && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="glass-card p-6 space-y-4">
-              <h2 className="text-xl font-display font-bold text-foreground flex items-center gap-2">
-                <CheckCircle size={24} className="text-primary" />{t.diagnosis.result}
-              </h2>
-              <div className="bg-secondary/50 rounded-2xl p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-bold text-foreground text-lg">{result.disease}</h3>
-                  <span className={`px-3 py-1 rounded-xl text-xs font-bold ${
-                    result.severity === "Critical" ? "bg-destructive/30 text-destructive" :
-                    result.severity === "High" ? "bg-destructive/20 text-destructive" :
-                    result.severity === "Medium" ? "bg-warning/20 text-warning" :
-                    "bg-success/20 text-success"
-                  }`}>{result.severity} {t.diagnosis.severity}</span>
-                </div>
-                <p className="text-sm text-muted-foreground">{t.diagnosis.affected}: {result.affectedPart} • {t.diagnosis.confidence}: {result.confidence}%</p>
-                {result.cause && <p className="text-sm text-muted-foreground mt-1">{t.diagnosis.cause}: {result.cause}</p>}
-              </div>
-              {result.symptoms && (
-                <div className="bg-warning/10 rounded-2xl p-4 border border-warning/20">
-                  <h4 className="font-semibold text-warning mb-2 flex items-center gap-2"><Bug size={16} /> {t.diagnosis.symptoms}</h4>
-                  <p className="text-sm text-foreground">{result.symptoms}</p>
-                </div>
-              )}
-              <div className="space-y-3">
-                <div className="bg-success/10 rounded-2xl p-4 border border-success/20">
-                  <h4 className="font-semibold text-success mb-2 flex items-center gap-2"><Pill size={16} /> {t.diagnosis.treatment}</h4>
-                  <p className="text-sm text-foreground">{result.treatment}</p>
-                </div>
-                {result.organicTreatment && (
-                  <div className="bg-success/5 rounded-2xl p-4 border border-success/10">
-                    <h4 className="font-semibold text-success mb-2 flex items-center gap-2"><Leaf size={16} /> {t.diagnosis.organicTreatment}</h4>
-                    <p className="text-sm text-foreground">{result.organicTreatment}</p>
-                  </div>
-                )}
-                <div className="bg-info/10 rounded-2xl p-4 border border-info/20">
-                  <h4 className="font-semibold text-info mb-2">🛡️ {t.diagnosis.prevention}</h4>
-                  <p className="text-sm text-foreground">{result.prevention}</p>
-                </div>
-                {/* Soil care section for disease results */}
-                {result.soilCare && (
-                  <div className="bg-accent/10 rounded-2xl p-4 border border-accent/20">
-                    <h4 className="font-semibold text-accent mb-2 flex items-center gap-2"><Mountain size={16} /> 🪨 Soil Maintenance</h4>
-                    <p className="text-sm text-foreground">{result.soilCare}</p>
-                  </div>
-                )}
-              </div>
-              <motion.a whileTap={{ scale: 0.98 }}
-                href={buildWhatsAppLink(`🔬 AI Disease Diagnosis:\n\nDisease: ${result.disease}\nSeverity: ${result.severity}\nPart: ${result.affectedPart}\nConfidence: ${result.confidence}%\n\nPlease advise on treatment.`)}
-                target="_blank" rel="noopener noreferrer"
-                className="w-full bg-success hover:bg-success/90 text-success-foreground py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-colors">
-                💬 {t.diagnosis.askExpert}
-              </motion.a>
-            </motion.div>
-          )}
-
-          {/* Soil Detection Results */}
-          {result && isSoilResult && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="glass-card p-6 space-y-4">
-              <h2 className="text-xl font-display font-bold text-foreground flex items-center gap-2">
-                <CheckCircle size={24} className="text-primary" /> Soil Analysis Report
-              </h2>
-
-              {/* Soil Type & Overview */}
-              <div className="bg-secondary/50 rounded-2xl p-4">
-                <h3 className="font-bold text-foreground text-lg mb-1">🪨 {result.soilType}</h3>
-                <p className="text-sm text-muted-foreground">{result.color}</p>
-                <p className="text-sm text-muted-foreground mt-1">Texture: {result.texture}</p>
-              </div>
-
-              {/* Quick Stats */}
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { label: "💧 Moisture", value: result.moistureLevel, color: result.moistureLevel === "High" ? "text-info" : result.moistureLevel === "Low" ? "text-warning" : "text-foreground" },
-                  { label: "🧪 pH Estimate", value: result.phEstimate, color: "text-foreground" },
-                  { label: "🌱 Organic Matter", value: result.organicMatter, color: result.organicMatter === "High" ? "text-success" : result.organicMatter === "Low" ? "text-destructive" : "text-warning" },
-                  { label: "⭐ Fertility", value: result.fertility, color: result.fertility === "High" || result.fertility === "Very High" ? "text-success" : result.fertility === "Low" ? "text-destructive" : "text-warning" },
-                  { label: "💦 Water Retention", value: result.waterRetention, color: "text-foreground" },
-                  { label: "🚰 Drainage", value: result.drainage, color: "text-foreground" },
-                ].map(stat => (
-                  <div key={stat.label} className="bg-card border border-border/50 rounded-xl p-3">
-                    <p className="text-xs text-muted-foreground">{stat.label}</p>
-                    <p className={`font-bold text-sm mt-0.5 ${stat.color}`}>{stat.value}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Fertility Tips */}
-              <div className="bg-success/10 rounded-2xl p-4 border border-success/20">
-                <h4 className="font-semibold text-success mb-2 flex items-center gap-2"><Sprout size={16} /> Fertility Maintenance</h4>
-                <p className="text-sm text-foreground">{result.fertilityTips}</p>
-              </div>
-
-              {/* Soil Maintenance */}
-              <div className="bg-primary/10 rounded-2xl p-4 border border-primary/20">
-                <h4 className="font-semibold text-primary mb-2 flex items-center gap-2"><Mountain size={16} /> Soil Maintenance</h4>
-                <p className="text-sm text-foreground">{result.soilMaintenance}</p>
-              </div>
-
-              {/* Suitable Crops */}
-              <div className="bg-info/10 rounded-2xl p-4 border border-info/20">
-                <h4 className="font-semibold text-info mb-2 flex items-center gap-2"><Leaf size={16} /> Suitable Crops</h4>
-                <p className="text-sm text-foreground">{result.suitableCrops}</p>
-              </div>
-
-              {/* Improvements */}
-              <div className="bg-accent/10 rounded-2xl p-4 border border-accent/20">
-                <h4 className="font-semibold text-accent mb-2 flex items-center gap-2"><FlaskConical size={16} /> Recommended Improvements</h4>
-                <p className="text-sm text-foreground">{result.improvements}</p>
-              </div>
-
-              {/* Warnings */}
-              {result.warnings && result.warnings !== "None" && result.warnings !== "None detected" && (
-                <div className="bg-warning/10 rounded-2xl p-4 border border-warning/20">
-                  <h4 className="font-semibold text-warning mb-2 flex items-center gap-2"><ShieldAlert size={16} /> ⚠️ Warnings</h4>
-                  <p className="text-sm text-foreground">{result.warnings}</p>
-                </div>
-              )}
-
-              <motion.a whileTap={{ scale: 0.98 }}
-                href={buildWhatsAppLink(`🪨 AI Soil Analysis:\n\nSoil Type: ${result.soilType}\nFertility: ${result.fertility}\npH: ${result.phEstimate}\nOrganic Matter: ${result.organicMatter}\n\nPlease advise on soil improvement.`)}
-                target="_blank" rel="noopener noreferrer"
-                className="w-full bg-success hover:bg-success/90 text-success-foreground py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-colors">
-                💬 {t.diagnosis.askExpert}
-              </motion.a>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </PageTransition>
-  );
-}
