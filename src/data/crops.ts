@@ -90,6 +90,16 @@ import amlaImage from "@/assets/crops/amla.jpg";
 import betelvineImage from "@/assets/crops/betelvine.jpg";
 import cocoaImage from "@/assets/crops/cocoa.jpg";
 import vanillaImage from "@/assets/crops/vanilla.jpg";
+import saffronImage from "@/assets/crops/saffron.jpg";
+import cloveImage from "@/assets/crops/clove.jpg";
+import cinnamonImage from "@/assets/crops/cinnamon.jpg";
+import fennelImage from "@/assets/crops/fennel.jpg";
+import taroImage from "@/assets/crops/taro.jpg";
+import dragonfruitImage from "@/assets/crops/dragonfruit.jpg";
+import ashgourdImage from "@/assets/crops/ashgourd.jpg";
+import snakegourdImage from "@/assets/crops/snakegourd.jpg";
+import clusterbeanImage from "@/assets/crops/clusterbean.jpg";
+import tapiocaImage from "@/assets/crops/tapioca.jpg";
 
 export interface Crop {
   id: string;
