@@ -16,7 +16,7 @@ interface MarketGroup {
 }
 
 export default function MandiRates() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("All");
   const [commodityFilter, setCommodityFilter] = useState("All");
