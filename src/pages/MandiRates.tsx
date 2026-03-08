@@ -129,7 +129,7 @@ export default function MandiRates() {
                         initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
                         className="bg-secondary/40 rounded-xl p-4">
                         <div className="flex justify-between items-center mb-2">
-                          <span className="font-semibold text-foreground text-sm">🌾 {r.commodity}</span>
+                          <span className="font-semibold text-foreground text-sm">🌾 {translateCropName(r.commodity, lang)}</span>
                           <span className="text-xs text-muted-foreground">{r.variety} • Per {r.unit}</span>
                         </div>
                         <div className="grid grid-cols-3 gap-2">
