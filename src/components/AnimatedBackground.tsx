@@ -96,7 +96,7 @@ export default function AnimatedBackground() {
       <motion.div
         className="absolute w-2.5 h-2.5 rounded-full"
         style={{ background: "hsl(38 80% 55%)", boxShadow: "0 0 18px hsl(38 80% 55% / 0.3)", bottom: "30%", left: "70%" }}
-        animate={{ y: [0, -90, 0], opacity: [0.08, 0.3, 0.08], scale: [1, 1.3, 1] }}
+        animate={{ y: [0, -90, 0], opacity: [0.2, 0.45, 0.2], scale: [1, 1.3, 1] }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: -6 }}
       />
     </div>
