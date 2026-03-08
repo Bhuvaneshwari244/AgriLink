@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { translateCommunityCategory } from "@/data/dataTranslations";
 import { ThumbsUp, ThumbsDown, Share2, MessageSquare } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,7 +12,7 @@ interface Question { id: string; text: string; category: string; votes: number; 
 const categories = ["All", "Pest Control", "Irrigation", "Soil", "Market", "Seeds", "Fertilizer", "Organic", "Equipment", "Weather"];
 
 export default function Community() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [questions, setQuestions] = useState<Question[]>(() => {
     const saved = localStorage.getItem("agrilink-questions");
     return saved ? JSON.parse(saved) : [
@@ -64,7 +65,7 @@ export default function Community() {
             className="w-full bg-secondary text-foreground p-3 rounded-2xl border border-border/50 mb-3 min-h-[80px] outline-none focus:ring-2 focus:ring-primary transition-all resize-none" />
           <div className="flex gap-3 items-center">
             <select value={newQCat} onChange={e => setNewQCat(e.target.value)} className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50">
-              {categories.slice(1).map(c => <option key={c} value={c}>{c}</option>)}
+              {categories.slice(1).map(c => <option key={c} value={c}>{translateCommunityCategory(c, lang)}</option>)}
             </select>
             <motion.button whileTap={{ scale: 0.97 }} onClick={postQuestion} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2.5 rounded-xl font-semibold transition-colors">{t.community.post}</motion.button>
           </div>
@@ -74,7 +75,7 @@ export default function Community() {
           {categories.map(c => (
             <button key={c} onClick={() => setFilter(c)}
               className={`relative whitespace-nowrap px-3 py-1.5 rounded-xl text-sm transition-all ${filter === c ? "text-primary-foreground font-medium" : "text-secondary-foreground hover:bg-muted"}`}>
-              <span className="relative z-10">{c === "All" ? t.common.all : c}</span>
+              <span className="relative z-10">{translateCommunityCategory(c, lang)}</span>
               {filter === c && <motion.div layoutId="comm-filter" className="absolute inset-0 bg-primary rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
             </button>
           ))}
@@ -86,7 +87,7 @@ export default function Community() {
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
               <div className="flex justify-between items-start mb-2">
                 <p className="text-foreground font-medium flex-1 leading-relaxed">{q.text}</p>
-                <span className="bg-primary/15 text-primary text-xs px-2.5 py-1 rounded-xl ml-2 whitespace-nowrap font-medium">{q.category}</span>
+                <span className="bg-primary/15 text-primary text-xs px-2.5 py-1 rounded-xl ml-2 whitespace-nowrap font-medium">{translateCommunityCategory(q.category, lang)}</span>
               </div>
               <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
                 <motion.button whileTap={{ scale: 0.9 }} onClick={() => vote(q.id, 1)} className="flex items-center gap-1 hover:text-primary transition-colors"><ThumbsUp size={14}/>{q.votes}</motion.button>
