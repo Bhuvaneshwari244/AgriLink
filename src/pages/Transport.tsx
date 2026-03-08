@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Phone, MessageCircle, Truck } from "lucide-react";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 export default function Transport() {
   const { t } = useLanguage();
   const [form, setForm] = useState({ cropType: "", quantity: "", pickup: "", destination: "" });
 
-  const sendWhatsApp = () => {
-    const msg = `🚛 Transport Request\n\nCrop: ${form.cropType}\nQuantity: ${form.quantity} Quintals\nPickup: ${form.pickup}\nDestination: ${form.destination}`;
-    window.open(`https://api.whatsapp.com/send?phone=919701473371&text=${encodeURIComponent(msg)}`, "_blank");
-  };
+  const transportMessage = `🚛 Transport Request\n\nCrop: ${form.cropType || "N/A"}\nQuantity: ${form.quantity || "N/A"} Quintals\nPickup: ${form.pickup || "N/A"}\nDestination: ${form.destination || "N/A"}`;
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-2xl">
@@ -35,13 +33,13 @@ export default function Transport() {
                 placeholder={field.placeholder} className="w-full bg-secondary text-foreground px-4 py-2.5 rounded-xl border border-border outline-none focus:ring-2 focus:ring-primary" />
             </div>
           ))}
-          <button onClick={sendWhatsApp} className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors">
+          <a href={buildWhatsAppLink(transportMessage)} target="_blank" rel="noopener noreferrer" className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors">
             <MessageCircle size={20}/>{t.transport.submit}
-          </button>
+          </a>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <a href="https://api.whatsapp.com/send?phone=919701473371" target="_blank" rel="noopener noreferrer"
+        <a href={buildWhatsAppLink("")} target="_blank" rel="noopener noreferrer"
           className="glass-card p-4 text-center hover:scale-105 transition-transform">
           <MessageCircle size={28} className="text-green-500 mx-auto mb-2"/>
           <p className="font-semibold text-foreground">{t.transport.whatsapp}</p>
@@ -56,3 +54,4 @@ export default function Transport() {
     </div>
   );
 }
+

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ThumbsUp, ThumbsDown, Share2, MessageSquare } from "lucide-react";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 interface Answer { id: string; text: string; votes: number; date: string; }
 interface Question { id: string; text: string; category: string; votes: number; answers: Answer[]; date: string; }
@@ -48,8 +49,6 @@ export default function Community() {
   const vote = (qId: string, delta: number) => setQuestions(prev => prev.map(q => q.id === qId ? { ...q, votes: q.votes + delta } : q));
   const voteAnswer = (qId: string, aId: string, delta: number) => setQuestions(prev => prev.map(q => q.id === qId ? { ...q, answers: q.answers.map(a => a.id === aId ? { ...a, votes: a.votes + delta } : a) } : q));
 
-  const shareWhatsApp = (text: string) => window.open(`https://api.whatsapp.com/send?phone=919701473371&text=${encodeURIComponent(text)}`, "_blank");
-
   const filtered = filter === "All" ? questions : questions.filter(q => q.category === filter);
 
   return (
@@ -86,7 +85,7 @@ export default function Community() {
               <button onClick={() => vote(q.id, 1)} className="flex items-center gap-1 hover:text-primary"><ThumbsUp size={14}/>{q.votes}</button>
               <button onClick={() => vote(q.id, -1)} className="flex items-center gap-1 hover:text-destructive"><ThumbsDown size={14}/></button>
               <button onClick={() => setExpandedQ(expandedQ === q.id ? null : q.id)} className="flex items-center gap-1 hover:text-foreground"><MessageSquare size={14}/>{q.answers.length} {t.community.answers}</button>
-              <button onClick={() => shareWhatsApp(q.text)} className="flex items-center gap-1 hover:text-green-500"><Share2 size={14}/>{t.community.share}</button>
+              <a href={buildWhatsAppLink(q.text)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-green-500"><Share2 size={14}/>{t.community.share}</a>
               <span className="ml-auto text-xs">{q.date}</span>
             </div>
             {expandedQ === q.id && (
@@ -114,3 +113,4 @@ export default function Community() {
     </div>
   );
 }
+
