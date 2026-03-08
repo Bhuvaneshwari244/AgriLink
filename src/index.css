@@ -84,7 +84,7 @@
   }
   .stat-card {
     @apply relative overflow-hidden rounded-2xl p-5 border border-border/50;
-    background: linear-gradient(135deg, hsl(160 20% 9%), hsl(160 22% 6%));
+    background: linear-gradient(135deg, hsl(152 18% 15%), hsl(150 20% 12%));
   }
   .stat-card::before {
     content: '';
