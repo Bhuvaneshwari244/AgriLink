@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { soilRecommendations, locationRecommendations, seasonRecommendations, soilTypes } from "@/data/recommendations";
+import { translateCropName } from "@/data/dataTranslations";
 import { Layers, MapPin, Sun } from "lucide-react";
 import { motion } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 
 export default function Recommendations() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [tab, setTab] = useState<"soil" | "location" | "season">("soil");
   const [selectedSoil, setSelectedSoil] = useState(soilTypes[0]);
   const [selectedRegion, setSelectedRegion] = useState(locationRecommendations[0].region);
@@ -27,7 +28,7 @@ export default function Recommendations() {
 
   const RecCard = ({ r, i }: { r: any; i: number }) => (
     <motion.div key={r.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="glass-card p-5">
-      <h3 className="font-display font-bold text-foreground text-lg mb-1">🌱 {r.crop}</h3>
+      <h3 className="font-display font-bold text-foreground text-lg mb-1">🌱 {translateCropName(r.crop, lang)}</h3>
       <p className="text-sm text-muted-foreground mb-3 leading-relaxed">{r.reason}</p>
       <div className="bg-secondary/50 rounded-xl p-3 mb-2">
         <h4 className="text-xs font-semibold text-primary mb-1">{t.recommendations.expertTips}</h4>

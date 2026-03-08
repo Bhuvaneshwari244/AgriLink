@@ -174,14 +174,60 @@ const dataTranslations: Record<string, DataTranslations> = {
   },
 };
 
+// Short name aliases used in mandi rates and recommendations
+// Maps short commodity names to their full crop library names
+const shortNameAliases: Record<string, string> = {
+  Chilli: "Chilli (Green & Red)", Cotton: "Cotton (Kapas)", Groundnut: "Groundnut (Peanut)",
+  Turmeric: "Turmeric (Haldi)", Ginger: "Ginger (Adrak)", Garlic: "Garlic (Lehsun)",
+  Maize: "Maize (Corn)", Jowar: "Jowar (Sorghum)", Bajra: "Bajra (Pearl Millet)",
+  Ragi: "Ragi (Finger Millet)", Cumin: "Cumin (Jeera)", Coriander: "Coriander (Dhaniya)",
+  Mustard: "Mustard (Sarson)", Sesame: "Sesame (Til)", Chickpea: "Chickpea (Chana)",
+  "Pigeon Pea": "Pigeon Pea (Arhar/Tur)", Lentil: "Lentil (Masoor)", Moong: "Moong (Green Gram)",
+  Urad: "Urad (Black Gram)", Okra: "Okra (Bhindi/Lady Finger)", Brinjal: "Brinjal (Eggplant)",
+  Arecanut: "Arecanut (Betel Nut)", Fenugreek: "Fenugreek (Methi)", Saffron: "Saffron (Kesar)",
+  Fennel: "Fennel (Saunf)", Clove: "Clove (Laung)", Cinnamon: "Cinnamon (Dalchini)",
+  Pepper: "Black Pepper", "Black Pepper": "Black Pepper",
+  Sapota: "Sapota (Chikoo)", Amla: "Amla (Indian Gooseberry)", Cowpea: "Cowpea (Lobia)",
+  Safflower: "Safflower (Kusum)", Spinach: "Spinach (Palak)", Capsicum: "Capsicum (Bell Pepper)",
+  Drumstick: "Drumstick (Moringa)", "Bottle Gourd": "Bottle Gourd (Lauki)",
+  "Bitter Gourd": "Bitter Gourd (Karela)", "Ridge Gourd": "Ridge Gourd (Turai)",
+  Linseed: "Linseed (Flax)", "Horse Gram": "Horse Gram (Kulthi)", "Field Pea": "Field Pea (Matar)",
+  Rajma: "Rajma (Kidney Bean)", "Niger Seed": "Niger Seed (Ramtil)",
+  // Mandi-specific
+  Jaggery: "Jaggery", Vegetables: "Vegetables", Pulses: "Pulses",
+  "Large Cardamom": "Large Cardamom", Masoor: "Lentil (Masoor)", Arhar: "Pigeon Pea (Arhar/Tur)",
+};
+
+// Additional short-name translations for mandi/recommendations
+const shortNameTranslations: Record<string, Record<string, string>> = {
+  hi: { Jaggery: "गुड़", Vegetables: "सब्जियाँ", Pulses: "दालें", "Large Cardamom": "बड़ी इलायची", "Coconut & Arecanut": "नारियल और सुपारी", "Chilli & Turmeric": "मिर्च और हल्दी", "Off-season Vegetables": "ऑफ-सीज़न सब्जियाँ", "Cumin & Coriander": "जीरा और धनिया", "Wheat (Rabi) + Rice (Kharif)": "गेहूं (रबी) + चावल (खरीफ)", "Turmeric & Ginger": "हल्दी और अदरक", "Moong (Green Gram)": "मूंग" },
+  te: { Jaggery: "బెల్లం", Vegetables: "కూరగాయలు", Pulses: "పప్పులు", "Large Cardamom": "పెద్ద ఏలకులు", "Coconut & Arecanut": "కొబ్బరి & పోక", "Chilli & Turmeric": "మిరప & పసుపు", "Off-season Vegetables": "ఆఫ్-సీజన్ కూరగాయలు", "Cumin & Coriander": "జీలకర్ర & ధనియాలు", "Wheat (Rabi) + Rice (Kharif)": "గోధుమ (రబీ) + వరి (ఖరీఫ్)", "Turmeric & Ginger": "పసుపు & అల్లం", "Moong (Green Gram)": "పెసర" },
+  ta: { Jaggery: "வெல்லம்", Vegetables: "காய்கறிகள்", Pulses: "பருப்புகள்", "Large Cardamom": "பெரிய ஏலக்காய்", "Coconut & Arecanut": "தேங்காய் & பாக்கு", "Chilli & Turmeric": "மிளகாய் & மஞ்சள்", "Off-season Vegetables": "அசீசன் காய்கறிகள்", "Cumin & Coriander": "சீரகம் & கொத்தமல்லி", "Wheat (Rabi) + Rice (Kharif)": "கோதுமை (ரபி) + அரிசி (காரிஃப்)", "Turmeric & Ginger": "மஞ்சள் & இஞ்சி", "Moong (Green Gram)": "பாசிப்பயறு" },
+  kn: { Jaggery: "ಬೆಲ್ಲ", Vegetables: "ತರಕಾರಿಗಳು", Pulses: "ಬೇಳೆಕಾಳುಗಳು", "Large Cardamom": "ದೊಡ್ಡ ಏಲಕ್ಕಿ", "Coconut & Arecanut": "ತೆಂಗಿನಕಾಯಿ & ಅಡಿಕೆ", "Chilli & Turmeric": "ಮೆಣಸಿನಕಾಯಿ & ಅರಿಶಿನ", "Off-season Vegetables": "ಆಫ್-ಸೀಸನ್ ತರಕಾರಿ", "Cumin & Coriander": "ಜೀರಿಗೆ & ಕೊತ್ತಂಬರಿ", "Moong (Green Gram)": "ಹೆಸರು" },
+  ml: { Jaggery: "ശർക്കര", Vegetables: "പച്ചക്കറികൾ", Pulses: "പയറു വർഗങ്ങൾ", "Large Cardamom": "വലിയ ഏലക്ക", "Coconut & Arecanut": "തേങ്ങ & അടയ്ക്ക", "Moong (Green Gram)": "ചെറുപയർ" },
+  mr: { Jaggery: "गूळ", Vegetables: "भाजीपाला", Pulses: "कडधान्ये", "Large Cardamom": "मोठी वेलदोडा", "Moong (Green Gram)": "मूग" },
+  bn: { Jaggery: "গুড়", Vegetables: "শাকসবজি", Pulses: "ডাল", "Large Cardamom": "বড় এলাচ", "Moong (Green Gram)": "মুগ" },
+  gu: { Jaggery: "ગોળ", Vegetables: "શાકભાજી", Pulses: "કઠોળ", "Moong (Green Gram)": "મગ" },
+  pa: { Jaggery: "ਗੁੜ", Vegetables: "ਸਬਜ਼ੀਆਂ", Pulses: "ਦਾਲਾਂ", "Moong (Green Gram)": "ਮੂੰਗ" },
+};
+
 // Helper: get translated name with fallback to English (original name)
 export function getDataTranslation(lang: string): DataTranslations {
   return dataTranslations[lang] || dataTranslations.en;
 }
 
 export function translateCropName(name: string, lang: string): string {
+  if (lang === "en") return name;
   const dt = dataTranslations[lang];
-  return dt?.cropNames?.[name] || name;
+  // Direct match
+  if (dt?.cropNames?.[name]) return dt.cropNames[name];
+  // Try short-name specific translations
+  const shortTrans = shortNameTranslations[lang];
+  if (shortTrans?.[name]) return shortTrans[name];
+  // Try alias to full name
+  const fullName = shortNameAliases[name];
+  if (fullName && dt?.cropNames?.[fullName]) return dt.cropNames[fullName];
+  return name;
 }
 
 export function translateCategory(category: string, lang: string): string {
