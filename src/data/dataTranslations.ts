@@ -1,10 +1,12 @@
-// Data-level translations for crop names, categories, plant parts, community categories etc.
+// Data-level translations for crop names, categories, plant parts, community categories, states, districts etc.
 
 type DataTranslations = {
   cropCategories: Record<string, string>;
   cropNames: Record<string, string>;
   communityCategories: Record<string, string>;
   plantParts: Record<string, string>;
+  stateNames?: Record<string, string>;
+  placeNames?: Record<string, string>;
 };
 
 const dataTranslations: Record<string, DataTranslations> = {
