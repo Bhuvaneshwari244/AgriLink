@@ -85,7 +85,7 @@ export default function MandiRates() {
           <select value={stateFilter} onChange={e => { setStateFilter(e.target.value); setShowNearby(false); }}
             className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50">
             <option value="All">{t.mandi.state}: {t.mandi.all}</option>
-            {states.map(s => <option key={s} value={s}>{s}</option>)}
+            {states.map(s => <option key={s} value={s}>{translateStateName(s, lang)}</option>)}
           </select>
           <select value={commodityFilter} onChange={e => { setCommodityFilter(e.target.value); setShowNearby(false); }}
             className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50">
