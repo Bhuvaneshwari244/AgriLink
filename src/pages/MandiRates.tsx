@@ -359,63 +359,125 @@ export default function MandiRates() {
 
             return (
               <motion.div key={key} className="glass-card overflow-hidden"
-                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i * 0.03, 0.3) }}>
+                initial={{ opacity: 0, y: 15, scale: 0.98 }} 
+                animate={{ opacity: 1, y: 0, scale: 1 }} 
+                transition={{ type: "spring", stiffness: 250, damping: 20, delay: Math.min(i * 0.05, 0.4) }}
+                whileHover={{ y: -2 }}
+              >
                 <div
                   className={`flex justify-between items-center p-5 pb-3 ${hasMultiple ? "cursor-pointer" : ""}`}
                   onClick={() => hasMultiple && toggleMarket(key)}
                 >
                   <div>
-                    <h3 className="font-display font-semibold text-foreground text-lg">🏪 {translatePlaceName(group.market, lang)}</h3>
-                    <p className="text-sm text-muted-foreground">{translatePlaceName(group.district, lang)}, {translateStateName(group.state, lang)}</p>
+                    <motion.h3 
+                      className="font-display font-semibold text-foreground text-lg"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ type: "spring", stiffness: 300, delay: Math.min(i * 0.05, 0.4) + 0.1 }}
+                    >
+                      🏪 {translatePlaceName(group.market, lang)}
+                    </motion.h3>
+                    <motion.p 
+                      className="text-sm text-muted-foreground"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ type: "spring", stiffness: 300, delay: Math.min(i * 0.05, 0.4) + 0.15 }}
+                    >
+                      {translatePlaceName(group.district, lang)}, {translateStateName(group.state, lang)}
+                    </motion.p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="bg-accent/15 text-accent text-xs px-2.5 py-1 rounded-xl font-medium">
+                    <motion.span 
+                      className="bg-accent/15 text-accent text-xs px-2.5 py-1 rounded-xl font-medium"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ type: "spring", stiffness: 400, delay: Math.min(i * 0.05, 0.4) + 0.2 }}
+                      whileHover={{ scale: 1.05, y: -1 }}
+                    >
                       {group.items.length} {group.items.length === 1 ? t.mandi.crop : t.mandi.crops}
-                    </span>
+                    </motion.span>
                     {hasMultiple && (
-                      isExpanded ? <ChevronUp size={18} className="text-muted-foreground" /> : <ChevronDown size={18} className="text-muted-foreground" />
+                      <motion.span
+                        animate={{ y: isExpanded ? 0 : [0, 3, 0] }}
+                        transition={{ repeat: isExpanded ? 0 : Infinity, duration: 1.5 }}
+                      >
+                        {isExpanded ? <ChevronUp size={18} className="text-muted-foreground" /> : <ChevronDown size={18} className="text-muted-foreground" />}
+                      </motion.span>
                     )}
                   </div>
                 </div>
 
                 <div className="px-5 pb-4 space-y-3">
                   <AnimatePresence initial={false}>
-                    {previewItems.map(r => (
+                    {previewItems.map((r, rIndex) => (
                       <motion.div key={r.id}
-                        initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+                        initial={{ opacity: 0, height: 0, y: 10 }} 
+                        animate={{ opacity: 1, height: "auto", y: 0 }} 
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
                         className="bg-secondary/40 rounded-xl p-4">
                         <div className="flex justify-between items-start mb-2 gap-2">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-semibold text-foreground text-sm">🌾 {translateCropName(r.commodity, lang)}</span>
+                            <motion.span 
+                              className="font-semibold text-foreground text-sm"
+                              initial={{ opacity: 0, y: 5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ type: "spring", stiffness: 300, delay: rIndex * 0.05 }}
+                            >
+                              🌾 {translateCropName(r.commodity, lang)}
+                            </motion.span>
                             {/* Price Alert Badge */}
                             <PriceAlertBadge current={r.modalPrice} previous={r.yesterdayPrice} threshold={10} />
                           </div>
-                          <span className="text-xs text-muted-foreground whitespace-nowrap">{r.variety} • Per {r.unit}</span>
+                          <motion.span 
+                            className="text-xs text-muted-foreground whitespace-nowrap"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                          >
+                            {r.variety} • Per {r.unit}
+                          </motion.span>
                         </div>
                         <div className="grid grid-cols-3 gap-2 mb-3">
                           <motion.div 
-                            className="bg-background/50 rounded-lg p-2 text-center hover-scale"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3, delay: 0.1 }}
+                            className="bg-background/50 rounded-lg p-2 text-center"
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ type: "spring", stiffness: 300, delay: 0.1 }}
+                            whileHover={{ y: -3, scale: 1.02 }}
                           >
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.minPrice}</p>
+                            <motion.p 
+                              className="text-[10px] text-muted-foreground uppercase tracking-wider"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: 0.15 }}
+                            >
+                              {t.mandi.minPrice}
+                            </motion.p>
                             <motion.p 
                               className="text-sm font-bold text-foreground mt-0.5"
-                              initial={{ scale: 0.8 }}
-                              animate={{ scale: 1 }}
-                              transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+                              initial={{ scale: 0.5, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.2 }}
                             >
                               ₹{r.minPrice.toLocaleString()}
                             </motion.p>
                           </motion.div>
                           <motion.div 
-                            className="bg-primary/10 rounded-lg p-2 text-center border border-primary/20 hover-scale"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3, delay: 0.15 }}
+                            className="bg-primary/10 rounded-lg p-2 text-center border border-primary/20"
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ type: "spring", stiffness: 300, delay: 0.15 }}
+                            whileHover={{ y: -3, scale: 1.02 }}
                           >
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.modalPrice}</p>
+                            <motion.p 
+                              className="text-[10px] text-muted-foreground uppercase tracking-wider"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: 0.2 }}
+                            >
+                              {t.mandi.modalPrice}
+                            </motion.p>
                             <motion.p 
                               className="text-sm font-bold text-primary mt-0.5"
                               initial={{ scale: 0.8 }}
