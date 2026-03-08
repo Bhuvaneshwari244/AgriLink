@@ -221,6 +221,32 @@ export default function MandiRates() {
                           </motion.div>
                         </div>
                         
+                        {/* Weekly Price Chart */}
+                        {r.weeklyPrices && r.weeklyPrices.length > 0 && (
+                          <motion.div 
+                            className="bg-background/30 rounded-lg p-3 border border-border/30 mb-3"
+                            initial={{ opacity: 0, y: 5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: 0.25 }}
+                          >
+                            <div className="flex items-center gap-2 mb-2">
+                              <BarChart3 size={12} className="text-muted-foreground" />
+                              <AnimatedLabel variant="slide" delay={0.3} className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                                {t.mandi.weeklyTrend || "7-Day Price Trend"}
+                              </AnimatedLabel>
+                            </div>
+                            <Sparkline data={r.weeklyPrices} height={50} />
+                            <div className="flex justify-between mt-1">
+                              <AnimatedLabel variant="fade" delay={0.4} className="text-[9px] text-muted-foreground">
+                                {t.mandi.weekAgo || "7 days ago"}
+                              </AnimatedLabel>
+                              <AnimatedLabel variant="fade" delay={0.45} className="text-[9px] text-muted-foreground">
+                                {t.mandi.today || "Today"}
+                              </AnimatedLabel>
+                            </div>
+                          </motion.div>
+                        )}
+                        
                         {/* Price History Section */}
                         <motion.div 
                           className="bg-background/30 rounded-lg p-2.5 border border-border/30"
@@ -237,7 +263,9 @@ export default function MandiRates() {
                                   animate={{ opacity: 1, x: 0 }}
                                   transition={{ duration: 0.3, delay: 0.4 }}
                                 >
-                                  <span className="text-muted-foreground">{t.mandi.yesterday || "Yesterday"}:</span>
+                                  <AnimatedLabel variant="fade" delay={0.42} className="text-muted-foreground">
+                                    {t.mandi.yesterday || "Yesterday"}:
+                                  </AnimatedLabel>
                                   <motion.span 
                                     className="font-medium text-foreground ml-1"
                                     initial={{ opacity: 0 }}
@@ -255,7 +283,9 @@ export default function MandiRates() {
                                   animate={{ opacity: 1, x: 0 }}
                                   transition={{ duration: 0.3, delay: 0.45 }}
                                 >
-                                  <span className="text-muted-foreground">{t.mandi.before || "Before"}:</span>
+                                  <AnimatedLabel variant="fade" delay={0.47} className="text-muted-foreground">
+                                    {t.mandi.before || "Before"}:
+                                  </AnimatedLabel>
                                   <motion.span 
                                     className="font-medium text-foreground ml-1"
                                     initial={{ opacity: 0 }}
