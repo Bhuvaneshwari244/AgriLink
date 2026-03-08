@@ -105,14 +105,14 @@ const img = {
   capsicum: u("1563565375-f3fdfdbefa83"),          // bell peppers
   beetroot: u("1593105544559-ecb03bf76f82"),       // beetroot
   lettuce: u("1622206151226-18ca2c9ab4a1"),        // lettuce
-  broccoli: u("1459411552884-841db9b3cc2a"),       // broccoli
+  broccoli: u("1584270354949-c26b0d5b4a1c"),       // broccoli head
   strawberry: u("1464965911861-746a04b4bca6"),     // strawberry
   pineapple: u("1550258987-190a2d41a8ba"),         // pineapple
-  litchi: u("1563746098-75c3fe5e6b98"),            // litchi
-  amla: u("1563746098-75c3fe5e6b98"),              // amla/gooseberry
-  betelvine: u("1558618666-fcd25c85f7e7"),         // betel vine
-  cocoa: u("1481391032119-d89fee407e44"),           // cocoa pods
-  vanilla: u("1558618666-fcd25c85f7e7"),           // vanilla
+  litchi: u("1595231776515-ddffb1f4eb73"),            // litchi fruit
+  amla: u("1590779033100-9f60a05a013d"),              // amla/gooseberry (green fruit)
+  betelvine: u("1416879595882-3373a0480b5b"),         // green vine leaves
+  cocoa: u("1606312619070-d48b4c652e52"),             // cocoa beans
+  vanilla: u("1611070449592-6e1f0d79a5c1"),           // vanilla beans
 };
 
 export const crops: Crop[] = [
