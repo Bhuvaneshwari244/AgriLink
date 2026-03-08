@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { mandiRates, states, MandiRate } from "@/data/mandiRates";
-import { translateCropName } from "@/data/dataTranslations";
+import { translateCropName, translateStateName, translatePlaceName } from "@/data/dataTranslations";
 import { Search, MapPin, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
