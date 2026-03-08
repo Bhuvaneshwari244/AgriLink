@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
+import { AnimatedLabel } from "@/components/AnimatedLabel";
 
 export default function Diagnosis() {
   const { t, lang } = useLanguage();
@@ -96,8 +97,12 @@ export default function Diagnosis() {
             <Sparkles size={24} className="text-primary" />
           </motion.div>
           <div>
-            <h1 className="text-2xl font-display font-bold text-foreground">{t.diagnosis.title}</h1>
-            <p className="text-sm text-muted-foreground">{t.diagnosis.poweredBy}</p>
+            <AnimatedLabel as="h1" variant="slide" delay={0.1} className="text-2xl font-display font-bold text-foreground">
+              {t.diagnosis.title}
+            </AnimatedLabel>
+            <AnimatedLabel as="p" variant="fade" delay={0.15} className="text-sm text-muted-foreground">
+              {t.diagnosis.poweredBy}
+            </AnimatedLabel>
           </div>
         </div>
 

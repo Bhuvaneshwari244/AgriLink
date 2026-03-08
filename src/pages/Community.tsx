@@ -5,6 +5,7 @@ import { ThumbsUp, ThumbsDown, Share2, MessageSquare } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
+import { AnimatedLabel } from "@/components/AnimatedLabel";
 
 interface Answer { id: string; text: string; votes: number; date: string; }
 interface Question { id: string; text: string; category: string; votes: number; answers: Answer[]; date: string; }
@@ -60,7 +61,9 @@ export default function Community() {
         <h1 className="text-3xl font-display font-bold text-foreground mb-6">{t.community.title}</h1>
         {/* Post Question */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-5 mb-6">
-          <h2 className="font-display font-semibold text-foreground mb-3">{t.community.askQuestion}</h2>
+          <AnimatedLabel as="h2" variant="slide" delay={0.1} className="font-display font-semibold text-foreground mb-3">
+            {t.community.askQuestion}
+          </AnimatedLabel>
           <textarea value={newQ} onChange={e => setNewQ(e.target.value)} placeholder={t.community.placeholder}
             className="w-full bg-secondary text-foreground p-3 rounded-2xl border border-border/50 mb-3 min-h-[80px] outline-none focus:ring-2 focus:ring-primary transition-all resize-none" />
           <div className="flex gap-3 items-center">

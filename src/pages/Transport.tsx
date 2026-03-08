@@ -5,6 +5,7 @@ import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 import { useToast } from "@/hooks/use-toast";
+import { AnimatedLabel } from "@/components/AnimatedLabel";
 
 const trackingSteps = [
   { key: "statusBooked", fallback: "Booked", icon: Package },
@@ -108,8 +109,12 @@ export default function Transport() {
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-12 h-12 bg-primary/15 rounded-2xl flex items-center justify-center"><Truck size={24} className="text-primary" /></div>
                   <div>
-                    <h2 className="font-display font-semibold text-foreground">{tt.requestPickup}</h2>
-                    <p className="text-sm text-muted-foreground">{tt.fillDetails}</p>
+                    <AnimatedLabel as="h2" variant="slide" delay={0.1} className="font-display font-semibold text-foreground">
+                      {tt.requestPickup}
+                    </AnimatedLabel>
+                    <AnimatedLabel as="p" variant="fade" delay={0.15} className="text-sm text-muted-foreground">
+                      {tt.fillDetails}
+                    </AnimatedLabel>
                   </div>
                 </div>
 
@@ -120,15 +125,17 @@ export default function Transport() {
                     { key: "pickup", label: tt.pickup, placeholder: tt.placeholderPickup, type: "text" },
                     { key: "destination", label: tt.destination, placeholder: tt.placeholderDest, type: "text" },
                     { key: "phone", label: "📱 Phone Number", placeholder: "e.g., 9876543210", type: "tel" },
-                  ].map(field => (
-                    <div key={field.key}>
-                      <label className="text-sm font-medium text-foreground mb-1.5 block">{field.label}</label>
+                  ].map((field, i) => (
+                    <motion.div key={field.key} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                      <AnimatedLabel as="label" variant="slide" delay={i * 0.06} className="text-sm font-medium text-foreground mb-1.5 block">
+                        {field.label}
+                      </AnimatedLabel>
                       <input type={field.type} value={(form as any)[field.key]}
                         onChange={e => setForm(prev => ({ ...prev, [field.key]: e.target.value }))}
                         placeholder={field.placeholder}
                         disabled={!!generatedId}
                         className="w-full bg-secondary text-foreground px-4 py-3 rounded-2xl border border-border/50 outline-none focus:ring-2 focus:ring-primary transition-all disabled:opacity-60" />
-                    </div>
+                    </motion.div>
                   ))}
 
                   {/* Register Button — generates ID */}

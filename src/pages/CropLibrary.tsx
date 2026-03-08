@@ -6,6 +6,7 @@ import { Search, ArrowLeft, ExternalLink } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
+import { AnimatedLabel } from "@/components/AnimatedLabel";
 
 export default function CropLibrary() {
   const { t, lang } = useLanguage();
@@ -77,8 +78,12 @@ export default function CropLibrary() {
               { label: t.crops.fertilizer, value: selected.fertilizerSchedule },
             ].map((item, i) => (
               <motion.div key={item.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="glass-card p-4">
-                <h3 className="text-sm font-semibold text-primary mb-1">{item.label}</h3>
-                <p className="text-foreground text-sm">{item.value}</p>
+                <AnimatedLabel as="h3" variant="slide" delay={i * 0.08} className="text-sm font-semibold text-primary mb-1">
+                  {item.label}
+                </AnimatedLabel>
+                <AnimatedLabel as="p" variant="fade" delay={i * 0.08 + 0.05} className="text-foreground text-sm">
+                  {item.value}
+                </AnimatedLabel>
               </motion.div>
             ))}
             <div className="glass-card p-4">
