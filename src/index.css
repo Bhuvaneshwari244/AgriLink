@@ -6,34 +6,34 @@
 
 @layer base {
   :root {
-    --background: 160 25% 4%;
+    --background: 150 20% 10%;
     --foreground: 80 20% 92%;
-    --card: 160 20% 8%;
+    --card: 152 18% 14%;
     --card-foreground: 80 20% 92%;
-    --popover: 160 20% 8%;
+    --popover: 152 18% 14%;
     --popover-foreground: 80 20% 92%;
-    --primary: 0 72% 51%;
+    --primary: 142 60% 48%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 160 15% 12%;
+    --secondary: 155 14% 18%;
     --secondary-foreground: 80 15% 85%;
-    --muted: 160 12% 14%;
-    --muted-foreground: 160 10% 50%;
-    --accent: 142 60% 45%;
+    --muted: 155 12% 20%;
+    --muted-foreground: 150 10% 55%;
+    --accent: 142 55% 50%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 160 12% 15%;
-    --input: 160 12% 15%;
-    --ring: 142 60% 45%;
+    --border: 152 12% 22%;
+    --input: 152 12% 22%;
+    --ring: 142 55% 50%;
     --radius: 0.75rem;
-    --sidebar-background: 160 22% 6%;
+    --sidebar-background: 150 20% 12%;
     --sidebar-foreground: 80 15% 85%;
-    --sidebar-primary: 142 60% 45%;
+    --sidebar-primary: 142 55% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 160 12% 12%;
+    --sidebar-accent: 155 12% 18%;
     --sidebar-accent-foreground: 80 15% 85%;
-    --sidebar-border: 160 12% 14%;
-    --sidebar-ring: 142 60% 45%;
+    --sidebar-border: 152 12% 20%;
+    --sidebar-ring: 142 55% 50%;
 
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
@@ -43,9 +43,9 @@
     --info-foreground: 0 0% 100%;
 
     --primary-glow: 100 70% 50%;
-    --gradient-primary: linear-gradient(135deg, hsl(142 60% 45%), hsl(100 70% 50%));
-    --shadow-elegant: 0 10px 30px -10px hsl(142 60% 45% / 0.3);
-    --shadow-card: 0 4px 24px -4px hsl(160 25% 2% / 0.6);
+    --gradient-primary: linear-gradient(135deg, hsl(142 55% 50%), hsl(100 70% 50%));
+    --shadow-elegant: 0 10px 30px -10px hsl(142 55% 50% / 0.3);
+    --shadow-card: 0 4px 24px -4px hsl(150 20% 5% / 0.5);
   }
 }
 
