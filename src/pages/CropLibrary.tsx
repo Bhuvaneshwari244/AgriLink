@@ -33,7 +33,7 @@ export default function CropLibrary() {
     return (
       <div className="container mx-auto px-4 py-6 max-w-3xl">
         <button onClick={() => setSelected(null)} className="flex items-center gap-2 text-primary mb-4"><ArrowLeft size={18}/>{t.common.back}</button>
-        <img src={selected.image} alt={selected.name} className="w-full h-56 object-cover rounded-xl mb-4" onError={e => handleImageError(e, selected.name)} />
+        <img src={getLiveCropImage(selected.name)} alt={selected.name} className="w-full h-56 object-cover rounded-xl mb-4" onError={e => handleImageError(e, selected.name)} />
         <h1 className="text-3xl font-display font-bold text-foreground">{selected.name}</h1>
         <p className="text-muted-foreground italic mb-4">{selected.scientificName}</p>
         <p className="text-secondary-foreground mb-6">{selected.description}</p>
