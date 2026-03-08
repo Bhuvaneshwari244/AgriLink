@@ -10,31 +10,52 @@ export default function CropLibrary() {
   const [category, setCategory] = useState("All");
   const [selected, setSelected] = useState<Crop | null>(null);
 
-  const getFallbackImage = (name: string) => {
-    const stableFallbacks = [
-      "https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1200&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1200&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1471193945509-9ad0617afabf?w=1200&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1492496913980-501348b61469?w=1200&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1592982537447-7440770cbfc9?w=1200&auto=format&fit=crop",
-    ];
+  const getCropFallbackImage = (name: string, category: string) => {
+    const paletteByCategory: Record<string, { bg1: string; bg2: string; accent: string }> = {
+      Cereals: { bg1: "#4b5d3f", bg2: "#8ea46b", accent: "#f2d06b" },
+      Pulses: { bg1: "#3f5d4b", bg2: "#70a18b", accent: "#f0e2a0" },
+      Oilseeds: { bg1: "#5d523f", bg2: "#a29066", accent: "#f5ce5a" },
+      Vegetables: { bg1: "#2f5f3c", bg2: "#63ad77", accent: "#d9f07f" },
+      Fruits: { bg1: "#5e4a2f", bg2: "#b48447", accent: "#ffd28a" },
+      Spices: { bg1: "#5d3f2f", bg2: "#a96f4d", accent: "#ffd099" },
+      Commercial: { bg1: "#444b5f", bg2: "#6a7598", accent: "#cbd5ff" },
+      Plantation: { bg1: "#2f4e5d", bg2: "#4f8aa3", accent: "#b7ecff" },
+    };
 
-    const hash = name.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-    return stableFallbacks[hash % stableFallbacks.length];
+    const palette = paletteByCategory[category] ?? { bg1: "#3f4e5d", bg2: "#6b88a3", accent: "#dce9f5" };
+    const safeName = name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const safeCategory = category.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-label="${safeName} crop image placeholder">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="${palette.bg1}"/>
+            <stop offset="100%" stop-color="${palette.bg2}"/>
+          </linearGradient>
+        </defs>
+        <rect width="1200" height="700" fill="url(#g)"/>
+        <path d="M0 560 C180 500, 360 620, 560 560 C780 490, 950 620, 1200 540 L1200 700 L0 700 Z" fill="${palette.accent}" opacity="0.35"/>
+        <text x="60" y="580" fill="white" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="64" font-weight="700">${safeName}</text>
+        <text x="60" y="635" fill="white" opacity="0.9" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="34">${safeCategory} Crop</text>
+      </svg>
+    `;
+
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
   };
 
-  const resolveCropImage = (image: string, name: string) => {
-    if (image?.includes("source.unsplash.com")) return getFallbackImage(name);
+  const resolveCropImage = (image: string, name: string, cropCategory: string) => {
+    if (!image || image.includes("source.unsplash.com")) return getCropFallbackImage(name, cropCategory);
     return image;
   };
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>, cropName: string) => {
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>, cropName: string, cropCategory: string) => {
     const img = e.currentTarget;
     const hasRetried = img.dataset.retryFallback === "1";
 
     if (!hasRetried) {
       img.dataset.retryFallback = "1";
-      img.src = getFallbackImage(cropName);
+      img.src = getCropFallbackImage(cropName, cropCategory);
       return;
     }
 
@@ -50,7 +71,7 @@ export default function CropLibrary() {
     return (
       <div className="container mx-auto px-4 py-6 max-w-3xl">
         <button onClick={() => setSelected(null)} className="flex items-center gap-2 text-primary mb-4"><ArrowLeft size={18}/>{t.common.back}</button>
-        <img src={resolveCropImage(selected.image, selected.name)} alt={selected.name} className="w-full h-56 object-cover rounded-xl mb-4" onError={e => handleImageError(e, selected.name)} />
+        <img src={resolveCropImage(selected.image, selected.name, selected.category)} alt={selected.name} className="w-full h-56 object-cover rounded-xl mb-4" onError={e => handleImageError(e, selected.name, selected.category)} />
         <h1 className="text-3xl font-display font-bold text-foreground">{selected.name}</h1>
         <p className="text-muted-foreground italic mb-4">{selected.scientificName}</p>
         <p className="text-secondary-foreground mb-6">{selected.description}</p>
@@ -103,7 +124,7 @@ export default function CropLibrary() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filtered.map(crop => (
           <button key={crop.id} onClick={() => setSelected(crop)} className="glass-card overflow-hidden text-left hover:scale-[1.02] transition-transform">
-            <img src={resolveCropImage(crop.image, crop.name)} alt={crop.name} className="w-full h-32 object-cover" onError={e => handleImageError(e, crop.name)} />
+            <img src={resolveCropImage(crop.image, crop.name, crop.category)} alt={crop.name} className="w-full h-32 object-cover" onError={e => handleImageError(e, crop.name, crop.category)} />
             <div className="p-3">
               <h3 className="font-semibold text-foreground text-sm">{crop.name}</h3>
               <p className="text-xs text-muted-foreground italic">{crop.scientificName}</p>
