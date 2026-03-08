@@ -69,33 +69,86 @@ export default function Recommendations() {
   return (
     <PageTransition>
       <div className="container mx-auto px-4 py-6 max-w-3xl">
-        <h1 className="text-3xl font-display font-bold text-foreground mb-6">{t.recommendations.title}</h1>
+        <motion.h1 
+          className="text-3xl font-display font-bold text-foreground mb-6"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: [0, -8, 0] }}
+          transition={{ type: "spring", stiffness: 400, damping: 15 }}
+        >
+          <motion.span
+            animate={{ y: [0, -6, 0], rotate: [0, 5, -5, 0] }}
+            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+            className="inline-block"
+          >
+            💡
+          </motion.span>{" "}
+          {t.recommendations.title}
+        </motion.h1>
         <div className="flex gap-2 mb-6">
-          {tabs.map(tb => (
-            <button key={tb.id} onClick={() => setTab(tb.id)}
-              className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${tab === tb.id ? "text-primary-foreground" : "text-secondary-foreground hover:bg-muted"}`}>
-              <span className="relative z-10 flex items-center gap-2"><tb.icon size={16}/>{tb.label}</span>
+          {tabs.map((tb, i) => (
+            <motion.button 
+              key={tb.id} 
+              onClick={() => setTab(tb.id)}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 400, delay: i * 0.08 }}
+              whileHover={{ y: -6, scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${tab === tb.id ? "text-primary-foreground" : "text-secondary-foreground hover:bg-muted"}`}
+            >
+              <motion.span 
+                className="relative z-10 flex items-center gap-2"
+                animate={tab === tb.id ? { y: [0, -3, 0] } : {}}
+                transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+              >
+                <motion.span
+                  animate={tab === tb.id ? { rotate: [0, 10, -10, 0], scale: [1, 1.2, 1] } : {}}
+                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                >
+                  <tb.icon size={16}/>
+                </motion.span>
+                {tb.label}
+              </motion.span>
               {tab === tb.id && <motion.div layoutId="rec-tab" className="absolute inset-0 bg-primary rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
-            </button>
+            </motion.button>
           ))}
         </div>
 
         {tab === "soil" && (
-          <motion.div key="soil" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <motion.div key="soil" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 300 }}>
             <div className="flex gap-2 overflow-x-auto pb-3 mb-4">
-              {soilTypes.map(s => (
-                <button key={s} onClick={() => setSelectedSoil(s)}
-                  className={`relative whitespace-nowrap px-3 py-1.5 rounded-xl text-sm transition-all ${selectedSoil === s ? "text-primary-foreground font-medium" : "text-secondary-foreground hover:bg-muted"}`}>
-                  <span className="relative z-10">{translateSoilType(s, lang)}</span>
+              {soilTypes.map((s, i) => (
+                <motion.button 
+                  key={s} 
+                  onClick={() => setSelectedSoil(s)}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 400, delay: i * 0.05 }}
+                  whileHover={{ y: -5, scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`relative whitespace-nowrap px-3 py-1.5 rounded-xl text-sm transition-all ${selectedSoil === s ? "text-primary-foreground font-medium" : "text-secondary-foreground hover:bg-muted"}`}
+                >
+                  <motion.span 
+                    className="relative z-10"
+                    animate={selectedSoil === s ? { y: [0, -3, 0] } : {}}
+                    transition={{ repeat: Infinity, duration: 1, ease: "easeInOut" }}
+                  >
+                    {translateSoilType(s, lang)}
+                  </motion.span>
                   {selectedSoil === s && <motion.div layoutId="soil-pill" className="absolute inset-0 bg-primary rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
-                </button>
+                </motion.button>
               ))}
             </div>
             {soilData && (
               <div>
-                <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                <motion.p 
+                  className="text-sm text-muted-foreground mb-4 leading-relaxed"
+                  initial={{ opacity: 0, x: -15 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
                   {translateSoilDescription(soilData.soilType, lang) || soilData.description}
-                </p>
+                </motion.p>
                 <div className="space-y-4">{soilData.recommendations.map((r, i) => <RecCard key={r.id} r={r} i={i} section="soil" />)}</div>
               </div>
             )}
@@ -103,20 +156,55 @@ export default function Recommendations() {
         )}
 
         {tab === "location" && (
-          <motion.div key="location" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <motion.div key="location" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 300 }}>
             <div className="flex gap-2 overflow-x-auto pb-3 mb-4">
-              {locationRecommendations.map(l => (
-                <button key={l.region} onClick={() => setSelectedRegion(l.region)}
-                  className={`relative whitespace-nowrap px-3 py-1.5 rounded-xl text-sm transition-all ${selectedRegion === l.region ? "text-primary-foreground font-medium" : "text-secondary-foreground hover:bg-muted"}`}>
-                  <span className="relative z-10">{translateRegionName(l.region, lang)}</span>
+              {locationRecommendations.map((l, i) => (
+                <motion.button 
+                  key={l.region} 
+                  onClick={() => setSelectedRegion(l.region)}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 400, delay: i * 0.05 }}
+                  whileHover={{ y: -5, scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`relative whitespace-nowrap px-3 py-1.5 rounded-xl text-sm transition-all ${selectedRegion === l.region ? "text-primary-foreground font-medium" : "text-secondary-foreground hover:bg-muted"}`}
+                >
+                  <motion.span 
+                    className="relative z-10 flex items-center gap-1"
+                    animate={selectedRegion === l.region ? { y: [0, -3, 0] } : {}}
+                    transition={{ repeat: Infinity, duration: 1, ease: "easeInOut" }}
+                  >
+                    <motion.span
+                      animate={selectedRegion === l.region ? { scale: [1, 1.3, 1] } : {}}
+                      transition={{ repeat: Infinity, duration: 1.5 }}
+                    >
+                      📍
+                    </motion.span>
+                    {translateRegionName(l.region, lang)}
+                  </motion.span>
                   {selectedRegion === l.region && <motion.div layoutId="loc-pill" className="absolute inset-0 bg-primary rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
-                </button>
+                </motion.button>
               ))}
             </div>
             {locationData && (
               <div>
-                <p className="text-sm text-muted-foreground mb-2">{t.recommendations.climate}: {translateRegionClimate(locationData.climate, lang)}</p>
-                <p className="text-xs text-muted-foreground mb-4">{t.recommendations.states}: {locationData.states.map(s => translateStateName(s, lang)).join(", ")}</p>
+                <motion.p 
+                  className="text-sm text-muted-foreground mb-2"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.15 }}
+                >
+                  <motion.span animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 1.5 }} className="inline-block">🌤️</motion.span>{" "}
+                  {t.recommendations.climate}: {translateRegionClimate(locationData.climate, lang)}
+                </motion.p>
+                <motion.p 
+                  className="text-xs text-muted-foreground mb-4"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  {t.recommendations.states}: {locationData.states.map(s => translateStateName(s, lang)).join(", ")}
+                </motion.p>
                 <div className="space-y-4">{locationData.recommendations.map((r, i) => <RecCard key={r.id} r={r} i={i} section="location" />)}</div>
               </div>
             )}
@@ -124,19 +212,53 @@ export default function Recommendations() {
         )}
 
         {tab === "season" && (
-          <motion.div key="season" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <motion.div key="season" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 300 }}>
             <div className="flex gap-2 mb-4">
-              {seasonRecommendations.map(s => (
-                <button key={s.season} onClick={() => setSelectedSeason(s.season)}
-                  className={`relative px-4 py-2 rounded-xl text-sm font-semibold transition-all ${s.season === selectedSeason ? "text-primary-foreground" : "text-secondary-foreground hover:bg-muted"}`}>
-                  <span className="relative z-10">{translateSeasonName(s.season, lang)} ({translateSeasonMonths(s.months, lang)})</span>
+              {seasonRecommendations.map((s, i) => (
+                <motion.button 
+                  key={s.season} 
+                  onClick={() => setSelectedSeason(s.season)}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 400, delay: i * 0.08 }}
+                  whileHover={{ y: -6, scale: 1.08 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`relative px-4 py-2 rounded-xl text-sm font-semibold transition-all ${s.season === selectedSeason ? "text-primary-foreground" : "text-secondary-foreground hover:bg-muted"}`}
+                >
+                  <motion.span 
+                    className="relative z-10 flex items-center gap-1"
+                    animate={s.season === selectedSeason ? { y: [0, -4, 0] } : {}}
+                    transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+                  >
+                    <motion.span
+                      animate={s.season === selectedSeason ? { rotate: [0, 15, -15, 0] } : {}}
+                      transition={{ repeat: Infinity, duration: 2 }}
+                    >
+                      ☀️
+                    </motion.span>
+                    {translateSeasonName(s.season, lang)} ({translateSeasonMonths(s.months, lang)})
+                  </motion.span>
                   {s.season === selectedSeason && <motion.div layoutId="season-pill" className="absolute inset-0 bg-primary rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
-                </button>
+                </motion.button>
               ))}
             </div>
             {seasonData && (
               <div className="space-y-4">
-                <p className="text-sm text-primary font-semibold">📅 {t.recommendations.currentSeason}: {translateSeasonName(seasonData.season, lang)} — {translateSeasonMonths(seasonData.months, lang)}</p>
+                <motion.p 
+                  className="text-sm text-primary font-semibold"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1, y: [0, -3, 0] }}
+                  transition={{ y: { repeat: 2, duration: 0.3 } }}
+                >
+                  <motion.span
+                    animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.2, 1] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                    className="inline-block"
+                  >
+                    📅
+                  </motion.span>{" "}
+                  {t.recommendations.currentSeason}: {translateSeasonName(seasonData.season, lang)} — {translateSeasonMonths(seasonData.months, lang)}
+                </motion.p>
                 {seasonData.recommendations.map((r, i) => <RecCard key={r.id} r={r} i={i} section="season" />)}
               </div>
             )}
