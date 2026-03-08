@@ -92,12 +92,24 @@ const PriceChange = ({ current, previous, label, delay = 0 }: { current: number;
 
 export default function MandiRates() {
   const { t, lang } = useLanguage();
+  const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("All");
   const [commodityFilter, setCommodityFilter] = useState("All");
   const [nearbyResults, setNearbyResults] = useState<MandiRate[]>([]);
   const [showNearby, setShowNearby] = useState(false);
   const [expandedMarkets, setExpandedMarkets] = useState<Set<string>>(new Set());
+  const [showCharts, setShowCharts] = useState(true);
+  const [showAlertsOnly, setShowAlertsOnly] = useState(false);
+
+  // Count significant price changes (>10%)
+  const alertCount = useMemo(() => {
+    return mandiRates.filter(r => {
+      if (!r.yesterdayPrice) return false;
+      const percentChange = Math.abs((r.modalPrice - r.yesterdayPrice) / r.yesterdayPrice * 100);
+      return percentChange >= 10;
+    }).length;
+  }, []);
 
   const commodities = ["All", ...Array.from(new Set(mandiRates.map(r => r.commodity))).sort()];
 
