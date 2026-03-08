@@ -8,7 +8,7 @@ export default function Transport() {
 
   const sendWhatsApp = () => {
     const msg = `🚛 Transport Request\n\nCrop: ${form.cropType}\nQuantity: ${form.quantity} Quintals\nPickup: ${form.pickup}\nDestination: ${form.destination}`;
-    window.open(`https://wa.me/919701473371?text=${encodeURIComponent(msg)}`, "_blank");
+    window.open(`https://api.whatsapp.com/send?phone=919701473371&text=${encodeURIComponent(msg)}`, "_blank");
   };
 
   return (
