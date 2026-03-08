@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Phone, MessageCircle, Truck, Search, Package, MapPin, CheckCircle2, Circle, Copy, Check } from "lucide-react";
+import { Phone, MessageCircle, Truck, Search, Package, MapPin, CheckCircle2, Circle, Copy, Check, Send } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
@@ -36,23 +36,26 @@ export default function Transport() {
   const [generatedId, setGeneratedId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const handleRequestPickup = () => {
+  // Step 1: Register & generate ID locally
+  const handleRegister = () => {
     if (!form.cropType || !form.quantity || !form.pickup || !form.destination || !form.phone) {
       toast({ title: "Missing details", description: "Please fill all fields including phone number", variant: "destructive" });
       return;
     }
     const id = generateTransportId();
     setGeneratedId(id);
-
-    // Also store in demo tracking so user can immediately track it
     demoTrackingData[id] = {
       currentStep: 0,
       eta: "Pending",
       details: [`Booked just now`, "", "", ""],
     };
+    toast({ title: "✅ Pickup Registered!", description: `Your tracking ID is ${id}` });
+  };
 
-    const message = `🚛 Transport Pickup Request\n\n📋 Tracking ID: ${id}\n🌾 Crop: ${form.cropType}\n📦 Quantity: ${form.quantity} Quintals\n📍 Pickup: ${form.pickup}\n🏁 Destination: ${form.destination}\n📱 Phone: ${form.phone}`;
-
+  // Step 2: Send ID + details via WhatsApp
+  const handleSendWhatsApp = () => {
+    if (!generatedId) return;
+    const message = `🚛 Transport Pickup Request\n\n📋 Tracking ID: ${generatedId}\n🌾 Crop: ${form.cropType}\n📦 Quantity: ${form.quantity} Quintals\n📍 Pickup: ${form.pickup}\n🏁 Destination: ${form.destination}\n📱 Phone: ${form.phone}`;
     window.open(buildWhatsAppLink(message), "_blank", "noopener,noreferrer");
   };
 
@@ -61,12 +64,12 @@ export default function Transport() {
       navigator.clipboard.writeText(generatedId);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-      toast({ title: "Copied!", description: `Tracking ID ${generatedId} copied to clipboard` });
     }
   };
 
   const handleTrack = () => {
-    const result = demoTrackingData[trackingId.trim().toUpperCase()];
+    const key = trackingId.trim().toUpperCase();
+    const result = demoTrackingData[key];
     if (result) {
       setTrackedResult(result);
       setTrackError(false);
@@ -83,7 +86,7 @@ export default function Transport() {
       <div className="container mx-auto px-4 py-6 max-w-2xl">
         <h1 className="text-3xl font-display font-bold text-foreground mb-6">{tt.title}</h1>
 
-        {/* Tab Switcher */}
+        {/* Tabs */}
         <div className="flex gap-2 mb-6">
           {[
             { id: "request" as const, label: tt.requestPickup, icon: Truck },
@@ -109,55 +112,72 @@ export default function Transport() {
                     <p className="text-sm text-muted-foreground">{tt.fillDetails}</p>
                   </div>
                 </div>
+
                 <div className="space-y-4">
                   {[
                     { key: "cropType", label: tt.cropType, placeholder: tt.placeholderCrop, type: "text" },
                     { key: "quantity", label: tt.quantity, placeholder: tt.placeholderQty, type: "number" },
                     { key: "pickup", label: tt.pickup, placeholder: tt.placeholderPickup, type: "text" },
                     { key: "destination", label: tt.destination, placeholder: tt.placeholderDest, type: "text" },
-                    { key: "phone", label: "Phone Number", placeholder: "e.g., 9876543210", type: "tel" },
+                    { key: "phone", label: "📱 Phone Number", placeholder: "e.g., 9876543210", type: "tel" },
                   ].map(field => (
                     <div key={field.key}>
                       <label className="text-sm font-medium text-foreground mb-1.5 block">{field.label}</label>
-                      <input
-                        type={field.type}
-                        value={(form as any)[field.key]}
+                      <input type={field.type} value={(form as any)[field.key]}
                         onChange={e => setForm(prev => ({ ...prev, [field.key]: e.target.value }))}
                         placeholder={field.placeholder}
-                        className="w-full bg-secondary text-foreground px-4 py-3 rounded-2xl border border-border/50 outline-none focus:ring-2 focus:ring-primary transition-all"
-                      />
+                        disabled={!!generatedId}
+                        className="w-full bg-secondary text-foreground px-4 py-3 rounded-2xl border border-border/50 outline-none focus:ring-2 focus:ring-primary transition-all disabled:opacity-60" />
                     </div>
                   ))}
 
-                  {/* Request Pickup Button */}
-                  <motion.button whileTap={{ scale: 0.98 }} onClick={handleRequestPickup}
-                    className="w-full bg-success hover:bg-success/90 text-success-foreground py-3.5 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-colors">
-                    <MessageCircle size={20} /> {tt.requestPickup} — {tt.submit}
-                  </motion.button>
+                  {/* Register Button — generates ID */}
+                  {!generatedId && (
+                    <motion.button whileTap={{ scale: 0.98 }} onClick={handleRegister}
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3.5 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-colors text-base">
+                      <Package size={20} /> {tt.requestPickup}
+                    </motion.button>
+                  )}
                 </div>
 
-                {/* Generated ID Card */}
+                {/* Generated ID + WhatsApp send */}
                 <AnimatePresence>
                   {generatedId && (
-                    <motion.div initial={{ opacity: 0, y: 10, height: 0 }} animate={{ opacity: 1, y: 0, height: "auto" }} exit={{ opacity: 0, y: -10, height: 0 }}
-                      className="mt-6 bg-success/10 border border-success/30 rounded-2xl p-5">
-                      <div className="flex items-center gap-2 mb-2">
-                        <CheckCircle2 size={20} className="text-success" />
-                        <p className="font-semibold text-foreground text-sm">Pickup Requested!</p>
-                      </div>
-                      <p className="text-xs text-muted-foreground mb-3">Your tracking ID has been generated and sent via WhatsApp. Save it to track your shipment.</p>
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 bg-card border border-border rounded-xl px-4 py-3 font-mono text-lg font-bold text-primary tracking-wider text-center">
-                          {generatedId}
+                    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-4">
+                      {/* ID Card */}
+                      <div className="bg-success/10 border border-success/30 rounded-2xl p-5">
+                        <div className="flex items-center gap-2 mb-1">
+                          <CheckCircle2 size={20} className="text-success" />
+                          <p className="font-display font-semibold text-foreground">Pickup Registered!</p>
                         </div>
-                        <button onClick={handleCopyId}
-                          className="bg-primary text-primary-foreground p-3 rounded-xl hover:bg-primary/90 transition-colors">
-                          {copied ? <Check size={20} /> : <Copy size={20} />}
-                        </button>
+                        <p className="text-xs text-muted-foreground mb-3">Your unique tracking ID:</p>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 bg-card border-2 border-success/40 rounded-xl px-4 py-3 font-mono text-xl font-bold text-success tracking-widest text-center select-all">
+                            {generatedId}
+                          </div>
+                          <button onClick={handleCopyId}
+                            className="bg-secondary hover:bg-secondary/80 text-foreground p-3 rounded-xl transition-colors" title="Copy ID">
+                            {copied ? <Check size={20} className="text-success" /> : <Copy size={20} />}
+                          </button>
+                        </div>
                       </div>
+
+                      {/* Send via WhatsApp */}
+                      <motion.button whileTap={{ scale: 0.98 }} onClick={handleSendWhatsApp}
+                        className="w-full bg-success hover:bg-success/90 text-success-foreground py-3.5 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-colors text-base">
+                        <Send size={20} /> Send ID & Details via WhatsApp
+                      </motion.button>
+
+                      {/* Track link */}
                       <button onClick={() => { setTrackingId(generatedId); setActiveTab("track"); }}
-                        className="w-full mt-3 text-sm text-primary font-semibold hover:underline">
+                        className="w-full text-sm text-primary font-semibold hover:underline py-2">
                         → Track this shipment
+                      </button>
+
+                      {/* New request */}
+                      <button onClick={() => { setGeneratedId(null); setForm({ cropType: "", quantity: "", pickup: "", destination: "", phone: "" }); }}
+                        className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
+                        + New Request
                       </button>
                     </motion.div>
                   )}
