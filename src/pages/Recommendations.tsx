@@ -33,7 +33,7 @@ export default function Recommendations() {
         <h4 className="text-xs font-semibold text-primary mb-1">{t.recommendations.expertTips}</h4>
         <ul className="text-xs text-foreground space-y-1">{r.tips.map((tip: string) => <li key={tip}>• {tip}</li>)}</ul>
       </div>
-      <p className="text-[10px] text-muted-foreground">Source: {r.expertSource}</p>
+      <p className="text-[10px] text-muted-foreground">{t.recommendations.source}: {r.expertSource}</p>
     </motion.div>
   );
 
@@ -84,8 +84,8 @@ export default function Recommendations() {
             </div>
             {locationData && (
               <div>
-                <p className="text-sm text-muted-foreground mb-2">Climate: {locationData.climate}</p>
-                <p className="text-xs text-muted-foreground mb-4">States: {locationData.states.join(", ")}</p>
+                <p className="text-sm text-muted-foreground mb-2">{t.recommendations.climate}: {locationData.climate}</p>
+                <p className="text-xs text-muted-foreground mb-4">{t.recommendations.states}: {locationData.states.join(", ")}</p>
                 <div className="space-y-4">{locationData.recommendations.map((r, i) => <RecCard key={r.id} r={r} i={i} />)}</div>
               </div>
             )}

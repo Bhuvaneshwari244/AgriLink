@@ -20,7 +20,7 @@ export default function Diagnosis() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 10 * 1024 * 1024) {
-      toast({ title: "File too large", description: "Please upload an image under 10MB", variant: "destructive" });
+      toast({ title: t.diagnosis.fileTooLarge, description: t.diagnosis.fileTooLargeDesc, variant: "destructive" });
       return;
     }
     const reader = new FileReader();
@@ -41,7 +41,7 @@ export default function Diagnosis() {
       setResult(data);
     } catch (err: any) {
       console.error("Diagnosis error:", err);
-      toast({ title: "Analysis Failed", description: err.message || "Could not analyze image. Please try again.", variant: "destructive" });
+      toast({ title: t.diagnosis.analysisFailed, description: err.message || "Could not analyze image. Please try again.", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -62,7 +62,7 @@ export default function Diagnosis() {
           </motion.div>
           <div>
             <h1 className="text-2xl font-display font-bold text-foreground">{t.diagnosis.title}</h1>
-            <p className="text-sm text-muted-foreground">Powered by AI Vision Analysis</p>
+            <p className="text-sm text-muted-foreground">{t.diagnosis.poweredBy}</p>
           </div>
         </div>
 
@@ -77,7 +77,7 @@ export default function Diagnosis() {
                   <Camera size={32} className="text-primary" />
                 </div>
                 <p className="text-foreground font-semibold text-lg">{t.diagnosis.upload}</p>
-                <p className="text-sm text-muted-foreground mt-1">Take a photo or upload from gallery (max 10MB)</p>
+                <p className="text-sm text-muted-foreground mt-1">{t.diagnosis.photoHint}</p>
               </motion.button>
             ) : (
               <motion.div key="preview" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
@@ -85,7 +85,7 @@ export default function Diagnosis() {
                   <img src={image} alt="Uploaded" className="w-full max-h-64 object-contain rounded-2xl" />
                   <motion.button whileTap={{ scale: 0.95 }} onClick={() => { setImage(null); setResult(null); }}
                     className="absolute top-2 right-2 bg-destructive/90 text-destructive-foreground text-xs px-3 py-1.5 rounded-xl font-medium">
-                    Remove
+                    {t.diagnosis.remove}
                   </motion.button>
                 </div>
               </motion.div>
@@ -93,7 +93,7 @@ export default function Diagnosis() {
           </AnimatePresence>
           {image && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-5">
-              <label className="text-sm font-medium text-foreground mb-2 block">🌿 Affected Plant Part</label>
+              <label className="text-sm font-medium text-foreground mb-2 block">🌿 {t.diagnosis.affectedPart}</label>
               <div className="grid grid-cols-4 gap-2 mb-5">
                 {plantParts.map(part => (
                   <motion.button key={part.name} whileTap={{ scale: 0.95 }} onClick={() => setPlantPart(part.name)}
@@ -106,7 +106,7 @@ export default function Diagnosis() {
               </div>
               <motion.button whileTap={{ scale: 0.98 }} onClick={analyze} disabled={loading}
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3.5 rounded-2xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50 transition-all animate-pulse-glow">
-                {loading ? <><Loader2 size={20} className="animate-spin" />Analyzing with AI...</> : <><Sparkles size={20} />{t.diagnosis.analyze}</>}
+                {loading ? <><Loader2 size={20} className="animate-spin" />{t.diagnosis.analyzing}</> : <><Sparkles size={20} />{t.diagnosis.analyze}</>}
               </motion.button>
             </motion.div>
           )}
@@ -128,12 +128,12 @@ export default function Diagnosis() {
                     "bg-success/20 text-success"
                   }`}>{result.severity} {t.diagnosis.severity}</span>
                 </div>
-                <p className="text-sm text-muted-foreground">Affected: {result.affectedPart} • Confidence: {result.confidence}%</p>
-                {result.cause && <p className="text-sm text-muted-foreground mt-1">Cause: {result.cause}</p>}
+                <p className="text-sm text-muted-foreground">{t.diagnosis.affected}: {result.affectedPart} • {t.diagnosis.confidence}: {result.confidence}%</p>
+                {result.cause && <p className="text-sm text-muted-foreground mt-1">{t.diagnosis.cause}: {result.cause}</p>}
               </div>
               {result.symptoms && (
                 <div className="bg-warning/10 rounded-2xl p-4 border border-warning/20">
-                  <h4 className="font-semibold text-warning mb-2 flex items-center gap-2"><Bug size={16} /> Symptoms</h4>
+                  <h4 className="font-semibold text-warning mb-2 flex items-center gap-2"><Bug size={16} /> {t.diagnosis.symptoms}</h4>
                   <p className="text-sm text-foreground">{result.symptoms}</p>
                 </div>
               )}
@@ -144,7 +144,7 @@ export default function Diagnosis() {
                 </div>
                 {result.organicTreatment && (
                   <div className="bg-success/5 rounded-2xl p-4 border border-success/10">
-                    <h4 className="font-semibold text-success mb-2 flex items-center gap-2"><Leaf size={16} /> Organic Treatment</h4>
+                    <h4 className="font-semibold text-success mb-2 flex items-center gap-2"><Leaf size={16} /> {t.diagnosis.organicTreatment}</h4>
                     <p className="text-sm text-foreground">{result.organicTreatment}</p>
                   </div>
                 )}
@@ -157,7 +157,7 @@ export default function Diagnosis() {
                 href={buildWhatsAppLink(`🔬 AI Disease Diagnosis:\n\nDisease: ${result.disease}\nSeverity: ${result.severity}\nPart: ${result.affectedPart}\nConfidence: ${result.confidence}%\n\nPlease advise on treatment.`)}
                 target="_blank" rel="noopener noreferrer"
                 className="w-full bg-success hover:bg-success/90 text-success-foreground py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-colors">
-                💬 Ask Expert on WhatsApp
+                💬 {t.diagnosis.askExpert}
               </motion.a>
             </motion.div>
           )}
