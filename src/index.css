@@ -114,7 +114,7 @@
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: hsl(160 20% 8%);
+  background: hsl(152 18% 14%);
 }
 ::-webkit-scrollbar-thumb {
   background: hsl(142 60% 45% / 0.5);
