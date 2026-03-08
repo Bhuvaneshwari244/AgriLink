@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ThumbsUp, ThumbsDown, Share2, MessageSquare } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { motion, AnimatePresence } from "framer-motion";
+import PageTransition from "@/components/PageTransition";
 
 interface Answer { id: string; text: string; votes: number; date: string; }
 interface Question { id: string; text: string; category: string; votes: number; answers: Answer[]; date: string; }
@@ -52,65 +54,74 @@ export default function Community() {
   const filtered = filter === "All" ? questions : questions.filter(q => q.category === filter);
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-3xl">
-      <h1 className="text-3xl font-display font-bold text-foreground mb-6">{t.community.title}</h1>
-      {/* Post Question */}
-      <div className="glass-card p-4 mb-6">
-        <h2 className="font-semibold text-foreground mb-3">{t.community.askQuestion}</h2>
-        <textarea value={newQ} onChange={e => setNewQ(e.target.value)} placeholder={t.community.placeholder}
-          className="w-full bg-secondary text-foreground p-3 rounded-xl border border-border mb-3 min-h-[80px] outline-none focus:ring-2 focus:ring-primary" />
-        <div className="flex gap-3 items-center">
-          <select value={newQCat} onChange={e => setNewQCat(e.target.value)} className="bg-secondary text-secondary-foreground text-sm rounded-lg px-3 py-2 border border-border">
-            {categories.slice(1).map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-          <button onClick={postQuestion} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-xl font-semibold transition-colors">{t.community.post}</button>
+    <PageTransition>
+      <div className="container mx-auto px-4 py-6 max-w-3xl">
+        <h1 className="text-3xl font-display font-bold text-foreground mb-6">{t.community.title}</h1>
+        {/* Post Question */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-5 mb-6">
+          <h2 className="font-display font-semibold text-foreground mb-3">{t.community.askQuestion}</h2>
+          <textarea value={newQ} onChange={e => setNewQ(e.target.value)} placeholder={t.community.placeholder}
+            className="w-full bg-secondary text-foreground p-3 rounded-2xl border border-border/50 mb-3 min-h-[80px] outline-none focus:ring-2 focus:ring-primary transition-all resize-none" />
+          <div className="flex gap-3 items-center">
+            <select value={newQCat} onChange={e => setNewQCat(e.target.value)} className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50">
+              {categories.slice(1).map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <motion.button whileTap={{ scale: 0.97 }} onClick={postQuestion} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2.5 rounded-xl font-semibold transition-colors">{t.community.post}</motion.button>
+          </div>
+        </motion.div>
+        {/* Filter */}
+        <div className="flex gap-2 overflow-x-auto pb-3 mb-4">
+          {categories.map(c => (
+            <button key={c} onClick={() => setFilter(c)}
+              className={`relative whitespace-nowrap px-3 py-1.5 rounded-xl text-sm transition-all ${filter === c ? "text-primary-foreground font-medium" : "text-secondary-foreground hover:bg-muted"}`}>
+              <span className="relative z-10">{c}</span>
+              {filter === c && <motion.div layoutId="comm-filter" className="absolute inset-0 bg-primary rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
+            </button>
+          ))}
+        </div>
+        {/* Questions */}
+        <div className="space-y-4">
+          {filtered.map((q, i) => (
+            <motion.div key={q.id} className="glass-card p-5"
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
+              <div className="flex justify-between items-start mb-2">
+                <p className="text-foreground font-medium flex-1 leading-relaxed">{q.text}</p>
+                <span className="bg-primary/15 text-primary text-xs px-2.5 py-1 rounded-xl ml-2 whitespace-nowrap font-medium">{q.category}</span>
+              </div>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                <motion.button whileTap={{ scale: 0.9 }} onClick={() => vote(q.id, 1)} className="flex items-center gap-1 hover:text-primary transition-colors"><ThumbsUp size={14}/>{q.votes}</motion.button>
+                <motion.button whileTap={{ scale: 0.9 }} onClick={() => vote(q.id, -1)} className="flex items-center gap-1 hover:text-destructive transition-colors"><ThumbsDown size={14}/></motion.button>
+                <button onClick={() => setExpandedQ(expandedQ === q.id ? null : q.id)} className="flex items-center gap-1 hover:text-foreground transition-colors"><MessageSquare size={14}/>{q.answers.length} {t.community.answers}</button>
+                <a href={buildWhatsAppLink(q.text)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-success transition-colors"><Share2 size={14}/>{t.community.share}</a>
+                <span className="ml-auto text-xs">{q.date}</span>
+              </div>
+              <AnimatePresence>
+                {expandedQ === q.id && (
+                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+                    <div className="border-t border-border/50 pt-3 space-y-3">
+                      {q.answers.map(a => (
+                        <div key={a.id} className="bg-secondary/50 rounded-xl p-3">
+                          <p className="text-sm text-foreground leading-relaxed">{a.text}</p>
+                          <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                            <motion.button whileTap={{ scale: 0.9 }} onClick={() => voteAnswer(q.id, a.id, 1)} className="flex items-center gap-1 hover:text-primary"><ThumbsUp size={12}/>{a.votes}</motion.button>
+                            <motion.button whileTap={{ scale: 0.9 }} onClick={() => voteAnswer(q.id, a.id, -1)} className="hover:text-destructive"><ThumbsDown size={12}/></motion.button>
+                            <span>{a.date}</span>
+                          </div>
+                        </div>
+                      ))}
+                      <div className="flex gap-2">
+                        <input value={answerTexts[q.id] || ""} onChange={e => setAnswerTexts(prev => ({ ...prev, [q.id]: e.target.value }))}
+                          placeholder={t.community.answer} className="flex-1 bg-secondary text-foreground px-4 py-2.5 rounded-xl text-sm border border-border/50 outline-none focus:ring-2 focus:ring-primary transition-all" />
+                        <motion.button whileTap={{ scale: 0.97 }} onClick={() => postAnswer(q.id)} className="bg-primary text-primary-foreground px-4 py-2.5 rounded-xl text-sm font-semibold">Reply</motion.button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          ))}
         </div>
       </div>
-      {/* Filter */}
-      <div className="flex gap-2 overflow-x-auto pb-3 mb-4">
-        {categories.map(c => (
-          <button key={c} onClick={() => setFilter(c)}
-            className={`whitespace-nowrap px-3 py-1 rounded-lg text-sm ${filter === c ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}>{c}</button>
-        ))}
-      </div>
-      {/* Questions */}
-      <div className="space-y-4">
-        {filtered.map(q => (
-          <div key={q.id} className="glass-card p-4">
-            <div className="flex justify-between items-start mb-2">
-              <p className="text-foreground font-medium flex-1">{q.text}</p>
-              <span className="bg-primary/20 text-primary text-xs px-2 py-0.5 rounded ml-2 whitespace-nowrap">{q.category}</span>
-            </div>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-              <button onClick={() => vote(q.id, 1)} className="flex items-center gap-1 hover:text-primary"><ThumbsUp size={14}/>{q.votes}</button>
-              <button onClick={() => vote(q.id, -1)} className="flex items-center gap-1 hover:text-destructive"><ThumbsDown size={14}/></button>
-              <button onClick={() => setExpandedQ(expandedQ === q.id ? null : q.id)} className="flex items-center gap-1 hover:text-foreground"><MessageSquare size={14}/>{q.answers.length} {t.community.answers}</button>
-              <a href={buildWhatsAppLink(q.text)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-green-500"><Share2 size={14}/>{t.community.share}</a>
-              <span className="ml-auto text-xs">{q.date}</span>
-            </div>
-            {expandedQ === q.id && (
-              <div className="border-t border-border pt-3 space-y-3">
-                {q.answers.map(a => (
-                  <div key={a.id} className="bg-secondary/50 rounded-lg p-3">
-                    <p className="text-sm text-foreground">{a.text}</p>
-                    <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                      <button onClick={() => voteAnswer(q.id, a.id, 1)} className="flex items-center gap-1 hover:text-primary"><ThumbsUp size={12}/>{a.votes}</button>
-                      <button onClick={() => voteAnswer(q.id, a.id, -1)} className="hover:text-destructive"><ThumbsDown size={12}/></button>
-                      <span>{a.date}</span>
-                    </div>
-                  </div>
-                ))}
-                <div className="flex gap-2">
-                  <input value={answerTexts[q.id] || ""} onChange={e => setAnswerTexts(prev => ({ ...prev, [q.id]: e.target.value }))}
-                    placeholder={t.community.answer} className="flex-1 bg-secondary text-foreground px-3 py-2 rounded-lg text-sm border border-border outline-none" />
-                  <button onClick={() => postAnswer(q.id)} className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-semibold">Reply</button>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
+    </PageTransition>
   );
 }
-
