@@ -561,7 +561,6 @@ export default function MandiRates() {
                               </motion.span>
                               {" "}{translateCropName(r.commodity, lang)}
                             </motion.span>
-                            </motion.span>
                             {/* Price Alert Badge */}
                             <PriceAlertBadge current={r.modalPrice} previous={r.yesterdayPrice} threshold={10} />
                           </div>
