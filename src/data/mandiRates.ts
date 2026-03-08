@@ -8,11 +8,23 @@ export interface MandiRate {
   minPrice: number;
   maxPrice: number;
   modalPrice: number;
+  yesterdayPrice?: number;
+  previousPrice?: number;
   unit: string;
   date: string;
   lat?: number;
   lng?: number;
 }
+
+// Helper to generate realistic historical prices
+const generateHistoricalPrices = (modalPrice: number): { yesterdayPrice: number; previousPrice: number } => {
+  const changePercent1 = (Math.random() - 0.5) * 0.1; // -5% to +5%
+  const changePercent2 = (Math.random() - 0.5) * 0.15; // -7.5% to +7.5%
+  return {
+    yesterdayPrice: Math.round(modalPrice * (1 + changePercent1)),
+    previousPrice: Math.round(modalPrice * (1 + changePercent2)),
+  };
+};
 
 export const states = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
