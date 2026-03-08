@@ -1,3 +1,6 @@
+import riceImage from "@/assets/crops/rice.jpg";
+import ragiImage from "@/assets/crops/ragi.jpg";
+
 export interface Crop {
   id: string;
   name: string;
