@@ -3,6 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Upload, Camera, Loader2, AlertTriangle, CheckCircle, Sparkles, Leaf, Bug, Pill } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 export default function Diagnosis() {
   const { t, lang } = useLanguage();
@@ -167,7 +168,7 @@ export default function Diagnosis() {
             </div>
           </div>
 
-          <a href={`https://api.whatsapp.com/send?phone=919701473371&text=${encodeURIComponent(`🔬 AI Disease Diagnosis:\n\nDisease: ${result.disease}\nSeverity: ${result.severity}\nPart: ${result.affectedPart}\nConfidence: ${result.confidence}%\n\nPlease advise on treatment.`)}`}
+          <a href={buildWhatsAppLink(`🔬 AI Disease Diagnosis:\n\nDisease: ${result.disease}\nSeverity: ${result.severity}\nPart: ${result.affectedPart}\nConfidence: ${result.confidence}%\n\nPlease advise on treatment.`)}
             target="_blank" rel="noopener noreferrer"
             className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors">
             💬 Ask Expert on WhatsApp
@@ -177,3 +178,4 @@ export default function Diagnosis() {
     </div>
   );
 }
+
