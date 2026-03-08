@@ -2,9 +2,11 @@ import { useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { mandiRates, states, MandiRate } from "@/data/mandiRates";
 import { translateCropName, translateStateName, translatePlaceName } from "@/data/dataTranslations";
-import { Search, MapPin, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Search, MapPin, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Minus, BarChart3 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
+import { Sparkline } from "@/components/ui/sparkline";
+import { AnimatedLabel } from "@/components/AnimatedLabel";
 
 interface MarketGroup {
   market: string;
