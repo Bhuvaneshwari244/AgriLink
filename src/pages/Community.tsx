@@ -48,7 +48,7 @@ export default function Community() {
   const vote = (qId: string, delta: number) => setQuestions(prev => prev.map(q => q.id === qId ? { ...q, votes: q.votes + delta } : q));
   const voteAnswer = (qId: string, aId: string, delta: number) => setQuestions(prev => prev.map(q => q.id === qId ? { ...q, answers: q.answers.map(a => a.id === aId ? { ...a, votes: a.votes + delta } : a) } : q));
 
-  const shareWhatsApp = (text: string) => window.open(`https://wa.me/919701473371?text=${encodeURIComponent(text)}`, "_blank");
+  const shareWhatsApp = (text: string) => window.open(`https://api.whatsapp.com/send?phone=919701473371&text=${encodeURIComponent(text)}`, "_blank");
 
   const filtered = filter === "All" ? questions : questions.filter(q => q.category === filter);
 

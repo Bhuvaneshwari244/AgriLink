@@ -41,7 +41,7 @@ export default function Transport() {
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <a href="https://wa.me/919701473371" target="_blank" rel="noopener noreferrer"
+        <a href="https://api.whatsapp.com/send?phone=919701473371" target="_blank" rel="noopener noreferrer"
           className="glass-card p-4 text-center hover:scale-105 transition-transform">
           <MessageCircle size={28} className="text-green-500 mx-auto mb-2"/>
           <p className="font-semibold text-foreground">{t.transport.whatsapp}</p>
