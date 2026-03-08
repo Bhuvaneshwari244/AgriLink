@@ -15,7 +15,7 @@ interface MarketGroup {
   items: MandiRate[];
 }
 
-const PriceChange = ({ current, previous, label }: { current: number; previous?: number; label: string }) => {
+const PriceChange = ({ current, previous, label, delay = 0 }: { current: number; previous?: number; label: string; delay?: number }) => {
   if (!previous) return null;
   const diff = current - previous;
   const percent = ((diff / previous) * 100).toFixed(1);
@@ -23,15 +23,31 @@ const PriceChange = ({ current, previous, label }: { current: number; previous?:
   const isDown = diff < 0;
   
   return (
-    <div className="flex items-center gap-1 text-[10px]">
+    <motion.div 
+      className="flex items-center gap-1 text-[10px]"
+      initial={{ opacity: 0, x: -5 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.3, delay }}
+    >
       <span className="text-muted-foreground">{label}:</span>
-      {isUp && <TrendingUp size={10} className="text-accent" />}
-      {isDown && <TrendingDown size={10} className="text-destructive" />}
-      {!isUp && !isDown && <Minus size={10} className="text-muted-foreground" />}
-      <span className={isUp ? "text-accent font-medium" : isDown ? "text-destructive font-medium" : "text-muted-foreground"}>
+      <motion.span
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 300, delay: delay + 0.1 }}
+      >
+        {isUp && <TrendingUp size={10} className="text-accent" />}
+        {isDown && <TrendingDown size={10} className="text-destructive" />}
+        {!isUp && !isDown && <Minus size={10} className="text-muted-foreground" />}
+      </motion.span>
+      <motion.span 
+        className={isUp ? "text-accent font-medium" : isDown ? "text-destructive font-medium" : "text-muted-foreground"}
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, delay: delay + 0.15 }}
+      >
         {isUp ? "+" : ""}{percent}%
-      </span>
-    </div>
+      </motion.span>
+    </motion.div>
   );
 };
 
