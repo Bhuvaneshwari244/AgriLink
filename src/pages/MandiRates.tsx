@@ -109,8 +109,8 @@ export default function MandiRates() {
                   onClick={() => hasMultiple && toggleMarket(key)}
                 >
                   <div>
-                    <h3 className="font-display font-semibold text-foreground text-lg">🏪 {group.market}</h3>
-                    <p className="text-sm text-muted-foreground">{group.district}, {group.state}</p>
+                    <h3 className="font-display font-semibold text-foreground text-lg">🏪 {translatePlaceName(group.market, lang)}</h3>
+                    <p className="text-sm text-muted-foreground">{translatePlaceName(group.district, lang)}, {translateStateName(group.state, lang)}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="bg-accent/15 text-accent text-xs px-2.5 py-1 rounded-xl font-medium">
