@@ -2,13 +2,27 @@ import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { crops, cropCategories, Crop } from "@/data/crops";
 import { Search, ArrowLeft, ExternalLink } from "lucide-react";
-import { Link } from "react-router-dom";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 export default function CropLibrary() {
   const { t } = useLanguage();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [selected, setSelected] = useState<Crop | null>(null);
+
+  const getLiveCropImage = (name: string) => `https://source.unsplash.com/1200x800/?${encodeURIComponent(`${name} crop field agriculture`)}`;
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>, cropName: string) => {
+    const img = e.currentTarget;
+    const liveFallback = getLiveCropImage(cropName);
+
+    if (img.src.includes("source.unsplash.com")) {
+      img.src = `https://placehold.co/400x200/1a1a2e/dc2626?text=${encodeURIComponent(cropName)}`;
+      return;
+    }
+
+    img.src = liveFallback;
+  };
 
   const filtered = crops.filter(c =>
     (category === "All" || c.category === category) &&
@@ -19,7 +33,7 @@ export default function CropLibrary() {
     return (
       <div className="container mx-auto px-4 py-6 max-w-3xl">
         <button onClick={() => setSelected(null)} className="flex items-center gap-2 text-primary mb-4"><ArrowLeft size={18}/>{t.common.back}</button>
-        <img src={selected.image} alt={selected.name} className="w-full h-56 object-cover rounded-xl mb-4" onError={e => { (e.target as HTMLImageElement).src = `https://placehold.co/400x200/1a1a2e/dc2626?text=${encodeURIComponent(selected.name)}`; }} />
+        <img src={selected.image} alt={selected.name} className="w-full h-56 object-cover rounded-xl mb-4" onError={e => handleImageError(e, selected.name)} />
         <h1 className="text-3xl font-display font-bold text-foreground">{selected.name}</h1>
         <p className="text-muted-foreground italic mb-4">{selected.scientificName}</p>
         <p className="text-secondary-foreground mb-6">{selected.description}</p>
@@ -44,7 +58,7 @@ export default function CropLibrary() {
             <ul className="list-disc list-inside space-y-1 text-sm text-foreground">{selected.bestPractices.map(b => <li key={b}>{b}</li>)}</ul>
           </div>
         </div>
-        <a href={`https://api.whatsapp.com/send?phone=919701473371&text=I%20need%20info%20about%20${encodeURIComponent(selected.name)}`} target="_blank" rel="noopener noreferrer"
+        <a href={buildWhatsAppLink(`I need info about ${selected.name}`)} target="_blank" rel="noopener noreferrer"
           className="mt-6 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl w-full transition-colors">
           <ExternalLink size={18}/> Ask about {selected.name} on WhatsApp
         </a>
@@ -72,8 +86,7 @@ export default function CropLibrary() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filtered.map(crop => (
           <button key={crop.id} onClick={() => setSelected(crop)} className="glass-card overflow-hidden text-left hover:scale-[1.02] transition-transform">
-            <img src={crop.image} alt={crop.name} className="w-full h-32 object-cover"
-              onError={e => { (e.target as HTMLImageElement).src = `https://placehold.co/400x200/1a1a2e/dc2626?text=${encodeURIComponent(crop.name)}`; }} />
+            <img src={crop.image} alt={crop.name} className="w-full h-32 object-cover" onError={e => handleImageError(e, crop.name)} />
             <div className="p-3">
               <h3 className="font-semibold text-foreground text-sm">{crop.name}</h3>
               <p className="text-xs text-muted-foreground italic">{crop.scientificName}</p>
@@ -85,3 +98,4 @@ export default function CropLibrary() {
     </div>
   );
 }
+
