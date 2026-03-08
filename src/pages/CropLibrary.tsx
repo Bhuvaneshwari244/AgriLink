@@ -30,13 +30,15 @@ export default function CropLibrary() {
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>, cropName: string) => {
     const img = e.currentTarget;
+    const hasRetried = img.dataset.retryFallback === "1";
 
-    if (img.src.includes("images.unsplash.com")) {
-      img.src = "/placeholder.svg";
+    if (!hasRetried) {
+      img.dataset.retryFallback = "1";
+      img.src = getFallbackImage(cropName);
       return;
     }
 
-    img.src = getFallbackImage(cropName);
+    img.src = "/placeholder.svg";
   };
 
   const filtered = crops.filter(c =>
