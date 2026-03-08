@@ -44,17 +44,41 @@ export default function CropLibrary() {
     return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
   };
 
-  const resolveCropImage = (image: string, name: string, cropCategory: string) => {
-    if (!image || image.includes("source.unsplash.com")) return getCropFallbackImage(name, cropCategory);
-    return image;
+  const getWikimediaOriginalUrl = (url: string) => {
+    if (!url.includes("upload.wikimedia.org/wikipedia/commons/thumb/")) return null;
+
+    const parts = url.split("/thumb/")[1]?.split("/") ?? [];
+    if (parts.length < 4) return null;
+
+    const [folder1, folder2, fileName] = parts;
+    return `https://upload.wikimedia.org/wikipedia/commons/${folder1}/${folder2}/${fileName}`;
   };
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>, cropName: string, cropCategory: string) => {
-    const img = e.currentTarget;
-    const hasRetried = img.dataset.retryFallback === "1";
+  const resolveCropImage = (image: string, name: string, cropCategory: string) => {
+    if (!image || image.includes("source.unsplash.com")) return getCropFallbackImage(name, cropCategory);
+    return getWikimediaOriginalUrl(image) ?? image;
+  };
 
-    if (!hasRetried) {
-      img.dataset.retryFallback = "1";
+  const handleImageError = (
+    e: React.SyntheticEvent<HTMLImageElement>,
+    cropName: string,
+    cropCategory: string,
+    originalImage: string,
+  ) => {
+    const img = e.currentTarget;
+    const retryStep = Number(img.dataset.retryStep ?? "0");
+
+    if (retryStep === 0) {
+      const wikimediaOriginal = getWikimediaOriginalUrl(originalImage);
+      if (wikimediaOriginal && img.src !== wikimediaOriginal) {
+        img.dataset.retryStep = "1";
+        img.src = wikimediaOriginal;
+        return;
+      }
+    }
+
+    if (retryStep <= 1) {
+      img.dataset.retryStep = "2";
       img.src = getCropFallbackImage(cropName, cropCategory);
       return;
     }
@@ -71,7 +95,7 @@ export default function CropLibrary() {
     return (
       <div className="container mx-auto px-4 py-6 max-w-3xl">
         <button onClick={() => setSelected(null)} className="flex items-center gap-2 text-primary mb-4"><ArrowLeft size={18}/>{t.common.back}</button>
-        <img src={resolveCropImage(selected.image, selected.name, selected.category)} alt={selected.name} className="w-full h-56 object-cover rounded-xl mb-4" onError={e => handleImageError(e, selected.name, selected.category)} />
+        <img src={resolveCropImage(selected.image, selected.name, selected.category)} alt={selected.name} className="w-full h-56 object-cover rounded-xl mb-4" onError={e => handleImageError(e, selected.name, selected.category, selected.image)} />
         <h1 className="text-3xl font-display font-bold text-foreground">{selected.name}</h1>
         <p className="text-muted-foreground italic mb-4">{selected.scientificName}</p>
         <p className="text-secondary-foreground mb-6">{selected.description}</p>
@@ -124,7 +148,7 @@ export default function CropLibrary() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filtered.map(crop => (
           <button key={crop.id} onClick={() => setSelected(crop)} className="glass-card overflow-hidden text-left hover:scale-[1.02] transition-transform">
-            <img src={resolveCropImage(crop.image, crop.name, crop.category)} alt={crop.name} className="w-full h-32 object-cover" onError={e => handleImageError(e, crop.name, crop.category)} />
+            <img src={resolveCropImage(crop.image, crop.name, crop.category)} alt={crop.name} className="w-full h-32 object-cover" onError={e => handleImageError(e, crop.name, crop.category, crop.image)} />
             <div className="p-3">
               <h3 className="font-semibold text-foreground text-sm">{crop.name}</h3>
               <p className="text-xs text-muted-foreground italic">{crop.scientificName}</p>
