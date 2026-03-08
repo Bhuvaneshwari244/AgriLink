@@ -108,40 +108,124 @@ export default function CropLibrary() {
   return (
     <PageTransition>
       <div className="container mx-auto px-4 py-6">
-        <h1 className="text-3xl font-display font-bold text-foreground mb-6">{t.crops.title}</h1>
-        <div className="relative mb-4">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <motion.h1 
+          className="text-3xl font-display font-bold text-foreground mb-6"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: [0, -8, 0] }}
+          transition={{ type: "spring", stiffness: 400, damping: 15 }}
+        >
+          <motion.span
+            animate={{ y: [0, -6, 0] }}
+            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+            className="inline-block"
+          >
+            🌾
+          </motion.span>{" "}
+          {t.crops.title}
+        </motion.h1>
+        <motion.div 
+          className="relative mb-4"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ type: "spring", stiffness: 300, delay: 0.1 }}
+        >
+          <motion.div
+            animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
+            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+            className="absolute left-3 top-1/2 -translate-y-1/2"
+          >
+            <Search size={18} className="text-muted-foreground" />
+          </motion.div>
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t.crops.search}
             className="w-full bg-secondary text-foreground pl-10 pr-4 py-3 rounded-2xl border border-border/50 focus:ring-2 focus:ring-primary outline-none transition-all" />
-        </div>
+        </motion.div>
         <div className="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide">
-          {cropCategories.map(cat => (
-            <button key={cat} onClick={() => setCategory(cat)}
-              className={`relative whitespace-nowrap px-4 py-2 rounded-xl text-sm transition-all ${category === cat ? "text-primary-foreground font-medium" : "text-secondary-foreground hover:bg-muted"}`}>
-              <span className="relative z-10">{translateCategory(cat, lang)}</span>
+          {cropCategories.map((cat, i) => (
+            <motion.button 
+              key={cat} 
+              onClick={() => setCategory(cat)}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 400, delay: i * 0.05 }}
+              whileHover={{ y: -5, scale: 1.08 }}
+              whileTap={{ scale: 0.95 }}
+              className={`relative whitespace-nowrap px-4 py-2 rounded-xl text-sm transition-all ${category === cat ? "text-primary-foreground font-medium" : "text-secondary-foreground hover:bg-muted"}`}
+            >
+              <motion.span 
+                className="relative z-10"
+                animate={category === cat ? { y: [0, -4, 0] } : {}}
+                transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+              >
+                {translateCategory(cat, lang)}
+              </motion.span>
               {category === cat && (
                 <motion.div layoutId="crop-cat" className="absolute inset-0 bg-primary rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />
               )}
-            </button>
+            </motion.button>
           ))}
         </div>
-        <p className="text-sm text-muted-foreground mb-4">{filtered.length} {t.crops.cropsFound}</p>
+        <motion.p 
+          className="text-sm text-muted-foreground mb-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, y: [0, -3, 0] }}
+          transition={{ delay: 0.3, y: { repeat: 2, duration: 0.3 } }}
+        >
+          <motion.span
+            animate={{ scale: [1, 1.15, 1] }}
+            transition={{ repeat: Infinity, duration: 1.5 }}
+            className="inline-block font-bold text-primary"
+          >
+            {filtered.length}
+          </motion.span>{" "}
+          {t.crops.cropsFound}
+        </motion.p>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filtered.map((crop, i) => (
             <motion.button
               key={crop.id}
               onClick={() => setSelected(crop)}
               className="glass-card-hover overflow-hidden text-left"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(i * 0.03, 0.3) }}
-              whileTap={{ scale: 0.97 }}
+              initial={{ opacity: 0, y: 20, rotate: -2 }}
+              animate={{ opacity: 1, y: 0, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20, delay: Math.min(i * 0.04, 0.4) }}
+              whileHover={{ y: -10, scale: 1.05, rotate: 1 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <img src={resolveCropImage(crop.image, crop.name, crop.category)} alt={translateCropName(crop.name, lang)} className="w-full h-36 object-cover" referrerPolicy="no-referrer" onError={e => handleImageError(e, crop.name, crop.category)} />
+              <motion.img 
+                src={resolveCropImage(crop.image, crop.name, crop.category)} 
+                alt={translateCropName(crop.name, lang)} 
+                className="w-full h-36 object-cover" 
+                referrerPolicy="no-referrer" 
+                onError={e => handleImageError(e, crop.name, crop.category)}
+                whileHover={{ scale: 1.1 }}
+                transition={{ duration: 0.3 }}
+              />
               <div className="p-3">
-                <h3 className="font-semibold text-foreground text-sm">{translateCropName(crop.name, lang)}</h3>
-                <p className="text-xs text-muted-foreground italic">{crop.scientificName}</p>
-                <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-lg mt-1.5 inline-block">{translateCategory(crop.category, lang)}</span>
+                <motion.h3 
+                  className="font-semibold text-foreground text-sm"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: Math.min(i * 0.04, 0.4) + 0.1 }}
+                >
+                  {translateCropName(crop.name, lang)}
+                </motion.h3>
+                <motion.p 
+                  className="text-xs text-muted-foreground italic"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: Math.min(i * 0.04, 0.4) + 0.15 }}
+                >
+                  {crop.scientificName}
+                </motion.p>
+                <motion.span 
+                  className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-lg mt-1.5 inline-block"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  transition={{ delay: Math.min(i * 0.04, 0.4) + 0.2, type: "spring", stiffness: 400 }}
+                >
+                  {translateCategory(crop.category, lang)}
+                </motion.span>
               </div>
             </motion.button>
           ))}

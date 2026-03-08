@@ -46,22 +46,84 @@ export default function Recommendations() {
     const translatedTips = translateTips(tKey, lang, r.tips);
 
     return (
-      <motion.div key={r.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="glass-card p-5">
-        <AnimatedLabel as="h3" variant="bounce" delay={i * 0.06} className="font-display font-bold text-foreground text-lg mb-1">
-          🌱 {translateCropName(r.crop, lang)}
-        </AnimatedLabel>
-        <AnimatedLabel as="p" variant="fade" delay={i * 0.06 + 0.1} className="text-sm text-muted-foreground mb-3 leading-relaxed">
+      <motion.div 
+        key={r.id} 
+        initial={{ opacity: 0, y: 20, rotate: -2 }} 
+        animate={{ opacity: 1, y: 0, rotate: 0 }} 
+        transition={{ type: "spring", stiffness: 300, damping: 20, delay: i * 0.08 }} 
+        whileHover={{ y: -8, scale: 1.02, rotate: 1 }}
+        className="glass-card p-5"
+      >
+        <motion.div
+          initial={{ opacity: 0, x: -15 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: i * 0.08 + 0.1 }}
+        >
+          <h3 className="font-display font-bold text-foreground text-lg mb-1 flex items-center gap-2">
+            <motion.span
+              animate={{ y: [0, -5, 0], rotate: [0, 10, -10, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+              className="inline-block"
+            >
+              🌱
+            </motion.span>
+            <motion.span
+              animate={{ y: [0, -3, 0] }}
+              transition={{ repeat: Infinity, duration: 2, delay: i * 0.1 }}
+            >
+              {translateCropName(r.crop, lang)}
+            </motion.span>
+          </h3>
+        </motion.div>
+        <motion.p 
+          className="text-sm text-muted-foreground mb-3 leading-relaxed"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: i * 0.08 + 0.15 }}
+        >
           {translatedReason}
-        </AnimatedLabel>
-        <div className="bg-secondary/50 rounded-xl p-3 mb-2">
-          <AnimatedLabel as="h4" variant="slide" delay={i * 0.06 + 0.15} className="text-xs font-semibold text-primary mb-1">
+        </motion.p>
+        <motion.div 
+          className="bg-secondary/50 rounded-xl p-3 mb-2"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", stiffness: 400, delay: i * 0.08 + 0.2 }}
+          whileHover={{ scale: 1.02 }}
+        >
+          <motion.h4 
+            className="text-xs font-semibold text-primary mb-1 flex items-center gap-1"
+            animate={{ y: [0, -2, 0] }}
+            transition={{ repeat: Infinity, duration: 1.5, delay: i * 0.1 }}
+          >
+            <motion.span
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ repeat: Infinity, duration: 1.2 }}
+            >
+              💡
+            </motion.span>
             {t.recommendations.expertTips}
-          </AnimatedLabel>
-          <ul className="text-xs text-foreground space-y-1">{translatedTips.map((tip: string) => <li key={tip}>• {tip}</li>)}</ul>
-        </div>
-        <AnimatedLabel as="p" variant="fade" delay={i * 0.06 + 0.2} className="text-[10px] text-muted-foreground">
+          </motion.h4>
+          <ul className="text-xs text-foreground space-y-1">
+            {translatedTips.map((tip: string, tipIdx: number) => (
+              <motion.li 
+                key={tip}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.08 + 0.25 + tipIdx * 0.05 }}
+              >
+                • {tip}
+              </motion.li>
+            ))}
+          </ul>
+        </motion.div>
+        <motion.p 
+          className="text-[10px] text-muted-foreground"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: i * 0.08 + 0.3 }}
+        >
           {t.recommendations.source}: {r.expertSource}
-        </AnimatedLabel>
+        </motion.p>
       </motion.div>
     );
   };
