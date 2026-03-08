@@ -169,43 +169,108 @@ export default function MandiRates() {
                           <span className="text-xs text-muted-foreground">{r.variety} • Per {r.unit}</span>
                         </div>
                         <div className="grid grid-cols-3 gap-2 mb-3">
-                          <div className="bg-background/50 rounded-lg p-2 text-center">
+                          <motion.div 
+                            className="bg-background/50 rounded-lg p-2 text-center hover-scale"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: 0.1 }}
+                          >
                             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.minPrice}</p>
-                            <p className="text-sm font-bold text-foreground mt-0.5">₹{r.minPrice.toLocaleString()}</p>
-                          </div>
-                          <div className="bg-primary/10 rounded-lg p-2 text-center border border-primary/20">
+                            <motion.p 
+                              className="text-sm font-bold text-foreground mt-0.5"
+                              initial={{ scale: 0.8 }}
+                              animate={{ scale: 1 }}
+                              transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+                            >
+                              ₹{r.minPrice.toLocaleString()}
+                            </motion.p>
+                          </motion.div>
+                          <motion.div 
+                            className="bg-primary/10 rounded-lg p-2 text-center border border-primary/20 hover-scale"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: 0.15 }}
+                          >
                             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.modalPrice}</p>
-                            <p className="text-sm font-bold text-primary mt-0.5">₹{r.modalPrice.toLocaleString()}</p>
-                          </div>
-                          <div className="bg-background/50 rounded-lg p-2 text-center">
+                            <motion.p 
+                              className="text-sm font-bold text-primary mt-0.5"
+                              initial={{ scale: 0.8 }}
+                              animate={{ scale: 1 }}
+                              transition={{ type: "spring", stiffness: 200, delay: 0.25 }}
+                            >
+                              ₹{r.modalPrice.toLocaleString()}
+                            </motion.p>
+                          </motion.div>
+                          <motion.div 
+                            className="bg-background/50 rounded-lg p-2 text-center hover-scale"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: 0.2 }}
+                          >
                             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.maxPrice}</p>
-                            <p className="text-sm font-bold text-foreground mt-0.5">₹{r.maxPrice.toLocaleString()}</p>
-                          </div>
+                            <motion.p 
+                              className="text-sm font-bold text-foreground mt-0.5"
+                              initial={{ scale: 0.8 }}
+                              animate={{ scale: 1 }}
+                              transition={{ type: "spring", stiffness: 200, delay: 0.3 }}
+                            >
+                              ₹{r.maxPrice.toLocaleString()}
+                            </motion.p>
+                          </motion.div>
                         </div>
                         
                         {/* Price History Section */}
-                        <div className="bg-background/30 rounded-lg p-2.5 border border-border/30">
+                        <motion.div 
+                          className="bg-background/30 rounded-lg p-2.5 border border-border/30"
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 0.35 }}
+                        >
                           <div className="flex items-center justify-between flex-wrap gap-2">
                             <div className="flex items-center gap-3">
                               {r.yesterdayPrice && (
-                                <div className="text-[10px]">
+                                <motion.div 
+                                  className="text-[10px]"
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ duration: 0.3, delay: 0.4 }}
+                                >
                                   <span className="text-muted-foreground">{t.mandi.yesterday || "Yesterday"}:</span>
-                                  <span className="font-medium text-foreground ml-1">₹{r.yesterdayPrice.toLocaleString()}</span>
-                                </div>
+                                  <motion.span 
+                                    className="font-medium text-foreground ml-1"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.2, delay: 0.5 }}
+                                  >
+                                    ₹{r.yesterdayPrice.toLocaleString()}
+                                  </motion.span>
+                                </motion.div>
                               )}
                               {r.previousPrice && (
-                                <div className="text-[10px]">
+                                <motion.div 
+                                  className="text-[10px]"
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ duration: 0.3, delay: 0.45 }}
+                                >
                                   <span className="text-muted-foreground">{t.mandi.before || "Before"}:</span>
-                                  <span className="font-medium text-foreground ml-1">₹{r.previousPrice.toLocaleString()}</span>
-                                </div>
+                                  <motion.span 
+                                    className="font-medium text-foreground ml-1"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.2, delay: 0.55 }}
+                                  >
+                                    ₹{r.previousPrice.toLocaleString()}
+                                  </motion.span>
+                                </motion.div>
                               )}
                             </div>
                             <div className="flex items-center gap-3">
-                              <PriceChange current={r.modalPrice} previous={r.yesterdayPrice} label={t.mandi.vsYesterday || "vs Yesterday"} />
-                              <PriceChange current={r.modalPrice} previous={r.previousPrice} label={t.mandi.vsBefore || "vs Before"} />
+                              <PriceChange current={r.modalPrice} previous={r.yesterdayPrice} label={t.mandi.vsYesterday || "vs Yesterday"} delay={0.5} />
+                              <PriceChange current={r.modalPrice} previous={r.previousPrice} label={t.mandi.vsBefore || "vs Before"} delay={0.6} />
                             </div>
                           </div>
-                        </div>
+                        </motion.div>
                       </motion.div>
                     ))}
                   </AnimatePresence>
