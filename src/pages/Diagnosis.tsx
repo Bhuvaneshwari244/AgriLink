@@ -1,22 +1,12 @@
 import { useState, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Upload, Camera, Loader2, AlertTriangle, CheckCircle } from "lucide-react";
-
-// Local pattern-matching diagnosis (no cloud needed)
-const diseaseDatabase = [
-  { keywords: ["yellow", "leaf", "curl"], disease: "Yellow Leaf Curl Virus", severity: "High", treatment: "Remove infected plants. Spray Imidacloprid 0.3ml/L for whitefly vector control. Use resistant varieties.", prevention: "Use virus-free seedlings. Install yellow sticky traps. Maintain field hygiene." },
-  { keywords: ["brown", "spot", "leaf"], disease: "Brown Leaf Spot", severity: "Medium", treatment: "Spray Mancozeb 2.5g/L or Carbendazim 1g/L. Apply potash fertilizer.", prevention: "Use resistant varieties. Balanced fertilization. Proper spacing." },
-  { keywords: ["wilt", "drooping", "dry"], disease: "Fusarium Wilt", severity: "High", treatment: "No chemical cure. Remove infected plants. Apply Trichoderma viride 4g/kg seed.", prevention: "Crop rotation for 3-4 years. Use resistant varieties. Soil solarization." },
-  { keywords: ["white", "powder", "mildew"], disease: "Powdery Mildew", severity: "Medium", treatment: "Spray Sulphur 3g/L or Karathane 1ml/L. Apply twice at 15-day interval.", prevention: "Avoid excess nitrogen. Proper air circulation. Resistant varieties." },
-  { keywords: ["rot", "black", "fruit"], disease: "Fruit Rot / Black Rot", severity: "High", treatment: "Spray Copper Oxychloride 3g/L. Remove and destroy infected fruits.", prevention: "Proper drainage. Avoid injury to fruits. Pre-harvest spray." },
-  { keywords: ["rust", "orange", "pustule"], disease: "Rust Disease", severity: "Medium", treatment: "Spray Propiconazole 1ml/L or Mancozeb 2.5g/L.", prevention: "Early sowing. Remove volunteer plants. Use resistant varieties." },
-  { keywords: ["blight", "burn", "necrosis"], disease: "Bacterial Blight", severity: "High", treatment: "Spray Streptocycline 0.5g + Copper Oxychloride 3g per liter of water.", prevention: "Use certified seeds. Hot water seed treatment. Crop rotation." },
-  { keywords: ["mosaic", "pattern", "virus"], disease: "Mosaic Virus", severity: "High", treatment: "No direct cure. Control aphid/whitefly vectors with Dimethoate 2ml/L.", prevention: "Resistant varieties. Remove infected plants immediately. Vector control." },
-  { keywords: ["insect", "pest", "hole", "damage"], disease: "Insect Pest Damage", severity: "Variable", treatment: "Identify specific pest. Use Neem oil 5ml/L for general control. IPM approach recommended.", prevention: "Pheromone traps. Light traps. Crop rotation. Biological control agents." },
-];
+import { supabase } from "@/integrations/supabase/client";
+import { Upload, Camera, Loader2, AlertTriangle, CheckCircle, Sparkles, Leaf, Bug, Pill } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Diagnosis() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const { toast } = useToast();
   const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -26,92 +16,161 @@ export default function Diagnosis() {
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Please upload an image under 10MB", variant: "destructive" });
+      return;
+    }
     const reader = new FileReader();
     reader.onload = ev => setImage(ev.target?.result as string);
     reader.readAsDataURL(file);
     setResult(null);
   };
 
-  const analyze = () => {
+  const analyze = async () => {
     if (!image) return;
     setLoading(true);
-    // Simulate AI analysis with pattern matching
-    setTimeout(() => {
-      const randomDisease = diseaseDatabase[Math.floor(Math.random() * diseaseDatabase.length)];
-      setResult({
-        disease: randomDisease.disease,
-        severity: randomDisease.severity,
-        affectedPart: plantPart,
-        treatment: randomDisease.treatment,
-        prevention: randomDisease.prevention,
-        confidence: (70 + Math.random() * 25).toFixed(1),
+    try {
+      const { data, error } = await supabase.functions.invoke("diagnose-crop", {
+        body: { imageBase64: image, plantPart, language: lang },
       });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setResult(data);
+    } catch (err: any) {
+      console.error("Diagnosis error:", err);
+      toast({
+        title: "Analysis Failed",
+        description: err.message || "Could not analyze image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
+
+  const plantParts = [
+    { name: "Leaf", icon: "🍃" },
+    { name: "Stem", icon: "🌿" },
+    { name: "Root", icon: "🌱" },
+    { name: "Fruit", icon: "🍎" },
+    { name: "Pod/Seed", icon: "🫘" },
+    { name: "Flower", icon: "🌸" },
+    { name: "Insect", icon: "🐛" },
+    { name: "Full Plant", icon: "🌳" },
+  ];
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-2xl">
-      <h1 className="text-3xl font-display font-bold text-foreground mb-6">{t.diagnosis.title}</h1>
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center">
+          <Sparkles size={24} className="text-primary" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-display font-bold text-foreground">{t.diagnosis.title}</h1>
+          <p className="text-sm text-muted-foreground">Powered by AI Vision Analysis</p>
+        </div>
+      </div>
+
       <div className="glass-card p-6 mb-6">
         <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={handleUpload} className="hidden" />
         {!image ? (
           <button onClick={() => fileRef.current?.click()}
-            className="w-full border-2 border-dashed border-border rounded-xl p-12 text-center hover:border-primary transition-colors">
-            <Upload size={48} className="mx-auto text-muted-foreground mb-3" />
-            <p className="text-foreground font-semibold">{t.diagnosis.upload}</p>
-            <p className="text-sm text-muted-foreground mt-1">Take a photo or upload from gallery</p>
+            className="w-full border-2 border-dashed border-border rounded-xl p-10 text-center hover:border-primary hover:bg-primary/5 transition-all group">
+            <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Camera size={32} className="text-primary" />
+            </div>
+            <p className="text-foreground font-semibold text-lg">{t.diagnosis.upload}</p>
+            <p className="text-sm text-muted-foreground mt-1">Take a photo or upload from gallery (max 10MB)</p>
           </button>
         ) : (
           <div>
-            <img src={image} alt="Uploaded" className="w-full max-h-64 object-contain rounded-xl mb-4" />
-            <button onClick={() => { setImage(null); setResult(null); }} className="text-sm text-muted-foreground underline mb-4">Change Image</button>
+            <div className="relative">
+              <img src={image} alt="Uploaded" className="w-full max-h-64 object-contain rounded-xl" />
+              <button onClick={() => { setImage(null); setResult(null); }}
+                className="absolute top-2 right-2 bg-destructive/90 text-destructive-foreground text-xs px-3 py-1 rounded-lg">
+                Remove
+              </button>
+            </div>
           </div>
         )}
         {image && (
-          <div className="mt-4">
-            <label className="text-sm font-medium text-foreground mb-2 block">Affected Plant Part</label>
-            <div className="flex gap-2 flex-wrap mb-4">
-              {["Leaf", "Stem", "Root", "Fruit", "Pod/Seed", "Flower", "Insect"].map(part => (
-                <button key={part} onClick={() => setPlantPart(part)}
-                  className={`px-3 py-1.5 rounded-lg text-sm ${plantPart === part ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}>{part}</button>
+          <div className="mt-5">
+            <label className="text-sm font-medium text-foreground mb-2 block">🌿 Affected Plant Part</label>
+            <div className="grid grid-cols-4 gap-2 mb-5">
+              {plantParts.map(part => (
+                <button key={part.name} onClick={() => setPlantPart(part.name)}
+                  className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-xs transition-all ${plantPart === part.name ? "bg-primary text-primary-foreground shadow-lg scale-105" : "bg-secondary text-secondary-foreground hover:bg-muted"}`}>
+                  <span className="text-lg">{part.icon}</span>
+                  {part.name}
+                </button>
               ))}
             </div>
             <button onClick={analyze} disabled={loading}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50 transition-colors">
-              {loading ? <><Loader2 size={20} className="animate-spin"/>Analyzing...</> : <><Camera size={20}/>{t.diagnosis.analyze}</>}
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 disabled:opacity-50 transition-all glow-red">
+              {loading ? (
+                <><Loader2 size={20} className="animate-spin" />Analyzing with AI...</>
+              ) : (
+                <><Sparkles size={20} />{t.diagnosis.analyze}</>
+              )}
             </button>
           </div>
         )}
       </div>
+
       {result && (
-        <div className="glass-card p-6 space-y-4">
+        <div className="glass-card p-6 space-y-4 animate-in fade-in slide-in-from-bottom-4">
           <h2 className="text-xl font-display font-bold text-foreground flex items-center gap-2">
-            <CheckCircle size={24} className="text-primary"/>{t.diagnosis.result}
+            <CheckCircle size={24} className="text-primary" />{t.diagnosis.result}
           </h2>
+          
           <div className="bg-secondary/50 rounded-xl p-4">
-            <div className="flex justify-between items-center mb-2">
+            <div className="flex justify-between items-start mb-2">
               <h3 className="font-bold text-foreground text-lg">{result.disease}</h3>
-              <span className={`px-3 py-1 rounded-lg text-xs font-bold ${result.severity === "High" ? "bg-red-500/20 text-red-400" : "bg-yellow-500/20 text-yellow-400"}`}>
+              <span className={`px-3 py-1 rounded-lg text-xs font-bold ${
+                result.severity === "Critical" ? "bg-red-600/30 text-red-300" :
+                result.severity === "High" ? "bg-red-500/20 text-red-400" :
+                result.severity === "Medium" ? "bg-yellow-500/20 text-yellow-400" :
+                "bg-green-500/20 text-green-400"
+              }`}>
                 {result.severity} {t.diagnosis.severity}
               </span>
             </div>
-            <p className="text-sm text-muted-foreground">Affected: {result.affectedPart} • Confidence: {result.confidence}%</p>
+            <p className="text-sm text-muted-foreground">
+              Affected: {result.affectedPart} • Confidence: {result.confidence}%
+            </p>
+            {result.cause && (
+              <p className="text-sm text-muted-foreground mt-1">Cause: {result.cause}</p>
+            )}
           </div>
+
+          {result.symptoms && (
+            <div className="bg-orange-500/10 rounded-xl p-4">
+              <h4 className="font-semibold text-orange-400 mb-2 flex items-center gap-2"><Bug size={16} /> Symptoms</h4>
+              <p className="text-sm text-foreground">{result.symptoms}</p>
+            </div>
+          )}
+
           <div className="space-y-3">
             <div className="bg-green-500/10 rounded-xl p-4">
-              <h4 className="font-semibold text-green-400 mb-2">💊 {t.diagnosis.treatment}</h4>
+              <h4 className="font-semibold text-green-400 mb-2 flex items-center gap-2"><Pill size={16} /> {t.diagnosis.treatment}</h4>
               <p className="text-sm text-foreground">{result.treatment}</p>
             </div>
+            {result.organicTreatment && (
+              <div className="bg-emerald-500/10 rounded-xl p-4">
+                <h4 className="font-semibold text-emerald-400 mb-2 flex items-center gap-2"><Leaf size={16} /> Organic Treatment</h4>
+                <p className="text-sm text-foreground">{result.organicTreatment}</p>
+              </div>
+            )}
             <div className="bg-blue-500/10 rounded-xl p-4">
               <h4 className="font-semibold text-blue-400 mb-2">🛡️ {t.diagnosis.prevention}</h4>
               <p className="text-sm text-foreground">{result.prevention}</p>
             </div>
           </div>
-          <a href={`https://wa.me/919701473371?text=${encodeURIComponent(`Disease detected: ${result.disease}\nSeverity: ${result.severity}\nPart: ${result.affectedPart}\n\nPlease advise on treatment.`)}`}
+
+          <a href={`https://api.whatsapp.com/send?phone=919701473371&text=${encodeURIComponent(`🔬 AI Disease Diagnosis:\n\nDisease: ${result.disease}\nSeverity: ${result.severity}\nPart: ${result.affectedPart}\nConfidence: ${result.confidence}%\n\nPlease advise on treatment.`)}`}
             target="_blank" rel="noopener noreferrer"
             className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors">
-            Ask Expert on WhatsApp
+            💬 Ask Expert on WhatsApp
           </a>
         </div>
       )}

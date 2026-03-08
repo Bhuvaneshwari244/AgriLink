@@ -74,7 +74,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </nav>
 
       {/* WhatsApp Floating Button */}
-      <a href="https://wa.me/919701473371?text=Hi%20AgriLink%2C%20I%20need%20help%20with%20farming"
+      <a href="https://api.whatsapp.com/send?phone=919701473371&text=Hi%20AgriLink%2C%20I%20need%20help%20with%20farming"
         target="_blank" rel="noopener noreferrer"
         className="fixed bottom-20 md:bottom-6 right-4 z-50 bg-green-500 hover:bg-green-600 text-white rounded-full p-3.5 shadow-lg transition-transform hover:scale-110">
         <MessageCircle size={24} />

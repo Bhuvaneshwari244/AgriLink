@@ -44,7 +44,7 @@ export default function CropLibrary() {
             <ul className="list-disc list-inside space-y-1 text-sm text-foreground">{selected.bestPractices.map(b => <li key={b}>{b}</li>)}</ul>
           </div>
         </div>
-        <a href={`https://wa.me/919701473371?text=I%20need%20info%20about%20${encodeURIComponent(selected.name)}`} target="_blank" rel="noopener noreferrer"
+        <a href={`https://api.whatsapp.com/send?phone=919701473371&text=I%20need%20info%20about%20${encodeURIComponent(selected.name)}`} target="_blank" rel="noopener noreferrer"
           className="mt-6 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl w-full transition-colors">
           <ExternalLink size={18}/> Ask about {selected.name} on WhatsApp
         </a>
