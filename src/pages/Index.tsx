@@ -125,14 +125,18 @@ export default function Index() {
 
         {/* Feature Grid */}
         <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-5 max-w-4xl mx-auto">
-          {features.map(f => (
+          {features.map((f, i) => (
             <StaggerItem key={f.path}>
               <Link to={f.path} className="glass-card-hover p-5 md:p-6 block group">
                 <div className={`w-12 h-12 md:w-14 md:h-14 mb-4 rounded-2xl bg-gradient-to-br ${f.color} flex items-center justify-center group-hover:shadow-lg group-hover:scale-105 transition-all duration-300`}>
                   <f.icon size={24} className="text-white" />
                 </div>
-                <h3 className="font-display font-semibold text-foreground mb-1.5">{t.nav[f.title]}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
+                <AnimatedLabel as="h3" variant="slide" delay={i * 0.05} className="font-display font-semibold text-foreground mb-1.5">
+                  {t.nav[f.title]}
+                </AnimatedLabel>
+                <AnimatedLabel as="p" variant="fade" delay={i * 0.05 + 0.1} className="text-xs text-muted-foreground leading-relaxed">
+                  {f.desc}
+                </AnimatedLabel>
               </Link>
             </StaggerItem>
           ))}
