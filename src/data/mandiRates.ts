@@ -10,19 +10,33 @@ export interface MandiRate {
   modalPrice: number;
   yesterdayPrice?: number;
   previousPrice?: number;
+  weeklyPrices?: number[];
   unit: string;
   date: string;
   lat?: number;
   lng?: number;
 }
 
-// Helper to generate realistic historical prices
-const generateHistoricalPrices = (modalPrice: number): { yesterdayPrice: number; previousPrice: number } => {
+// Helper to generate realistic historical prices including weekly data
+const generateHistoricalPrices = (modalPrice: number): { yesterdayPrice: number; previousPrice: number; weeklyPrices: number[] } => {
   const changePercent1 = (Math.random() - 0.5) * 0.1; // -5% to +5%
   const changePercent2 = (Math.random() - 0.5) * 0.15; // -7.5% to +7.5%
+  
+  // Generate 7 days of price history with realistic fluctuations
+  const weeklyPrices: number[] = [];
+  let basePrice = modalPrice * (1 + (Math.random() - 0.5) * 0.2); // Start with some variance
+  for (let i = 0; i < 7; i++) {
+    const dailyChange = (Math.random() - 0.5) * 0.06; // -3% to +3% daily
+    basePrice = basePrice * (1 + dailyChange);
+    weeklyPrices.push(Math.round(basePrice));
+  }
+  // Ensure today's price matches modal price
+  weeklyPrices[6] = modalPrice;
+  
   return {
     yesterdayPrice: Math.round(modalPrice * (1 + changePercent1)),
     previousPrice: Math.round(modalPrice * (1 + changePercent2)),
+    weeklyPrices,
   };
 };
 
