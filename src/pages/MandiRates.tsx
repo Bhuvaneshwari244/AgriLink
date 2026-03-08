@@ -2,11 +2,13 @@ import { useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { mandiRates, states, MandiRate } from "@/data/mandiRates";
 import { translateCropName, translateStateName, translatePlaceName } from "@/data/dataTranslations";
-import { Search, MapPin, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Minus, BarChart3 } from "lucide-react";
+import { Search, MapPin, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Minus, BarChart3, Eye, EyeOff, AlertTriangle, Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 import { Sparkline } from "@/components/ui/sparkline";
 import { AnimatedLabel } from "@/components/AnimatedLabel";
+import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/hooks/use-toast";
 
 interface MarketGroup {
   market: string;
@@ -16,6 +18,41 @@ interface MarketGroup {
   lng?: number;
   items: MandiRate[];
 }
+
+// Price Alert Badge Component
+const PriceAlertBadge = ({ current, previous, threshold = 10 }: { current: number; previous?: number; threshold?: number }) => {
+  if (!previous) return null;
+  const percentChange = ((current - previous) / previous) * 100;
+  const absChange = Math.abs(percentChange);
+  
+  if (absChange < threshold) return null;
+  
+  const isUp = percentChange > 0;
+  const isSevere = absChange >= 15;
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+      transition={{ type: "spring", stiffness: 400, damping: 15 }}
+      className={`
+        inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold
+        ${isUp 
+          ? isSevere 
+            ? "bg-success/20 text-success border border-success/30" 
+            : "bg-accent/20 text-accent border border-accent/30"
+          : isSevere 
+            ? "bg-destructive/20 text-destructive border border-destructive/30" 
+            : "bg-warning/20 text-warning border border-warning/30"
+        }
+      `}
+    >
+      {isSevere && <AlertTriangle size={10} className="animate-pulse" />}
+      {isUp ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+      <span>{isUp ? "+" : ""}{percentChange.toFixed(1)}%</span>
+    </motion.div>
+  );
+};
 
 const PriceChange = ({ current, previous, label, delay = 0 }: { current: number; previous?: number; label: string; delay?: number }) => {
   if (!previous) return null;
