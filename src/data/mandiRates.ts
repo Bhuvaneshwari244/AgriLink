@@ -329,3 +329,9 @@ const rawMandiRates: Omit<MandiRate, 'yesterdayPrice' | 'previousPrice'>[] = [
   { id: "sk1", state: "Sikkim", district: "Gangtok", market: "Gangtok", commodity: "Cardamom", variety: "Large", minPrice: 90000, maxPrice: 140000, modalPrice: 115000, unit: "Quintal", date: "2026-03-08", lat: 27.3389, lng: 88.6065 },
   { id: "sk2", state: "Sikkim", district: "Namchi", market: "Namchi", commodity: "Ginger", variety: "Organic", minPrice: 3500, maxPrice: 5500, modalPrice: 4500, unit: "Quintal", date: "2026-03-08", lat: 27.1667, lng: 88.3500 },
 ];
+
+// Add historical prices to all rates
+export const mandiRates: MandiRate[] = rawMandiRates.map(rate => ({
+  ...rate,
+  ...generateHistoricalPrices(rate.modalPrice),
+}));
