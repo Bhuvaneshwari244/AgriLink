@@ -47,13 +47,21 @@ export default function Recommendations() {
 
     return (
       <motion.div key={r.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="glass-card p-5">
-        <h3 className="font-display font-bold text-foreground text-lg mb-1">🌱 {translateCropName(r.crop, lang)}</h3>
-        <p className="text-sm text-muted-foreground mb-3 leading-relaxed">{translatedReason}</p>
+        <AnimatedLabel as="h3" variant="bounce" delay={i * 0.06} className="font-display font-bold text-foreground text-lg mb-1">
+          🌱 {translateCropName(r.crop, lang)}
+        </AnimatedLabel>
+        <AnimatedLabel as="p" variant="fade" delay={i * 0.06 + 0.1} className="text-sm text-muted-foreground mb-3 leading-relaxed">
+          {translatedReason}
+        </AnimatedLabel>
         <div className="bg-secondary/50 rounded-xl p-3 mb-2">
-          <h4 className="text-xs font-semibold text-primary mb-1">{t.recommendations.expertTips}</h4>
+          <AnimatedLabel as="h4" variant="slide" delay={i * 0.06 + 0.15} className="text-xs font-semibold text-primary mb-1">
+            {t.recommendations.expertTips}
+          </AnimatedLabel>
           <ul className="text-xs text-foreground space-y-1">{translatedTips.map((tip: string) => <li key={tip}>• {tip}</li>)}</ul>
         </div>
-        <p className="text-[10px] text-muted-foreground">{t.recommendations.source}: {r.expertSource}</p>
+        <AnimatedLabel as="p" variant="fade" delay={i * 0.06 + 0.2} className="text-[10px] text-muted-foreground">
+          {t.recommendations.source}: {r.expertSource}
+        </AnimatedLabel>
       </motion.div>
     );
   };

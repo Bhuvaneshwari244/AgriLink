@@ -5,6 +5,7 @@ import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 import { useToast } from "@/hooks/use-toast";
+import { AnimatedLabel } from "@/components/AnimatedLabel";
 
 const trackingSteps = [
   { key: "statusBooked", fallback: "Booked", icon: Package },

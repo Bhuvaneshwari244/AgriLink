@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
+import { AnimatedLabel } from "@/components/AnimatedLabel";
 
 export default function Diagnosis() {
   const { t, lang } = useLanguage();
