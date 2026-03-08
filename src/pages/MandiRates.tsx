@@ -167,56 +167,88 @@ export default function MandiRates() {
       <div className="container mx-auto px-4 py-6">
         <motion.h1 
           className="text-3xl font-display font-bold text-foreground mb-6"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          initial={{ opacity: 0, y: -30, scale: 0.9 }}
+          animate={{ opacity: 1, y: [0, -8, 0], scale: 1 }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 400, 
+            damping: 10,
+            y: { repeat: 2, duration: 0.4 }
+          }}
         >
           {t.mandi.title}
         </motion.h1>
         <motion.div 
           className="flex flex-col md:flex-row gap-3 mb-4"
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 250, damping: 18, delay: 0.1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.1 }}
         >
           <div className="relative flex-1">
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.2 }}
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: [1, 1.3, 1], rotate: 0 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 500, 
+                damping: 12, 
+                delay: 0.2,
+                scale: { repeat: 1, duration: 0.3 }
+              }}
+              className="absolute left-3 top-1/2 -translate-y-1/2"
             >
-              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Search size={18} className="text-muted-foreground" />
             </motion.div>
-            <input value={search} onChange={e => { setSearch(e.target.value); setShowNearby(false); }} placeholder={t.mandi.search}
-              className="w-full bg-secondary text-foreground pl-10 pr-4 py-3 rounded-2xl border border-border/50 outline-none focus:ring-2 focus:ring-primary transition-all" />
+            <motion.input 
+              value={search} 
+              onChange={e => { setSearch(e.target.value); setShowNearby(false); }} 
+              placeholder={t.mandi.search}
+              className="w-full bg-secondary text-foreground pl-10 pr-4 py-3 rounded-2xl border border-border/50 outline-none focus:ring-2 focus:ring-primary transition-all"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.15 }}
+              whileFocus={{ scale: 1.02 }}
+            />
           </div>
           <motion.button 
-            whileTap={{ scale: 0.97 }} 
-            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.9 }} 
+            whileHover={{ scale: 1.08, y: -5 }}
             onClick={findNearby} 
             className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-3 rounded-2xl font-semibold transition-colors"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.15 }}
+            initial={{ opacity: 0, x: 30, scale: 0.8 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 400, damping: 12, delay: 0.2 }}
           >
             <motion.span
-              animate={{ y: [0, -3, 0] }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+              animate={{ y: [0, -8, 0, -5, 0, -3, 0] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
             >
               <MapPin size={18}/>
             </motion.span>
-            {t.mandi.nearby}
+            <motion.span
+              animate={{ y: [0, -4, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5, delay: 0.2 }}
+            >
+              {t.mandi.nearby}
+            </motion.span>
           </motion.button>
         </motion.div>
         <div className="flex gap-3 mb-4 flex-wrap items-center">
           <motion.select 
             value={stateFilter} 
             onChange={e => { setStateFilter(e.target.value); setShowNearby(false); }}
-            className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50"
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.2 }}
-            whileHover={{ y: -2 }}
+            className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50 cursor-pointer"
+            initial={{ opacity: 0, y: 25, scale: 0.8 }}
+            animate={{ opacity: 1, y: [0, -6, 0], scale: 1 }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 400, 
+              damping: 12, 
+              delay: 0.25,
+              y: { repeat: 1, duration: 0.3, delay: 0.3 }
+            }}
+            whileHover={{ y: -5, scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <option value="All">{t.mandi.state}: {t.mandi.all}</option>
             {states.map(s => <option key={s} value={s}>{translateStateName(s, lang)}</option>)}
@@ -224,11 +256,18 @@ export default function MandiRates() {
           <motion.select 
             value={commodityFilter} 
             onChange={e => { setCommodityFilter(e.target.value); setShowNearby(false); }}
-            className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50"
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.25 }}
-            whileHover={{ y: -2 }}
+            className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50 cursor-pointer"
+            initial={{ opacity: 0, y: 25, scale: 0.8 }}
+            animate={{ opacity: 1, y: [0, -6, 0], scale: 1 }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 400, 
+              damping: 12, 
+              delay: 0.3,
+              y: { repeat: 1, duration: 0.3, delay: 0.35 }
+            }}
+            whileHover={{ y: -5, scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             {commodities.map(c => <option key={c} value={c}>{c === "All" ? `${t.mandi.commodity}: ${t.mandi.all}` : translateCropName(c, lang)}</option>)}
           </motion.select>
@@ -237,23 +276,31 @@ export default function MandiRates() {
           <div className="flex items-center gap-4 ml-auto">
             {/* Chart Toggle */}
             <motion.div 
-              className="flex items-center gap-2 bg-secondary/60 px-3 py-2 rounded-xl border border-border/50"
-              initial={{ opacity: 0, x: 10, scale: 0.9 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.3 }}
-              whileHover={{ y: -2, scale: 1.02 }}
+              className="flex items-center gap-2 bg-secondary/60 px-3 py-2 rounded-xl border border-border/50 cursor-pointer"
+              initial={{ opacity: 0, x: 20, scale: 0.8 }}
+              animate={{ opacity: 1, x: 0, scale: [1, 1.08, 1] }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 400, 
+                damping: 12, 
+                delay: 0.35,
+                scale: { repeat: 1, duration: 0.25, delay: 0.4 }
+              }}
+              whileHover={{ y: -5, scale: 1.08 }}
             >
               <motion.span
-                animate={showCharts ? { rotate: [0, 10, -10, 0] } : {}}
-                transition={{ duration: 0.4 }}
+                animate={{ 
+                  rotate: showCharts ? [0, 15, -15, 10, -10, 0] : [0, -10, 10, 0],
+                  scale: [1, 1.2, 1]
+                }}
+                transition={{ duration: 0.5 }}
               >
                 {showCharts ? <Eye size={14} className="text-primary" /> : <EyeOff size={14} className="text-muted-foreground" />}
               </motion.span>
               <motion.span 
                 className="text-xs text-muted-foreground"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.35 }}
+                animate={{ y: [0, -3, 0] }}
+                transition={{ repeat: Infinity, duration: 2, delay: 0.5 }}
               >
                 {t.mandi.showCharts || "Charts"}
               </motion.span>
