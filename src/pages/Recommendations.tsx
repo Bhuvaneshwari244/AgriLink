@@ -10,6 +10,7 @@ import {
 import { Layers, MapPin, Sun } from "lucide-react";
 import { motion } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
+import { AnimatedLabel } from "@/components/AnimatedLabel";
 
 export default function Recommendations() {
   const { t, lang } = useLanguage();
