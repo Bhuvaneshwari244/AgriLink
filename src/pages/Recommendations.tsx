@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { soilRecommendations, locationRecommendations, seasonRecommendations, soilTypes } from "@/data/recommendations";
-import { translateCropName } from "@/data/dataTranslations";
+import { translateCropName, translateStateName } from "@/data/dataTranslations";
+import {
+  translateSoilType, translateSoilDescription, translateRegionName,
+  translateRegionClimate, translateSeasonName, translateSeasonMonths,
+  translateReason, translateTips,
+} from "@/data/recommendationsTranslations";
 import { Layers, MapPin, Sun } from "lucide-react";
 import { motion } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
@@ -26,17 +31,31 @@ export default function Recommendations() {
     { id: "season" as const, label: t.recommendations.seasonBased, icon: Sun },
   ];
 
-  const RecCard = ({ r, i }: { r: any; i: number }) => (
-    <motion.div key={r.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="glass-card p-5">
-      <h3 className="font-display font-bold text-foreground text-lg mb-1">🌱 {translateCropName(r.crop, lang)}</h3>
-      <p className="text-sm text-muted-foreground mb-3 leading-relaxed">{r.reason}</p>
-      <div className="bg-secondary/50 rounded-xl p-3 mb-2">
-        <h4 className="text-xs font-semibold text-primary mb-1">{t.recommendations.expertTips}</h4>
-        <ul className="text-xs text-foreground space-y-1">{r.tips.map((tip: string) => <li key={tip}>• {tip}</li>)}</ul>
-      </div>
-      <p className="text-[10px] text-muted-foreground">{t.recommendations.source}: {r.expertSource}</p>
-    </motion.div>
-  );
+  // Build a composite key for translation lookup to avoid ID conflicts
+  const getReasonKey = (section: string, id: string) => {
+    // For IDs that conflict (s1-s4), use section prefix
+    if (section === "soil" && id.startsWith("s")) return `soil-${id}`;
+    if (section === "location" && id.startsWith("s")) return `loc-${id}`;
+    return id;
+  };
+
+  const RecCard = ({ r, i, section }: { r: any; i: number; section: string }) => {
+    const tKey = getReasonKey(section, r.id);
+    const translatedReason = translateReason(tKey, lang, r.reason);
+    const translatedTips = translateTips(tKey, lang, r.tips);
+
+    return (
+      <motion.div key={r.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="glass-card p-5">
+        <h3 className="font-display font-bold text-foreground text-lg mb-1">🌱 {translateCropName(r.crop, lang)}</h3>
+        <p className="text-sm text-muted-foreground mb-3 leading-relaxed">{translatedReason}</p>
+        <div className="bg-secondary/50 rounded-xl p-3 mb-2">
+          <h4 className="text-xs font-semibold text-primary mb-1">{t.recommendations.expertTips}</h4>
+          <ul className="text-xs text-foreground space-y-1">{translatedTips.map((tip: string) => <li key={tip}>• {tip}</li>)}</ul>
+        </div>
+        <p className="text-[10px] text-muted-foreground">{t.recommendations.source}: {r.expertSource}</p>
+      </motion.div>
+    );
+  };
 
   return (
     <PageTransition>
@@ -58,15 +77,17 @@ export default function Recommendations() {
               {soilTypes.map(s => (
                 <button key={s} onClick={() => setSelectedSoil(s)}
                   className={`relative whitespace-nowrap px-3 py-1.5 rounded-xl text-sm transition-all ${selectedSoil === s ? "text-primary-foreground font-medium" : "text-secondary-foreground hover:bg-muted"}`}>
-                  <span className="relative z-10">{s}</span>
+                  <span className="relative z-10">{translateSoilType(s, lang)}</span>
                   {selectedSoil === s && <motion.div layoutId="soil-pill" className="absolute inset-0 bg-primary rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
                 </button>
               ))}
             </div>
             {soilData && (
               <div>
-                <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{soilData.description}</p>
-                <div className="space-y-4">{soilData.recommendations.map((r, i) => <RecCard key={r.id} r={r} i={i} />)}</div>
+                <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                  {translateSoilDescription(soilData.soilType, lang) || soilData.description}
+                </p>
+                <div className="space-y-4">{soilData.recommendations.map((r, i) => <RecCard key={r.id} r={r} i={i} section="soil" />)}</div>
               </div>
             )}
           </motion.div>
@@ -78,16 +99,16 @@ export default function Recommendations() {
               {locationRecommendations.map(l => (
                 <button key={l.region} onClick={() => setSelectedRegion(l.region)}
                   className={`relative whitespace-nowrap px-3 py-1.5 rounded-xl text-sm transition-all ${selectedRegion === l.region ? "text-primary-foreground font-medium" : "text-secondary-foreground hover:bg-muted"}`}>
-                  <span className="relative z-10">{l.region}</span>
+                  <span className="relative z-10">{translateRegionName(l.region, lang)}</span>
                   {selectedRegion === l.region && <motion.div layoutId="loc-pill" className="absolute inset-0 bg-primary rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
                 </button>
               ))}
             </div>
             {locationData && (
               <div>
-                <p className="text-sm text-muted-foreground mb-2">{t.recommendations.climate}: {locationData.climate}</p>
-                <p className="text-xs text-muted-foreground mb-4">{t.recommendations.states}: {locationData.states.join(", ")}</p>
-                <div className="space-y-4">{locationData.recommendations.map((r, i) => <RecCard key={r.id} r={r} i={i} />)}</div>
+                <p className="text-sm text-muted-foreground mb-2">{t.recommendations.climate}: {translateRegionClimate(locationData.climate, lang)}</p>
+                <p className="text-xs text-muted-foreground mb-4">{t.recommendations.states}: {locationData.states.map(s => translateStateName(s, lang)).join(", ")}</p>
+                <div className="space-y-4">{locationData.recommendations.map((r, i) => <RecCard key={r.id} r={r} i={i} section="location" />)}</div>
               </div>
             )}
           </motion.div>
@@ -99,15 +120,15 @@ export default function Recommendations() {
               {seasonRecommendations.map(s => (
                 <button key={s.season} onClick={() => setSelectedSeason(s.season)}
                   className={`relative px-4 py-2 rounded-xl text-sm font-semibold transition-all ${s.season === selectedSeason ? "text-primary-foreground" : "text-secondary-foreground hover:bg-muted"}`}>
-                  <span className="relative z-10">{s.season} ({s.months})</span>
+                  <span className="relative z-10">{translateSeasonName(s.season, lang)} ({translateSeasonMonths(s.months, lang)})</span>
                   {s.season === selectedSeason && <motion.div layoutId="season-pill" className="absolute inset-0 bg-primary rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
                 </button>
               ))}
             </div>
             {seasonData && (
               <div className="space-y-4">
-                <p className="text-sm text-primary font-semibold">📅 {t.recommendations.currentSeason}: {seasonData.season} — {seasonData.months}</p>
-                {seasonData.recommendations.map((r, i) => <RecCard key={r.id} r={r} i={i} />)}
+                <p className="text-sm text-primary font-semibold">📅 {t.recommendations.currentSeason}: {translateSeasonName(seasonData.season, lang)} — {translateSeasonMonths(seasonData.months, lang)}</p>
+                {seasonData.recommendations.map((r, i) => <RecCard key={r.id} r={r} i={i} section="season" />)}
               </div>
             )}
           </motion.div>
