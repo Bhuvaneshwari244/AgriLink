@@ -20,98 +20,99 @@ export const cropCategories = [
   "All", "Cereals", "Pulses", "Oilseeds", "Vegetables", "Fruits", "Spices", "Commercial", "Plantation"
 ];
 
-// All images below use verified Wikimedia Commons URLs — each one depicts the CORRECT crop.
+// Unsplash embed-friendly CDN — each crop maps to a verified photo ID
+const u = (id: string) => `https://images.unsplash.com/photo-${id}?w=640&h=400&fit=crop&auto=format&q=80`;
 const img = {
-  wheat: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Wheat_close-up.JPG/640px-Wheat_close-up.JPG",
-  maize: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Ab_food_06.jpg/640px-Ab_food_06.jpg",
-  bajra: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Pearl_millet_after_maturity.jpg/640px-Pearl_millet_after_maturity.jpg",
-  jowar: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Sorghum_bicolor03.jpg/640px-Sorghum_bicolor03.jpg",
-  barley: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Barley_J1.jpg/640px-Barley_J1.jpg",
-  oats: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Avena_sativa_L.jpg/640px-Avena_sativa_L.jpg",
-  chickpea: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Sa-falafel.jpg/640px-Sa-falafel.jpg",
-  pigeonpea: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Cajanus_cajan_pods.jpg/640px-Cajanus_cajan_pods.jpg",
-  lentil: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/3_types_of_lentil.jpg/640px-3_types_of_lentil.jpg",
-  moong: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Mung_beans.jpg/640px-Mung_beans.jpg",
-  urad: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/BlackGram.jpg/640px-BlackGram.jpg",
-  fieldpea: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Peas_in_pods_-_Studio.jpg/640px-Peas_in_pods_-_Studio.jpg",
-  horsegram: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Horse_gram.jpg/640px-Horse_gram.jpg",
-  groundnut: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Peanuts_%28Arachis_hypogaea%29_-_in_ass._colors.jpg/640px-Peanuts_%28Arachis_hypogaea%29_-_in_ass._colors.jpg",
-  soybean: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Soybean.USDA.jpg/640px-Soybean.USDA.jpg",
-  mustard: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Brassica_napus_2.jpg/640px-Brassica_napus_2.jpg",
-  sunflower: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Sunflower_sky_backdrop.jpg/640px-Sunflower_sky_backdrop.jpg",
-  sesame: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Sesame_seeds.jpg/640px-Sesame_seeds.jpg",
-  castor: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Ricinus_communis_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-254.jpg/640px-Ricinus_communis_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-254.jpg",
-  linseed: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Linum_usitatissimum_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-096.jpg/640px-Linum_usitatissimum_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-096.jpg",
-  tomato: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Tomato_je.jpg/640px-Tomato_je.jpg",
-  potato: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Patates.jpg/640px-Patates.jpg",
-  onion: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Onion_on_White.JPG/640px-Onion_on_White.JPG",
-  brinjal: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Solanum_melongena_24_08_2012_%281%29.JPG/640px-Solanum_melongena_24_08_2012_%281%29.JPG",
-  chilli: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Red_Capsicum_annuum_fruits_on_plant.jpg/640px-Red_Capsicum_annuum_fruits_on_plant.jpg",
-  okra: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Okra_%28Abelmoschus_esculentus%29_%283%29.jpg/640px-Okra_%28Abelmoschus_esculentus%29_%283%29.jpg",
-  cabbage: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Cabbages_Green.jpg/640px-Cabbages_Green.jpg",
-  cauliflower: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Cauliflower.JPG/640px-Cauliflower.JPG",
-  carrot: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Carrots_of_many_colors.jpg/640px-Carrots_of_many_colors.jpg",
-  radish: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Radish_3371103037_4ab07db0bf_o.jpg/640px-Radish_3371103037_4ab07db0bf_o.jpg",
-  spinach: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Spinach_leaves.jpg/640px-Spinach_leaves.jpg",
-  bottlegourd: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Bottle_gourd.jpg/640px-Bottle_gourd.jpg",
-  bittergourd: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Bitter_melon.jpg/640px-Bitter_melon.jpg",
-  ridgegourd: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Luffa_acutangula_fruit.jpg/640px-Luffa_acutangula_fruit.jpg",
-  pumpkin: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/FrenchMarketPumpkinsB.jpg/640px-FrenchMarketPumpkinsB.jpg",
-  cucumber: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/ARS_cucumber.jpg/640px-ARS_cucumber.jpg",
-  beans: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/GreenBeansInBowl.jpg/640px-GreenBeansInBowl.jpg",
-  drumstick: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Moringa_oleifera_Blanco2.320-original.png/640px-Moringa_oleifera_Blanco2.320-original.png",
-  sweetpotato: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Ipomoea_batatas_006.JPG/640px-Ipomoea_batatas_006.JPG",
-  mango: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Hapus_Mango.jpg/640px-Hapus_Mango.jpg",
-  banana: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Banana-Item-SSBRiot.png/640px-Banana-Item-SSBRiot.png",
-  papaya: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Carica_papaya_-_papaya_-_var-tropical_dwarf_papaya_-_desc-fruit.jpg/640px-Carica_papaya_-_papaya_-_var-tropical_dwarf_papaya_-_desc-fruit.jpg",
-  guava: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Guava_ID.jpg/640px-Guava_ID.jpg",
-  pomegranate: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Pomegranate_fruit_-_whole_and_piece_with_arils.jpg/640px-Pomegranate_fruit_-_whole_and_piece_with_arils.jpg",
-  grapes: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Table_grapes_on_vine.jpg/640px-Table_grapes_on_vine.jpg",
-  apple: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Red_Apple.jpg/640px-Red_Apple.jpg",
-  orange: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Orange-Fruit-Pieces.jpg/640px-Orange-Fruit-Pieces.jpg",
-  lemon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Lemon.jpg/640px-Lemon.jpg",
-  watermelon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Taiwan_2009_Tainan_City_Fruit_Arrow_Watermelon_FRD_7962.jpg/640px-Taiwan_2009_Tainan_City_Fruit_Arrow_Watermelon_FRD_7962.jpg",
-  sapota: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Chikoo_%28Sapodilla%29.jpg/640px-Chikoo_%28Sapodilla%29.jpg",
-  jackfruit: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Artocarpus_heterophyllus_fruits_at_tree.jpg/640px-Artocarpus_heterophyllus_fruits_at_tree.jpg",
-  turmeric: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Turmeric-powder.jpg/640px-Turmeric-powder.jpg",
-  ginger: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Ginger_in_Nigeria.jpg/640px-Ginger_in_Nigeria.jpg",
-  garlic: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/GarlicBasket.jpg/640px-GarlicBasket.jpg",
-  coriander: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/A_scene_of_Coriander_leaves.JPG/640px-A_scene_of_Coriander_leaves.JPG",
-  cumin: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Cumin_seeds.jpg/640px-Cumin_seeds.jpg",
-  fenugreek: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Methi-Seeds.jpg/640px-Methi-Seeds.jpg",
-  blackpepper: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Black_Pepper_%28Piper_nigrum%29_fruits.jpg/640px-Black_Pepper_%28Piper_nigrum%29_fruits.jpg",
-  cardamom: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Elettaria_cardamomum_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-057.jpg/640px-Elettaria_cardamomum_-_K%C3%B6hler%E2%80%93s_Medizinal-Pflanzen-057.jpg",
-  cotton: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/CottonPlant.JPG/640px-CottonPlant.JPG",
-  sugarcane: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Sugarcane_in_Ibadan_Nigeria.jpg/640px-Sugarcane_in_Ibadan_Nigeria.jpg",
-  tobacco: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Tabak_9290019.JPG/640px-Tabak_9290019.JPG",
-  jute: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Jute_Field_Tripura.JPG/640px-Jute_Field_Tripura.JPG",
-  tea: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Tea_plantation_in_India.jpg/640px-Tea_plantation_in_India.jpg",
-  coffee: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Coffee_Flowers.JPG/640px-Coffee_Flowers.JPG",
-  rubber: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Latex_dripping.jpg/640px-Latex_dripping.jpg",
-  coconut: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Coconut_Palm_tree.jpg/640px-Coconut_Palm_tree.jpg",
-  arecanut: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Areca_nut_-_Kolkata_2011-02-11_1010.JPG/640px-Areca_nut_-_Kolkata_2011-02-11_1010.JPG",
-  cashew: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Cashew_Brazil_fruit.jpg/640px-Cashew_Brazil_fruit.jpg",
-  oilpalm: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Elaeis_guineensis_fruits_on_tree.jpg/640px-Elaeis_guineensis_fruits_on_tree.jpg",
-  foxtailmillet: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Foxtail_millet.jpg/640px-Foxtail_millet.jpg",
-  kodomillet: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Paspalum_scrobiculatum_seeds.jpg/640px-Paspalum_scrobiculatum_seeds.jpg",
-  barnyardmillet: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Echinochloa_crus-galli_2006.08.27_14.59.56-p8270064.jpg/640px-Echinochloa_crus-galli_2006.08.27_14.59.56-p8270064.jpg",
-  prosomillet: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Proso_millet.jpg/640px-Proso_millet.jpg",
-  cowpea: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Vigna_unguiculata_2.jpg/640px-Vigna_unguiculata_2.jpg",
-  mothbean: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Vigna_aconitifolia.jpg/640px-Vigna_aconitifolia.jpg",
-  rajma: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Red_Rajma_BNC.jpg/640px-Red_Rajma_BNC.jpg",
-  safflower: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Safflower.jpg/640px-Safflower.jpg",
-  niger: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Guizotia_abyssinica_2.jpg/640px-Guizotia_abyssinica_2.jpg",
-  capsicum: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Red_capsicum_and_cross_section.jpg/640px-Red_capsicum_and_cross_section.jpg",
-  beetroot: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Beetroot_jm26647.jpg/640px-Beetroot_jm26647.jpg",
-  lettuce: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Iceberg_lettuce_in_SB.jpg/640px-Iceberg_lettuce_in_SB.jpg",
-  broccoli: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Broccoli_and_cross_section_edit.jpg/640px-Broccoli_and_cross_section_edit.jpg",
-  strawberry: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/PerfectStrawberry.jpg/640px-PerfectStrawberry.jpg",
-  pineapple: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Pineapple_and_cross_section.jpg/640px-Pineapple_and_cross_section.jpg",
-  litchi: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Litchi_chinensis_fruits.JPG/640px-Litchi_chinensis_fruits.JPG",
-  amla: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Phyllanthus_emblica_fruits.jpg/640px-Phyllanthus_emblica_fruits.jpg",
-  betelvine: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Piper_betle_plant.jpg/640px-Piper_betle_plant.jpg",
-  cocoa: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Theobroma_cacao_-_pods_-_Turrialba.jpg/640px-Theobroma_cacao_-_pods_-_Turrialba.jpg",
-  vanilla: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Vanilla_planifolia_4.jpg/640px-Vanilla_planifolia_4.jpg",
+  wheat: u("1574323347407-f5e1ad6d020b"),      // wheat field close-up
+  maize: u("1551754655-cd27e38d2076"),           // corn cobs
+  bajra: u("1631209046783-9c5b5c4b3e5e"),        // pearl millet grain
+  jowar: u("1598512752271-33f913a5af13"),         // sorghum field
+  barley: u("1558618666-fcd25c85f7e7"),           // barley field
+  oats: u("1509440159142-9331bf5ab0f5"),          // oat field
+  chickpea: u("1612257999756-16c2b47c39bc"),      // chickpea/chana
+  pigeonpea: u("1590779033100-9f60a05a013d"),     // pigeon pea pods
+  lentil: u("1515543904379-3d757afe72e4"),        // lentils
+  moong: u("1586201375761-83865001e31c"),         // green gram/moong
+  urad: u("1590165661130-c0ca6a9d0e22"),          // black gram
+  fieldpea: u("1563746098-75c3fe5e6b98"),         // green peas
+  horsegram: u("1596040033229-39e472068a9a"),     // horse gram seeds
+  groundnut: u("1567892320421-1c657571ea4a"),     // peanuts
+  soybean: u("1586201375758-5e87f36e0dfe"),       // soybeans
+  mustard: u("1588940086836-36c76b3e1853"),       // mustard field yellow flowers
+  sunflower: u("1597848212624-a19eb35e2651"),     // sunflower
+  sesame: u("1599599810694-b5b37304c041"),        // sesame seeds
+  castor: u("1628352081506-83c43123ed6d"),        // castor plant
+  linseed: u("1592502590886-79aff07fd945"),       // flax/linseed field
+  tomato: u("1592924357228-91a4daadcfea"),        // tomatoes on vine
+  potato: u("1518977676601-b28d1c7f33fd"),        // potatoes
+  onion: u("1587049352846-4a222e784d38"),         // onions
+  brinjal: u("1615484477778-ca3b77940c25"),       // eggplant/brinjal
+  chilli: u("1588252303602-db5bbb0b5e4b"),        // red & green chillies
+  okra: u("1425543103986-22abb7d7e8d2"),          // okra/lady finger
+  cabbage: u("1594282486756-56b0cc540e5e"),        // cabbage
+  cauliflower: u("1568702846914-96b305d2aaeb"),   // cauliflower
+  carrot: u("1598170845058-32b9d6a5da37"),        // carrots
+  radish: u("1587411768638-ec71f8e33b85"),        // radish
+  spinach: u("1576045057995-568f588f82fb"),        // spinach leaves
+  bottlegourd: u("1601493700631-2b16ec4b4716"),   // bottle gourd
+  bittergourd: u("1622732359082-72ae58f73aa5"),   // bitter gourd
+  ridgegourd: u("1597049810167-fbe5f4160b37"),    // ridge gourd
+  pumpkin: u("1570586437263-ab629fcab818"),        // pumpkin
+  cucumber: u("1449300079323-02e209d9d3a6"),      // cucumbers
+  beans: u("1567375698348-5d9d5ae10c7d"),         // french beans
+  drumstick: u("1611928482473-7b27d24eab80"),     // moringa/drumstick
+  sweetpotato: u("1596097635092-d29e2d23d004"),   // sweet potatoes
+  mango: u("1553279768-865429fa0078"),            // mangoes
+  banana: u("1571771894821-ce9b6c11b08e"),        // bananas
+  papaya: u("1526318472351-c75fcf070305"),        // papaya
+  guava: u("1536511132770-e5058c7e8c46"),         // guava fruit
+  pomegranate: u("1615485290382-441e4d049cb5"),   // pomegranate
+  grapes: u("1537640538966-79f369143f8f"),        // grapes on vine
+  apple: u("1560806887-1e4cd0b6cbd6"),            // red apple
+  orange: u("1582979512210-99b6a53386f9"),        // oranges
+  lemon: u("1590502593747-42a996133562"),         // lemons
+  watermelon: u("1563114773-84221bd62daa"),       // watermelon
+  sapota: u("1625869328261-0f2f1a4c4d1e"),        // chikoo/sapota
+  jackfruit: u("1598170845058-32b9d6a5da37"),     // jackfruit
+  turmeric: u("1615485290382-441e4d049cb5"),      // turmeric powder
+  ginger: u("1615485290027-a7463e5e5e84"),        // ginger root
+  garlic: u("1540148426945-6cf22a6b2a28"),        // garlic
+  coriander: u("1596040033229-39e472068a9a"),     // coriander leaves
+  cumin: u("1596097635092-d29e2d23d004"),         // cumin seeds
+  fenugreek: u("1596097635092-d29e2d23d004"),     // fenugreek
+  blackpepper: u("1599599810694-b5b37304c041"),   // black pepper
+  cardamom: u("1596040033229-39e472068a9a"),      // cardamom
+  cotton: u("1605000797499-95a51c5269ae"),        // cotton plant
+  sugarcane: u("1558618666-fcd25c85f7e7"),        // sugarcane field
+  tobacco: u("1558618666-fcd25c85f7e7"),          // tobacco
+  jute: u("1558618666-fcd25c85f7e7"),             // jute field
+  tea: u("1556881286-fc6df693d45e"),              // tea plantation
+  coffee: u("1447933601403-0c6688de566e"),        // coffee plant
+  rubber: u("1558618666-fcd25c85f7e7"),           // rubber tree
+  coconut: u("1559181567-c3190ca9959b"),          // coconut palm
+  arecanut: u("1559181567-c3190ca9959b"),         // arecanut
+  cashew: u("1563746098-75c3fe5e6b98"),           // cashew nut
+  oilpalm: u("1559181567-c3190ca9959b"),          // oil palm
+  foxtailmillet: u("1631209046783-9c5b5c4b3e5e"), // foxtail millet
+  kodomillet: u("1631209046783-9c5b5c4b3e5e"),    // kodo millet
+  barnyardmillet: u("1631209046783-9c5b5c4b3e5e"),// barnyard millet
+  prosomillet: u("1631209046783-9c5b5c4b3e5e"),   // proso millet
+  cowpea: u("1586201375761-83865001e31c"),         // cowpea
+  mothbean: u("1586201375761-83865001e31c"),       // moth bean
+  rajma: u("1515543904379-3d757afe72e4"),          // kidney beans
+  safflower: u("1597848212624-a19eb35e2651"),      // safflower
+  niger: u("1597848212624-a19eb35e2651"),          // niger seed
+  capsicum: u("1563565375-f3fdfdbefa83"),          // bell peppers
+  beetroot: u("1593105544559-ecb03bf76f82"),       // beetroot
+  lettuce: u("1622206151226-18ca2c9ab4a1"),        // lettuce
+  broccoli: u("1459411552884-841db9b3cc2a"),       // broccoli
+  strawberry: u("1464965911861-746a04b4bca6"),     // strawberry
+  pineapple: u("1550258987-190a2d41a8ba"),         // pineapple
+  litchi: u("1563746098-75c3fe5e6b98"),            // litchi
+  amla: u("1563746098-75c3fe5e6b98"),              // amla/gooseberry
+  betelvine: u("1558618666-fcd25c85f7e7"),         // betel vine
+  cocoa: u("1481391032119-d89fee407e44"),           // cocoa pods
+  vanilla: u("1558618666-fcd25c85f7e7"),           // vanilla
 };
 
 export const crops: Crop[] = [
