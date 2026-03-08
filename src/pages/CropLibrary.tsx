@@ -6,6 +6,7 @@ import { Search, ArrowLeft, ExternalLink } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
+import { AnimatedLabel } from "@/components/AnimatedLabel";
 
 export default function CropLibrary() {
   const { t, lang } = useLanguage();
