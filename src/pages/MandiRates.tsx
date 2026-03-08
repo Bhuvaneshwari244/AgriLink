@@ -165,39 +165,98 @@ export default function MandiRates() {
   return (
     <PageTransition>
       <div className="container mx-auto px-4 py-6">
-        <h1 className="text-3xl font-display font-bold text-foreground mb-6">{t.mandi.title}</h1>
-        <div className="flex flex-col md:flex-row gap-3 mb-4">
+        <motion.h1 
+          className="text-3xl font-display font-bold text-foreground mb-6"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
+          {t.mandi.title}
+        </motion.h1>
+        <motion.div 
+          className="flex flex-col md:flex-row gap-3 mb-4"
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 250, damping: 18, delay: 0.1 }}
+        >
           <div className="relative flex-1">
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.2 }}
+            >
+              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            </motion.div>
             <input value={search} onChange={e => { setSearch(e.target.value); setShowNearby(false); }} placeholder={t.mandi.search}
               className="w-full bg-secondary text-foreground pl-10 pr-4 py-3 rounded-2xl border border-border/50 outline-none focus:ring-2 focus:ring-primary transition-all" />
           </div>
-          <motion.button whileTap={{ scale: 0.97 }} onClick={findNearby} className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-3 rounded-2xl font-semibold transition-colors">
-            <MapPin size={18}/>{t.mandi.nearby}
+          <motion.button 
+            whileTap={{ scale: 0.97 }} 
+            whileHover={{ scale: 1.02, y: -2 }}
+            onClick={findNearby} 
+            className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-3 rounded-2xl font-semibold transition-colors"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.15 }}
+          >
+            <motion.span
+              animate={{ y: [0, -3, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+            >
+              <MapPin size={18}/>
+            </motion.span>
+            {t.mandi.nearby}
           </motion.button>
-        </div>
+        </motion.div>
         <div className="flex gap-3 mb-4 flex-wrap items-center">
-          <select value={stateFilter} onChange={e => { setStateFilter(e.target.value); setShowNearby(false); }}
-            className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50">
+          <motion.select 
+            value={stateFilter} 
+            onChange={e => { setStateFilter(e.target.value); setShowNearby(false); }}
+            className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50"
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.2 }}
+            whileHover={{ y: -2 }}
+          >
             <option value="All">{t.mandi.state}: {t.mandi.all}</option>
             {states.map(s => <option key={s} value={s}>{translateStateName(s, lang)}</option>)}
-          </select>
-          <select value={commodityFilter} onChange={e => { setCommodityFilter(e.target.value); setShowNearby(false); }}
-            className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50">
+          </motion.select>
+          <motion.select 
+            value={commodityFilter} 
+            onChange={e => { setCommodityFilter(e.target.value); setShowNearby(false); }}
+            className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50"
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.25 }}
+            whileHover={{ y: -2 }}
+          >
             {commodities.map(c => <option key={c} value={c}>{c === "All" ? `${t.mandi.commodity}: ${t.mandi.all}` : translateCropName(c, lang)}</option>)}
-          </select>
+          </motion.select>
           
           {/* Toggle Controls */}
           <div className="flex items-center gap-4 ml-auto">
             {/* Chart Toggle */}
             <motion.div 
               className="flex items-center gap-2 bg-secondary/60 px-3 py-2 rounded-xl border border-border/50"
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
+              initial={{ opacity: 0, x: 10, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.3 }}
+              whileHover={{ y: -2, scale: 1.02 }}
             >
-              {showCharts ? <Eye size={14} className="text-primary" /> : <EyeOff size={14} className="text-muted-foreground" />}
-              <span className="text-xs text-muted-foreground">{t.mandi.showCharts || "Charts"}</span>
+              <motion.span
+                animate={showCharts ? { rotate: [0, 10, -10, 0] } : {}}
+                transition={{ duration: 0.4 }}
+              >
+                {showCharts ? <Eye size={14} className="text-primary" /> : <EyeOff size={14} className="text-muted-foreground" />}
+              </motion.span>
+              <motion.span 
+                className="text-xs text-muted-foreground"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.35 }}
+              >
+                {t.mandi.showCharts || "Charts"}
+              </motion.span>
               <Switch 
                 checked={showCharts} 
                 onCheckedChange={setShowCharts}
