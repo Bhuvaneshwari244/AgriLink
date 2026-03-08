@@ -25,7 +25,7 @@ function generateParticles(count: number): Particle[] {
     duration: 15 + Math.random() * 25,
     delay: Math.random() * -20,
     rotation: Math.random() * 360,
-    opacity: 0.08 + Math.random() * 0.1,
+    opacity: 0.15 + Math.random() * 0.2,
   }));
 }
 
