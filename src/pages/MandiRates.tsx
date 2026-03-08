@@ -113,11 +113,19 @@ export default function MandiRates() {
 
   const commodities = ["All", ...Array.from(new Set(mandiRates.map(r => r.commodity))).sort()];
 
-  const filtered = mandiRates.filter(r =>
-    (stateFilter === "All" || r.state === stateFilter) &&
-    (commodityFilter === "All" || r.commodity === commodityFilter) &&
-    (search === "" || r.market.toLowerCase().includes(search.toLowerCase()) || r.district.toLowerCase().includes(search.toLowerCase()) || r.state.toLowerCase().includes(search.toLowerCase()) || r.commodity.toLowerCase().includes(search.toLowerCase()))
-  );
+  const filtered = mandiRates.filter(r => {
+    const matchesFilters = 
+      (stateFilter === "All" || r.state === stateFilter) &&
+      (commodityFilter === "All" || r.commodity === commodityFilter) &&
+      (search === "" || r.market.toLowerCase().includes(search.toLowerCase()) || r.district.toLowerCase().includes(search.toLowerCase()) || r.state.toLowerCase().includes(search.toLowerCase()) || r.commodity.toLowerCase().includes(search.toLowerCase()));
+    
+    if (showAlertsOnly) {
+      if (!r.yesterdayPrice) return false;
+      const percentChange = Math.abs((r.modalPrice - r.yesterdayPrice) / r.yesterdayPrice * 100);
+      return matchesFilters && percentChange >= 10;
+    }
+    return matchesFilters;
+  });
 
   const findNearby = () => {
     if (!navigator.geolocation) return alert("Geolocation not supported");
