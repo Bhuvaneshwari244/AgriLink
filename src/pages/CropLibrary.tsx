@@ -128,7 +128,7 @@ export default function CropLibrary() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filtered.map(crop => (
           <button key={crop.id} onClick={() => setSelected(crop)} className="glass-card overflow-hidden text-left hover:scale-[1.02] transition-transform">
-            <img src={resolveCropImage(crop.image, crop.name, crop.category)} alt={crop.name} className="w-full h-32 object-cover" onError={e => handleImageError(e, crop.name, crop.category, crop.image)} />
+            <img src={resolveCropImage(crop.image, crop.name, crop.category)} alt={crop.name} className="w-full h-32 object-cover" onError={e => handleImageError(e, crop.name, crop.category)} />
             <div className="p-3">
               <h3 className="font-semibold text-foreground text-sm">{crop.name}</h3>
               <p className="text-xs text-muted-foreground italic">{crop.scientificName}</p>
