@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { soilRecommendations, locationRecommendations, seasonRecommendations, soilTypes } from "@/data/recommendations";
+import { translateCropName } from "@/data/dataTranslations";
 import { Layers, MapPin, Sun } from "lucide-react";
 import { motion } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 
 export default function Recommendations() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [tab, setTab] = useState<"soil" | "location" | "season">("soil");
   const [selectedSoil, setSelectedSoil] = useState(soilTypes[0]);
   const [selectedRegion, setSelectedRegion] = useState(locationRecommendations[0].region);
