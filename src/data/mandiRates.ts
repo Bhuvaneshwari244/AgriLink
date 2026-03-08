@@ -8,11 +8,23 @@ export interface MandiRate {
   minPrice: number;
   maxPrice: number;
   modalPrice: number;
+  yesterdayPrice?: number;
+  previousPrice?: number;
   unit: string;
   date: string;
   lat?: number;
   lng?: number;
 }
+
+// Helper to generate realistic historical prices
+const generateHistoricalPrices = (modalPrice: number): { yesterdayPrice: number; previousPrice: number } => {
+  const changePercent1 = (Math.random() - 0.5) * 0.1; // -5% to +5%
+  const changePercent2 = (Math.random() - 0.5) * 0.15; // -7.5% to +7.5%
+  return {
+    yesterdayPrice: Math.round(modalPrice * (1 + changePercent1)),
+    previousPrice: Math.round(modalPrice * (1 + changePercent2)),
+  };
+};
 
 export const states = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
@@ -23,7 +35,7 @@ export const states = [
   "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi", "Jammu & Kashmir"
 ];
 
-export const mandiRates: MandiRate[] = [
+const rawMandiRates: Omit<MandiRate, 'yesterdayPrice' | 'previousPrice'>[] = [
   // ANDHRA PRADESH
   { id: "ap1", state: "Andhra Pradesh", district: "Guntur", market: "Guntur", commodity: "Chilli", variety: "Teja", minPrice: 12000, maxPrice: 18000, modalPrice: 15000, unit: "Quintal", date: "2026-03-08", lat: 16.3067, lng: 80.4365 },
   { id: "ap2", state: "Andhra Pradesh", district: "Kurnool", market: "Kurnool", commodity: "Cotton", variety: "Hybrid", minPrice: 6500, maxPrice: 7200, modalPrice: 6800, unit: "Quintal", date: "2026-03-08", lat: 15.8281, lng: 78.0373 },
@@ -317,3 +329,9 @@ export const mandiRates: MandiRate[] = [
   { id: "sk1", state: "Sikkim", district: "Gangtok", market: "Gangtok", commodity: "Cardamom", variety: "Large", minPrice: 90000, maxPrice: 140000, modalPrice: 115000, unit: "Quintal", date: "2026-03-08", lat: 27.3389, lng: 88.6065 },
   { id: "sk2", state: "Sikkim", district: "Namchi", market: "Namchi", commodity: "Ginger", variety: "Organic", minPrice: 3500, maxPrice: 5500, modalPrice: 4500, unit: "Quintal", date: "2026-03-08", lat: 27.1667, lng: 88.3500 },
 ];
+
+// Add historical prices to all rates
+export const mandiRates: MandiRate[] = rawMandiRates.map(rate => ({
+  ...rate,
+  ...generateHistoricalPrices(rate.modalPrice),
+}));

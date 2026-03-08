@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { mandiRates, states, MandiRate } from "@/data/mandiRates";
 import { translateCropName, translateStateName, translatePlaceName } from "@/data/dataTranslations";
-import { Search, MapPin, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, MapPin, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 
@@ -14,6 +14,26 @@ interface MarketGroup {
   lng?: number;
   items: MandiRate[];
 }
+
+const PriceChange = ({ current, previous, label }: { current: number; previous?: number; label: string }) => {
+  if (!previous) return null;
+  const diff = current - previous;
+  const percent = ((diff / previous) * 100).toFixed(1);
+  const isUp = diff > 0;
+  const isDown = diff < 0;
+  
+  return (
+    <div className="flex items-center gap-1 text-[10px]">
+      <span className="text-muted-foreground">{label}:</span>
+      {isUp && <TrendingUp size={10} className="text-accent" />}
+      {isDown && <TrendingDown size={10} className="text-destructive" />}
+      {!isUp && !isDown && <Minus size={10} className="text-muted-foreground" />}
+      <span className={isUp ? "text-accent font-medium" : isDown ? "text-destructive font-medium" : "text-muted-foreground"}>
+        {isUp ? "+" : ""}{percent}%
+      </span>
+    </div>
+  );
+};
 
 export default function MandiRates() {
   const { t, lang } = useLanguage();
@@ -132,7 +152,7 @@ export default function MandiRates() {
                           <span className="font-semibold text-foreground text-sm">🌾 {translateCropName(r.commodity, lang)}</span>
                           <span className="text-xs text-muted-foreground">{r.variety} • Per {r.unit}</span>
                         </div>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-3 gap-2 mb-3">
                           <div className="bg-background/50 rounded-lg p-2 text-center">
                             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.minPrice}</p>
                             <p className="text-sm font-bold text-foreground mt-0.5">₹{r.minPrice.toLocaleString()}</p>
@@ -144,6 +164,30 @@ export default function MandiRates() {
                           <div className="bg-background/50 rounded-lg p-2 text-center">
                             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.maxPrice}</p>
                             <p className="text-sm font-bold text-foreground mt-0.5">₹{r.maxPrice.toLocaleString()}</p>
+                          </div>
+                        </div>
+                        
+                        {/* Price History Section */}
+                        <div className="bg-background/30 rounded-lg p-2.5 border border-border/30">
+                          <div className="flex items-center justify-between flex-wrap gap-2">
+                            <div className="flex items-center gap-3">
+                              {r.yesterdayPrice && (
+                                <div className="text-[10px]">
+                                  <span className="text-muted-foreground">{t.mandi.yesterday || "Yesterday"}:</span>
+                                  <span className="font-medium text-foreground ml-1">₹{r.yesterdayPrice.toLocaleString()}</span>
+                                </div>
+                              )}
+                              {r.previousPrice && (
+                                <div className="text-[10px]">
+                                  <span className="text-muted-foreground">{t.mandi.before || "Before"}:</span>
+                                  <span className="font-medium text-foreground ml-1">₹{r.previousPrice.toLocaleString()}</span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <PriceChange current={r.modalPrice} previous={r.yesterdayPrice} label={t.mandi.vsYesterday || "vs Yesterday"} />
+                              <PriceChange current={r.modalPrice} previous={r.previousPrice} label={t.mandi.vsBefore || "vs Before"} />
+                            </div>
                           </div>
                         </div>
                       </motion.div>
