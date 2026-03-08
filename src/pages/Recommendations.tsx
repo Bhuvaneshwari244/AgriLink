@@ -12,7 +12,8 @@ export default function Recommendations() {
   const [selectedRegion, setSelectedRegion] = useState(locationRecommendations[0].region);
 
   const currentMonth = new Date().getMonth();
-  const currentSeason = currentMonth >= 5 && currentMonth <= 9 ? "Kharif" : currentMonth >= 10 || currentMonth <= 2 ? "Rabi" : "Zaid";
+  const defaultSeason = currentMonth >= 5 && currentMonth <= 9 ? "Kharif" : currentMonth >= 10 || currentMonth <= 2 ? "Rabi" : "Zaid";
+  const [selectedSeason, setSelectedSeason] = useState(defaultSeason);
 
   const soilData = soilRecommendations.find(s => s.soilType === selectedSoil);
   const locationData = locationRecommendations.find(l => l.region === selectedRegion);
