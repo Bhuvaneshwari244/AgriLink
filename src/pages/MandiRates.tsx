@@ -329,23 +329,34 @@ export default function MandiRates() {
                   : "bg-secondary/60 border-border/50 text-muted-foreground hover:border-warning/30"
                 }
               `}
-              whileTap={{ scale: 0.97 }}
-              whileHover={{ y: -2, scale: 1.02 }}
-              initial={{ opacity: 0, x: 10, scale: 0.9 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.35 }}
+              whileTap={{ scale: 0.9 }}
+              whileHover={{ y: -5, scale: 1.08 }}
+              initial={{ opacity: 0, x: 20, scale: 0.8 }}
+              animate={{ opacity: 1, x: 0, scale: [1, 1.1, 1] }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 400, 
+                damping: 12, 
+                delay: 0.4,
+                scale: { repeat: 1, duration: 0.25, delay: 0.45 }
+              }}
             >
               <motion.span
-                animate={showAlertsOnly ? { rotate: [0, 15, -15, 10, -10, 0] } : {}}
-                transition={{ duration: 0.5 }}
+                animate={{ 
+                  rotate: showAlertsOnly ? [0, 20, -20, 15, -15, 0] : [0],
+                  y: [0, -5, 0, -3, 0]
+                }}
+                transition={{ 
+                  rotate: { duration: 0.5 },
+                  y: { repeat: Infinity, duration: 1.5 }
+                }}
               >
                 <Bell size={14} className={showAlertsOnly ? "animate-pulse" : ""} />
               </motion.span>
               <motion.span 
                 className="text-xs font-medium"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
+                animate={{ y: [0, -3, 0] }}
+                transition={{ repeat: Infinity, duration: 2, delay: 0.3 }}
               >
                 {t.mandi.priceAlerts || "Alerts"}
               </motion.span>
@@ -353,8 +364,13 @@ export default function MandiRates() {
                 <motion.span 
                   className="bg-warning text-warning-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
                   initial={{ scale: 0 }}
-                  animate={{ scale: 1, y: [0, -3, 0] }}
-                  transition={{ type: "spring", stiffness: 400, y: { repeat: Infinity, duration: 1.2, ease: "easeInOut" } }}
+                  animate={{ scale: [1, 1.3, 1], y: [0, -6, 0, -4, 0] }}
+                  transition={{ 
+                    type: "spring", 
+                    stiffness: 500,
+                    scale: { repeat: Infinity, duration: 1.5 },
+                    y: { repeat: Infinity, duration: 1, ease: "easeInOut" }
+                  }}
                 >
                   {alertCount}
                 </motion.span>
@@ -366,36 +382,67 @@ export default function MandiRates() {
         {showNearby && (
           <motion.p 
             className="text-sm text-primary mb-3 font-medium"
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            initial={{ opacity: 0, x: -20, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1, y: [0, -5, 0] }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 400,
+              y: { repeat: 2, duration: 0.3 }
+            }}
           >
-            📍 {t.mandi.showingNearby} ({grouped.length})
+            <motion.span
+              animate={{ y: [0, -6, 0] }}
+              transition={{ repeat: Infinity, duration: 1.2 }}
+              className="inline-block"
+            >
+              📍
+            </motion.span>
+            {" "}{t.mandi.showingNearby} ({grouped.length})
           </motion.p>
         )}
         {showAlertsOnly && (
           <motion.p 
             className="text-sm text-warning mb-3 font-medium flex items-center gap-2"
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            initial={{ opacity: 0, y: -10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 400 }}
           >
             <motion.span
-              animate={{ y: [0, -3, 0] }}
-              transition={{ repeat: Infinity, duration: 0.8 }}
+              animate={{ y: [0, -8, 0, -5, 0], rotate: [0, -10, 10, 0] }}
+              transition={{ repeat: Infinity, duration: 1 }}
             >
               <AlertTriangle size={14} />
             </motion.span>
-            {t.mandi.showingAlerts || "Showing only commodities with >10% price change"}
+            <motion.span
+              animate={{ y: [0, -3, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5, delay: 0.2 }}
+            >
+              {t.mandi.showingAlerts || "Showing only commodities with >10% price change"}
+            </motion.span>
           </motion.p>
         )}
         <motion.p 
           className="text-sm text-muted-foreground mb-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: [0, -4, 0] }}
+          transition={{ delay: 0.5, y: { repeat: 1, duration: 0.3, delay: 0.55 } }}
         >
-          {grouped.length} {t.mandi.markets} • {displayData.length} {t.mandi.rates}
+          <motion.span
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            className="inline-block font-semibold text-foreground"
+          >
+            {grouped.length}
+          </motion.span>
+          {" "}{t.mandi.markets} • {" "}
+          <motion.span
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ repeat: Infinity, duration: 2, delay: 0.5 }}
+            className="inline-block font-semibold text-foreground"
+          >
+            {displayData.length}
+          </motion.span>
+          {" "}{t.mandi.rates}
         </motion.p>
         <div className="space-y-3">
           {grouped.map((group, i) => {
