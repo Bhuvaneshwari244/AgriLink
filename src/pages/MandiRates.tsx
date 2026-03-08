@@ -575,73 +575,111 @@ export default function MandiRates() {
                         </div>
                         <div className="grid grid-cols-3 gap-2 mb-3">
                           <motion.div 
-                            className="bg-background/50 rounded-lg p-2 text-center"
-                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            transition={{ type: "spring", stiffness: 300, delay: 0.1 }}
-                            whileHover={{ y: -3, scale: 1.02 }}
+                            className="bg-background/50 rounded-lg p-2 text-center cursor-pointer"
+                            initial={{ opacity: 0, y: 25, scale: 0.8, rotate: -3 }}
+                            animate={{ opacity: 1, y: [0, -8, 0], scale: 1, rotate: 0 }}
+                            transition={{ 
+                              type: "spring", 
+                              stiffness: 400, 
+                              damping: 12, 
+                              delay: 0.1,
+                              y: { repeat: 1, duration: 0.25, delay: 0.15 }
+                            }}
+                            whileHover={{ y: -8, scale: 1.08, rotate: 2 }}
+                            whileTap={{ scale: 0.95 }}
                           >
                             <motion.p 
                               className="text-[10px] text-muted-foreground uppercase tracking-wider"
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              transition={{ delay: 0.15 }}
+                              animate={{ y: [0, -2, 0] }}
+                              transition={{ repeat: Infinity, duration: 2, delay: 0.2 }}
                             >
                               {t.mandi.minPrice}
                             </motion.p>
                             <motion.p 
                               className="text-sm font-bold text-foreground mt-0.5"
-                              initial={{ scale: 0.5, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.2 }}
+                              initial={{ scale: 0.3, opacity: 0, y: 10 }}
+                              animate={{ scale: [1, 1.15, 1], opacity: 1, y: 0 }}
+                              transition={{ 
+                                type: "spring", 
+                                stiffness: 500, 
+                                damping: 12, 
+                                delay: 0.2,
+                                scale: { repeat: 1, duration: 0.2 }
+                              }}
                             >
                               ₹{r.minPrice.toLocaleString()}
                             </motion.p>
                           </motion.div>
                           <motion.div 
-                            className="bg-primary/10 rounded-lg p-2 text-center border border-primary/20"
-                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            transition={{ type: "spring", stiffness: 300, delay: 0.15 }}
-                            whileHover={{ y: -3, scale: 1.02 }}
+                            className="bg-primary/10 rounded-lg p-2 text-center border border-primary/20 cursor-pointer"
+                            initial={{ opacity: 0, y: 25, scale: 0.8 }}
+                            animate={{ opacity: 1, y: [0, -10, 0], scale: [1, 1.05, 1] }}
+                            transition={{ 
+                              type: "spring", 
+                              stiffness: 400, 
+                              damping: 12, 
+                              delay: 0.15,
+                              y: { repeat: 1, duration: 0.25, delay: 0.2 },
+                              scale: { repeat: 1, duration: 0.25, delay: 0.2 }
+                            }}
+                            whileHover={{ y: -10, scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
                           >
                             <motion.p 
                               className="text-[10px] text-muted-foreground uppercase tracking-wider"
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              transition={{ delay: 0.2 }}
+                              animate={{ y: [0, -2, 0] }}
+                              transition={{ repeat: Infinity, duration: 2, delay: 0.4 }}
                             >
                               {t.mandi.modalPrice}
                             </motion.p>
                             <motion.p 
                               className="text-sm font-bold text-primary mt-0.5"
-                              initial={{ scale: 0.5, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.25 }}
+                              initial={{ scale: 0.3, opacity: 0, y: 10 }}
+                              animate={{ scale: [1, 1.2, 1], opacity: 1, y: [0, -5, 0] }}
+                              transition={{ 
+                                type: "spring", 
+                                stiffness: 500, 
+                                damping: 10, 
+                                delay: 0.25,
+                                scale: { repeat: 2, duration: 0.2 },
+                                y: { repeat: 2, duration: 0.2 }
+                              }}
                             >
                               ₹{r.modalPrice.toLocaleString()}
                             </motion.p>
                           </motion.div>
                           <motion.div 
-                            className="bg-background/50 rounded-lg p-2 text-center"
-                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            transition={{ type: "spring", stiffness: 300, delay: 0.2 }}
-                            whileHover={{ y: -3, scale: 1.02 }}
+                            className="bg-background/50 rounded-lg p-2 text-center cursor-pointer"
+                            initial={{ opacity: 0, y: 25, scale: 0.8, rotate: 3 }}
+                            animate={{ opacity: 1, y: [0, -8, 0], scale: 1, rotate: 0 }}
+                            transition={{ 
+                              type: "spring", 
+                              stiffness: 400, 
+                              damping: 12, 
+                              delay: 0.2,
+                              y: { repeat: 1, duration: 0.25, delay: 0.25 }
+                            }}
+                            whileHover={{ y: -8, scale: 1.08, rotate: -2 }}
+                            whileTap={{ scale: 0.95 }}
                           >
                             <motion.p 
                               className="text-[10px] text-muted-foreground uppercase tracking-wider"
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              transition={{ delay: 0.25 }}
+                              animate={{ y: [0, -2, 0] }}
+                              transition={{ repeat: Infinity, duration: 2, delay: 0.6 }}
                             >
                               {t.mandi.maxPrice}
                             </motion.p>
                             <motion.p 
                               className="text-sm font-bold text-foreground mt-0.5"
-                              initial={{ scale: 0.5, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.3 }}
+                              initial={{ scale: 0.3, opacity: 0, y: 10 }}
+                              animate={{ scale: [1, 1.15, 1], opacity: 1, y: 0 }}
+                              transition={{ 
+                                type: "spring", 
+                                stiffness: 500, 
+                                damping: 12, 
+                                delay: 0.3,
+                                scale: { repeat: 1, duration: 0.2 }
+                              }}
                             >
                               ₹{r.maxPrice.toLocaleString()}
                             </motion.p>
