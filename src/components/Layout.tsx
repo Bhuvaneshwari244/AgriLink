@@ -5,6 +5,7 @@ import { Home, BookOpen, Users, BarChart3, Truck, Stethoscope, Star, Menu, X, Me
 import { useState } from "react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { motion, AnimatePresence } from "framer-motion";
+import AnimatedBackground from "./AnimatedBackground";
 
 const navItems = [
   { path: "/", icon: Home, key: "home" as const },
@@ -22,7 +23,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground relative">
+      <AnimatedBackground />
       {/* Top Navbar */}
       <header className="sticky top-0 z-50 bg-card/90 backdrop-blur-xl border-b border-border/50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
