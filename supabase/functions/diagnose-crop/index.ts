@@ -13,6 +13,15 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
+    const langNames: Record<string, string> = {
+      hi: "Hindi", te: "Telugu", ta: "Tamil", kn: "Kannada", ml: "Malayalam",
+      mr: "Marathi", bn: "Bengali", gu: "Gujarati", pa: "Punjabi", or: "Odia",
+      as: "Assamese", ur: "Urdu", sd: "Sindhi", ks: "Kashmiri", ne: "Nepali",
+      sa: "Sanskrit", mai: "Maithili", doi: "Dogri", kok: "Konkani", mni: "Manipuri",
+      sat: "Santali", bodo: "Bodo",
+    };
+    const langName = langNames[language] || "";
+
     const systemPrompt = `You are an expert agricultural scientist and plant pathologist. Analyze the uploaded image of a ${plantPart || "plant"} and provide a diagnosis.
 
 IMPORTANT: Respond ONLY in valid JSON format with this exact structure:
@@ -29,8 +38,7 @@ IMPORTANT: Respond ONLY in valid JSON format with this exact structure:
 }
 
 If the image doesn't show a plant or disease, still respond with JSON but set disease to "No disease detected" or "Not a plant image" and provide general farming advice in treatment/prevention fields.
-${language && language !== "en" ? `Respond in ${language} language for all text fields.` : ""}`;
-
+${langName ? `IMPORTANT: ALL text field values in the JSON MUST be written in ${langName} language. The JSON keys must remain in English, but ALL values must be in ${langName}.` : ""}`;
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
