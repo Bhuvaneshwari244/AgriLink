@@ -46,7 +46,6 @@ export default function MandiRates() {
 
   const displayData = showNearby ? nearbyResults : filtered;
 
-  // Group by market
   const grouped = useMemo(() => {
     const map = new Map<string, MarketGroup>();
     displayData.forEach(r => {
@@ -84,16 +83,16 @@ export default function MandiRates() {
         <div className="flex gap-3 mb-4 flex-wrap">
           <select value={stateFilter} onChange={e => { setStateFilter(e.target.value); setShowNearby(false); }}
             className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50">
-            <option value="All">{t.mandi.state}: All</option>
+            <option value="All">{t.mandi.state}: {t.mandi.all}</option>
             {states.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
           <select value={commodityFilter} onChange={e => { setCommodityFilter(e.target.value); setShowNearby(false); }}
             className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50">
-            {commodities.map(c => <option key={c} value={c}>{c === "All" ? `${t.mandi.commodity}: All` : c}</option>)}
+            {commodities.map(c => <option key={c} value={c}>{c === "All" ? `${t.mandi.commodity}: ${t.mandi.all}` : c}</option>)}
           </select>
         </div>
-        {showNearby && <p className="text-sm text-primary mb-3 font-medium">📍 Showing {grouped.length} nearest markets based on your location</p>}
-        <p className="text-sm text-muted-foreground mb-4">{grouped.length} markets • {displayData.length} rates</p>
+        {showNearby && <p className="text-sm text-primary mb-3 font-medium">📍 {t.mandi.showingNearby} ({grouped.length})</p>}
+        <p className="text-sm text-muted-foreground mb-4">{grouped.length} {t.mandi.markets} • {displayData.length} {t.mandi.rates}</p>
         <div className="space-y-3">
           {grouped.map((group, i) => {
             const key = `${group.market}-${group.district}-${group.state}`;
@@ -104,7 +103,6 @@ export default function MandiRates() {
             return (
               <motion.div key={key} className="glass-card overflow-hidden"
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i * 0.03, 0.3) }}>
-                {/* Market Header */}
                 <div
                   className={`flex justify-between items-center p-5 pb-3 ${hasMultiple ? "cursor-pointer" : ""}`}
                   onClick={() => hasMultiple && toggleMarket(key)}
@@ -115,7 +113,7 @@ export default function MandiRates() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="bg-accent/15 text-accent text-xs px-2.5 py-1 rounded-xl font-medium">
-                      {group.items.length} {group.items.length === 1 ? "crop" : "crops"}
+                      {group.items.length} {group.items.length === 1 ? t.mandi.crop : t.mandi.crops}
                     </span>
                     {hasMultiple && (
                       isExpanded ? <ChevronUp size={18} className="text-muted-foreground" /> : <ChevronDown size={18} className="text-muted-foreground" />
@@ -123,7 +121,6 @@ export default function MandiRates() {
                   </div>
                 </div>
 
-                {/* Crop Rates */}
                 <div className="px-5 pb-4 space-y-3">
                   <AnimatePresence initial={false}>
                     {previewItems.map(r => (
@@ -154,7 +151,7 @@ export default function MandiRates() {
 
                   {hasMultiple && !isExpanded && (
                     <button onClick={() => toggleMarket(key)} className="w-full text-center text-xs text-primary font-medium py-1 hover:underline">
-                      + {group.items.length - 1} more crops — tap to expand
+                      + {group.items.length - 1} {t.mandi.tapExpand}
                     </button>
                   )}
                 </div>

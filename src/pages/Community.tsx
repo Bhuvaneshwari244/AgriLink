@@ -74,7 +74,7 @@ export default function Community() {
           {categories.map(c => (
             <button key={c} onClick={() => setFilter(c)}
               className={`relative whitespace-nowrap px-3 py-1.5 rounded-xl text-sm transition-all ${filter === c ? "text-primary-foreground font-medium" : "text-secondary-foreground hover:bg-muted"}`}>
-              <span className="relative z-10">{c}</span>
+              <span className="relative z-10">{c === "All" ? t.common.all : c}</span>
               {filter === c && <motion.div layoutId="comm-filter" className="absolute inset-0 bg-primary rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
             </button>
           ))}
@@ -112,7 +112,7 @@ export default function Community() {
                       <div className="flex gap-2">
                         <input value={answerTexts[q.id] || ""} onChange={e => setAnswerTexts(prev => ({ ...prev, [q.id]: e.target.value }))}
                           placeholder={t.community.answer} className="flex-1 bg-secondary text-foreground px-4 py-2.5 rounded-xl text-sm border border-border/50 outline-none focus:ring-2 focus:ring-primary transition-all" />
-                        <motion.button whileTap={{ scale: 0.97 }} onClick={() => postAnswer(q.id)} className="bg-primary text-primary-foreground px-4 py-2.5 rounded-xl text-sm font-semibold">Reply</motion.button>
+                        <motion.button whileTap={{ scale: 0.97 }} onClick={() => postAnswer(q.id)} className="bg-primary text-primary-foreground px-4 py-2.5 rounded-xl text-sm font-semibold">{t.community.reply}</motion.button>
                       </div>
                     </div>
                   </motion.div>

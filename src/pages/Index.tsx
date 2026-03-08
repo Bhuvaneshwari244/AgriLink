@@ -5,30 +5,30 @@ import { motion } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 import { StaggerContainer, StaggerItem } from "@/components/StaggerChildren";
 
-const features = [
-  { path: "/crops", icon: BookOpen, color: "from-red-600 to-orange-600", title: "crops" as const, desc: "Seasonality, soil, irrigation, pests, fertilizer schedules" },
-  { path: "/community", icon: Users, color: "from-blue-600 to-cyan-600", title: "community" as const, desc: "Q&A, local language support, expert answers" },
-  { path: "/mandi", icon: BarChart3, color: "from-emerald-600 to-green-600", title: "mandi" as const, desc: "Live rates by district/market + nearby search" },
-  { path: "/transport", icon: Truck, color: "from-amber-600 to-yellow-600", title: "transport" as const, desc: "Connect to logistics, request pickup flow" },
-  { path: "/diagnosis", icon: Stethoscope, color: "from-violet-600 to-purple-600", title: "diagnosis" as const, desc: "AI-powered disease detection from photos" },
-  { path: "/recommendations", icon: Star, color: "from-orange-600 to-red-600", title: "recommendations" as const, desc: "Soil, location & season based crop advice" },
-];
-
-const stats = [
-  { label: "Crops Listed", value: "100+", icon: Leaf, color: "text-emerald-400" },
-  { label: "Languages", value: "30+", icon: Globe, color: "text-blue-400" },
-  { label: "Mandi Markets", value: "500+", icon: TrendingUp, color: "text-amber-400" },
-  { label: "AI Powered", value: "Real-time", icon: Zap, color: "text-violet-400" },
-];
-
 export default function Index() {
   const { t } = useLanguage();
+
+  const features = [
+    { path: "/crops", icon: BookOpen, color: "from-red-600 to-orange-600", title: "crops" as const, desc: t.features.cropsDesc },
+    { path: "/community", icon: Users, color: "from-blue-600 to-cyan-600", title: "community" as const, desc: t.features.communityDesc },
+    { path: "/mandi", icon: BarChart3, color: "from-emerald-600 to-green-600", title: "mandi" as const, desc: t.features.mandiDesc },
+    { path: "/transport", icon: Truck, color: "from-amber-600 to-yellow-600", title: "transport" as const, desc: t.features.transportDesc },
+    { path: "/diagnosis", icon: Stethoscope, color: "from-violet-600 to-purple-600", title: "diagnosis" as const, desc: t.features.diagnosisDesc },
+    { path: "/recommendations", icon: Star, color: "from-orange-600 to-red-600", title: "recommendations" as const, desc: t.features.recommendationsDesc },
+  ];
+
+  const stats = [
+    { label: t.stats.cropsListed, value: "100+", icon: Leaf, color: "text-emerald-400" },
+    { label: t.stats.languages, value: "30+", icon: Globe, color: "text-blue-400" },
+    { label: t.stats.mandiMarkets, value: "500+", icon: TrendingUp, color: "text-amber-400" },
+    { label: t.stats.aiPowered, value: t.stats.realtime, icon: Zap, color: "text-violet-400" },
+  ];
+
   return (
     <PageTransition>
       <div className="container mx-auto px-4 py-6">
         {/* Hero */}
         <section className="text-center py-10 md:py-20 relative">
-          {/* Background glow */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-primary/5 rounded-full blur-[120px]" />
           </div>
@@ -39,7 +39,7 @@ export default function Index() {
             transition={{ duration: 0.4 }}
             className="inline-flex items-center gap-2 bg-primary/10 text-primary px-5 py-2 rounded-full text-sm font-medium mb-6 border border-primary/20"
           >
-            <Sparkles size={14} className="animate-pulse" /> AI-Powered Farming Intelligence
+            <Sparkles size={14} className="animate-pulse" /> {t.hero.badge}
           </motion.div>
 
           <motion.h1
@@ -70,7 +70,7 @@ export default function Index() {
               {t.hero.cta} <ChevronRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
             </Link>
             <Link to="/diagnosis" className="inline-flex items-center justify-center gap-2 bg-secondary hover:bg-muted text-foreground font-semibold px-8 py-3.5 rounded-2xl transition-colors border border-border/50 group">
-              <Stethoscope size={18} /> AI Diagnosis
+              <Stethoscope size={18} /> {t.hero.aiDiagnosis}
             </Link>
           </motion.div>
         </section>
@@ -98,17 +98,10 @@ export default function Index() {
         >
           <div className="glass-card p-6 md:p-8 border-l-4 border-l-primary">
             <h2 className="text-xl font-display font-bold text-foreground mb-5">
-              Web Track: Farmer Crop Intelligence + Community Platform
+              {t.hero.problemTitle}
             </h2>
             <ul className="space-y-3">
-              {[
-                "Crop library: seasonality, soil, irrigation, pests, fertilizer schedules.",
-                "Community: Q&A, local language support, expert answers.",
-                "Live mandi rates by district/market + price trends.",
-                "Transportation: connect to logistics providers or request pickup flow.",
-                "AI Disease Detection: upload photo, get instant diagnosis & treatment.",
-                "Recommendations: soil, location & season based expert crop advice.",
-              ].map((item, i) => (
+              {t.problemItems.map((item, i) => (
                 <motion.li
                   key={i}
                   initial={{ opacity: 0, x: -10 }}

@@ -91,7 +91,7 @@ export default function CropLibrary() {
           <motion.a whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
             href={buildWhatsAppLink(`I need info about ${selected.name}`)} target="_blank" rel="noopener noreferrer"
             className="mt-6 flex items-center justify-center gap-2 bg-success hover:bg-success/90 text-success-foreground px-6 py-3 rounded-2xl w-full transition-colors font-semibold">
-            <ExternalLink size={18}/> Ask about {selected.name} on WhatsApp
+            <ExternalLink size={18}/> {t.crops.askOnWhatsApp} — {selected.name}
           </motion.a>
         </div>
       </PageTransition>
@@ -111,14 +111,14 @@ export default function CropLibrary() {
           {cropCategories.map(cat => (
             <button key={cat} onClick={() => setCategory(cat)}
               className={`relative whitespace-nowrap px-4 py-2 rounded-xl text-sm transition-all ${category === cat ? "text-primary-foreground font-medium" : "text-secondary-foreground hover:bg-muted"}`}>
-              <span className="relative z-10">{cat}</span>
+              <span className="relative z-10">{cat === "All" ? t.common.all : cat}</span>
               {category === cat && (
                 <motion.div layoutId="crop-cat" className="absolute inset-0 bg-primary rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />
               )}
             </button>
           ))}
         </div>
-        <p className="text-sm text-muted-foreground mb-4">{filtered.length} crops found</p>
+        <p className="text-sm text-muted-foreground mb-4">{filtered.length} {t.crops.cropsFound}</p>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filtered.map((crop, i) => (
             <motion.button

@@ -19,16 +19,16 @@ export default function Transport() {
           <div className="flex items-center gap-3 mb-6">
             <div className="w-12 h-12 bg-primary/15 rounded-2xl flex items-center justify-center"><Truck size={24} className="text-primary"/></div>
             <div>
-              <h2 className="font-display font-semibold text-foreground">Request Pickup</h2>
-              <p className="text-sm text-muted-foreground">Fill details and send via WhatsApp</p>
+              <h2 className="font-display font-semibold text-foreground">{t.transport.requestPickup}</h2>
+              <p className="text-sm text-muted-foreground">{t.transport.fillDetails}</p>
             </div>
           </div>
           <div className="space-y-4">
             {[
-              { key: "cropType", label: t.transport.cropType, placeholder: "e.g., Rice, Wheat, Cotton" },
-              { key: "quantity", label: t.transport.quantity, placeholder: "e.g., 50" },
-              { key: "pickup", label: t.transport.pickup, placeholder: "Village/Town name" },
-              { key: "destination", label: t.transport.destination, placeholder: "Market/City name" },
+              { key: "cropType", label: t.transport.cropType, placeholder: t.transport.placeholderCrop },
+              { key: "quantity", label: t.transport.quantity, placeholder: t.transport.placeholderQty },
+              { key: "pickup", label: t.transport.pickup, placeholder: t.transport.placeholderPickup },
+              { key: "destination", label: t.transport.destination, placeholder: t.transport.placeholderDest },
             ].map(field => (
               <div key={field.key}>
                 <label className="text-sm font-medium text-foreground mb-1.5 block">{field.label}</label>
