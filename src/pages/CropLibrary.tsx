@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { crops, cropCategories, Crop } from "@/data/crops";
+import { translateCropName, translateCategory } from "@/data/dataTranslations";
 import { Search, ArrowLeft, ExternalLink } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 
 export default function CropLibrary() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [selected, setSelected] = useState<Crop | null>(null);
@@ -26,7 +27,7 @@ export default function CropLibrary() {
     const palette = paletteByCategory[category] ?? { bg1: "#3f4e5d", bg2: "#6b88a3", accent: "#dce9f5" };
     const safeName = name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     const safeCategory = category.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${palette.bg1}"/><stop offset="100%" stop-color="${palette.bg2}"/></linearGradient></defs><rect width="1200" height="700" fill="url(#g)"/><path d="M0 560 C180 500, 360 620, 560 560 C780 490, 950 620, 1200 540 L1200 700 L0 700 Z" fill="${palette.accent}" opacity="0.35"/><text x="60" y="580" fill="white" font-family="system-ui" font-size="64" font-weight="700">${safeName}</text><text x="60" y="635" fill="white" opacity="0.9" font-family="system-ui" font-size="34">${safeCategory} Crop</text></svg>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${palette.bg1}"/><stop offset="100%" stop-color="${palette.bg2}"/></linearGradient></defs><rect width="1200" height="700" fill="url(#g)"/><path d="M0 560 C180 500, 360 620, 560 560 C780 490, 950 620, 1200 540 L1200 700 L0 700 Z" fill="${palette.accent}" opacity="0.35"/><text x="60" y="580" fill="white" font-family="system-ui" font-size="64" font-weight="700">${safeName}</text><text x="60" y="635" fill="white" opacity="0.9" font-family="system-ui" font-size="34">${safeCategory}</text></svg>`;
     return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
   };
 
@@ -44,10 +45,11 @@ export default function CropLibrary() {
 
   const filtered = crops.filter(c =>
     (category === "All" || c.category === category) &&
-    (c.name.toLowerCase().includes(search.toLowerCase()) || c.scientificName.toLowerCase().includes(search.toLowerCase()))
+    (c.name.toLowerCase().includes(search.toLowerCase()) || c.scientificName.toLowerCase().includes(search.toLowerCase()) || translateCropName(c.name, lang).toLowerCase().includes(search.toLowerCase()))
   );
 
   if (selected) {
+    const translatedName = translateCropName(selected.name, lang);
     return (
       <PageTransition>
         <div className="container mx-auto px-4 py-6 max-w-3xl">
@@ -59,12 +61,12 @@ export default function CropLibrary() {
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             src={resolveCropImage(selected.image, selected.name, selected.category)}
-            alt={selected.name}
+            alt={translatedName}
             className="w-full h-56 object-cover rounded-2xl mb-5 shadow-lg"
             referrerPolicy="no-referrer"
             onError={e => handleImageError(e, selected.name, selected.category)}
           />
-          <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-3xl font-display font-bold text-foreground">{selected.name}</motion.h1>
+          <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-3xl font-display font-bold text-foreground">{translatedName}</motion.h1>
           <p className="text-muted-foreground italic mb-4">{selected.scientificName}</p>
           <p className="text-secondary-foreground mb-6 leading-relaxed">{selected.description}</p>
           <div className="grid gap-4">
@@ -91,7 +93,7 @@ export default function CropLibrary() {
           <motion.a whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
             href={buildWhatsAppLink(`I need info about ${selected.name}`)} target="_blank" rel="noopener noreferrer"
             className="mt-6 flex items-center justify-center gap-2 bg-success hover:bg-success/90 text-success-foreground px-6 py-3 rounded-2xl w-full transition-colors font-semibold">
-            <ExternalLink size={18}/> {t.crops.askOnWhatsApp} — {selected.name}
+            <ExternalLink size={18}/> {t.crops.askOnWhatsApp} — {translatedName}
           </motion.a>
         </div>
       </PageTransition>
@@ -111,7 +113,7 @@ export default function CropLibrary() {
           {cropCategories.map(cat => (
             <button key={cat} onClick={() => setCategory(cat)}
               className={`relative whitespace-nowrap px-4 py-2 rounded-xl text-sm transition-all ${category === cat ? "text-primary-foreground font-medium" : "text-secondary-foreground hover:bg-muted"}`}>
-              <span className="relative z-10">{cat === "All" ? t.common.all : cat}</span>
+              <span className="relative z-10">{translateCategory(cat, lang)}</span>
               {category === cat && (
                 <motion.div layoutId="crop-cat" className="absolute inset-0 bg-primary rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />
               )}
@@ -130,11 +132,11 @@ export default function CropLibrary() {
               transition={{ delay: Math.min(i * 0.03, 0.3) }}
               whileTap={{ scale: 0.97 }}
             >
-              <img src={resolveCropImage(crop.image, crop.name, crop.category)} alt={crop.name} className="w-full h-36 object-cover" referrerPolicy="no-referrer" onError={e => handleImageError(e, crop.name, crop.category)} />
+              <img src={resolveCropImage(crop.image, crop.name, crop.category)} alt={translateCropName(crop.name, lang)} className="w-full h-36 object-cover" referrerPolicy="no-referrer" onError={e => handleImageError(e, crop.name, crop.category)} />
               <div className="p-3">
-                <h3 className="font-semibold text-foreground text-sm">{crop.name}</h3>
+                <h3 className="font-semibold text-foreground text-sm">{translateCropName(crop.name, lang)}</h3>
                 <p className="text-xs text-muted-foreground italic">{crop.scientificName}</p>
-                <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-lg mt-1.5 inline-block">{crop.category}</span>
+                <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-lg mt-1.5 inline-block">{translateCategory(crop.category, lang)}</span>
               </div>
             </motion.button>
           ))}

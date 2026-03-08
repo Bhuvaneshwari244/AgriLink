@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { translatePlantPart } from "@/data/dataTranslations";
 import { supabase } from "@/integrations/supabase/client";
 import { Upload, Camera, Loader2, AlertTriangle, CheckCircle, Sparkles, Leaf, Bug, Pill } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -99,7 +100,7 @@ export default function Diagnosis() {
                   <motion.button key={part.name} whileTap={{ scale: 0.95 }} onClick={() => setPlantPart(part.name)}
                     className={`relative flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-xs transition-all ${plantPart === part.name ? "text-primary-foreground font-medium shadow-lg" : "text-secondary-foreground hover:bg-muted"}`}>
                     <span className="relative z-10 text-lg">{part.icon}</span>
-                    <span className="relative z-10">{part.name}</span>
+                    <span className="relative z-10">{translatePlantPart(part.name, lang)}</span>
                     {plantPart === part.name && <motion.div layoutId="plant-part" className="absolute inset-0 bg-primary rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
                   </motion.button>
                 ))}
