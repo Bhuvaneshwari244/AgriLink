@@ -6,36 +6,36 @@
 
 @layer base {
   :root {
-    --background: 150 20% 10%;
-    --foreground: 80 20% 92%;
-    --card: 152 18% 14%;
-    --card-foreground: 80 20% 92%;
-    --popover: 152 18% 14%;
-    --popover-foreground: 80 20% 92%;
-    --primary: 142 60% 48%;
+    --background: 100 20% 97%;
+    --foreground: 150 25% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 150 25% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 150 25% 15%;
+    --primary: 142 60% 40%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 155 14% 18%;
-    --secondary-foreground: 80 15% 85%;
-    --muted: 155 12% 20%;
-    --muted-foreground: 150 10% 55%;
-    --accent: 142 55% 50%;
+    --secondary: 100 15% 92%;
+    --secondary-foreground: 150 20% 30%;
+    --muted: 100 12% 90%;
+    --muted-foreground: 150 10% 45%;
+    --accent: 142 55% 42%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
+    --destructive: 0 84% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 152 12% 22%;
-    --input: 152 12% 22%;
-    --ring: 142 55% 50%;
+    --border: 100 12% 85%;
+    --input: 100 12% 85%;
+    --ring: 142 55% 42%;
     --radius: 0.75rem;
-    --sidebar-background: 150 20% 12%;
-    --sidebar-foreground: 80 15% 85%;
-    --sidebar-primary: 142 55% 50%;
+    --sidebar-background: 100 15% 95%;
+    --sidebar-foreground: 150 20% 25%;
+    --sidebar-primary: 142 55% 42%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 155 12% 18%;
-    --sidebar-accent-foreground: 80 15% 85%;
-    --sidebar-border: 152 12% 20%;
-    --sidebar-ring: 142 55% 50%;
+    --sidebar-accent: 100 12% 90%;
+    --sidebar-accent-foreground: 150 20% 25%;
+    --sidebar-border: 100 12% 88%;
+    --sidebar-ring: 142 55% 42%;
 
-    --success: 142 71% 45%;
+    --success: 142 71% 40%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 10%;
@@ -43,9 +43,9 @@
     --info-foreground: 0 0% 100%;
 
     --primary-glow: 100 70% 50%;
-    --gradient-primary: linear-gradient(135deg, hsl(142 55% 50%), hsl(100 70% 50%));
-    --shadow-elegant: 0 10px 30px -10px hsl(142 55% 50% / 0.3);
-    --shadow-card: 0 4px 24px -4px hsl(150 20% 5% / 0.5);
+    --gradient-primary: linear-gradient(135deg, hsl(142 55% 42%), hsl(100 70% 50%));
+    --shadow-elegant: 0 10px 30px -10px hsl(142 55% 42% / 0.2);
+    --shadow-card: 0 4px 20px -4px hsl(150 20% 50% / 0.08);
   }
 }
 
