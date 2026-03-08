@@ -2,11 +2,13 @@ import { useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { mandiRates, states, MandiRate } from "@/data/mandiRates";
 import { translateCropName, translateStateName, translatePlaceName } from "@/data/dataTranslations";
-import { Search, MapPin, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Minus, BarChart3 } from "lucide-react";
+import { Search, MapPin, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Minus, BarChart3, Eye, EyeOff, AlertTriangle, Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 import { Sparkline } from "@/components/ui/sparkline";
 import { AnimatedLabel } from "@/components/AnimatedLabel";
+import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/hooks/use-toast";
 
 interface MarketGroup {
   market: string;
@@ -16,6 +18,41 @@ interface MarketGroup {
   lng?: number;
   items: MandiRate[];
 }
+
+// Price Alert Badge Component
+const PriceAlertBadge = ({ current, previous, threshold = 10 }: { current: number; previous?: number; threshold?: number }) => {
+  if (!previous) return null;
+  const percentChange = ((current - previous) / previous) * 100;
+  const absChange = Math.abs(percentChange);
+  
+  if (absChange < threshold) return null;
+  
+  const isUp = percentChange > 0;
+  const isSevere = absChange >= 15;
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+      transition={{ type: "spring", stiffness: 400, damping: 15 }}
+      className={`
+        inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold
+        ${isUp 
+          ? isSevere 
+            ? "bg-success/20 text-success border border-success/30" 
+            : "bg-accent/20 text-accent border border-accent/30"
+          : isSevere 
+            ? "bg-destructive/20 text-destructive border border-destructive/30" 
+            : "bg-warning/20 text-warning border border-warning/30"
+        }
+      `}
+    >
+      {isSevere && <AlertTriangle size={10} className="animate-pulse" />}
+      {isUp ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+      <span>{isUp ? "+" : ""}{percentChange.toFixed(1)}%</span>
+    </motion.div>
+  );
+};
 
 const PriceChange = ({ current, previous, label, delay = 0 }: { current: number; previous?: number; label: string; delay?: number }) => {
   if (!previous) return null;
@@ -55,20 +92,40 @@ const PriceChange = ({ current, previous, label, delay = 0 }: { current: number;
 
 export default function MandiRates() {
   const { t, lang } = useLanguage();
+  const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("All");
   const [commodityFilter, setCommodityFilter] = useState("All");
   const [nearbyResults, setNearbyResults] = useState<MandiRate[]>([]);
   const [showNearby, setShowNearby] = useState(false);
   const [expandedMarkets, setExpandedMarkets] = useState<Set<string>>(new Set());
+  const [showCharts, setShowCharts] = useState(true);
+  const [showAlertsOnly, setShowAlertsOnly] = useState(false);
+
+  // Count significant price changes (>10%)
+  const alertCount = useMemo(() => {
+    return mandiRates.filter(r => {
+      if (!r.yesterdayPrice) return false;
+      const percentChange = Math.abs((r.modalPrice - r.yesterdayPrice) / r.yesterdayPrice * 100);
+      return percentChange >= 10;
+    }).length;
+  }, []);
 
   const commodities = ["All", ...Array.from(new Set(mandiRates.map(r => r.commodity))).sort()];
 
-  const filtered = mandiRates.filter(r =>
-    (stateFilter === "All" || r.state === stateFilter) &&
-    (commodityFilter === "All" || r.commodity === commodityFilter) &&
-    (search === "" || r.market.toLowerCase().includes(search.toLowerCase()) || r.district.toLowerCase().includes(search.toLowerCase()) || r.state.toLowerCase().includes(search.toLowerCase()) || r.commodity.toLowerCase().includes(search.toLowerCase()))
-  );
+  const filtered = mandiRates.filter(r => {
+    const matchesFilters = 
+      (stateFilter === "All" || r.state === stateFilter) &&
+      (commodityFilter === "All" || r.commodity === commodityFilter) &&
+      (search === "" || r.market.toLowerCase().includes(search.toLowerCase()) || r.district.toLowerCase().includes(search.toLowerCase()) || r.state.toLowerCase().includes(search.toLowerCase()) || r.commodity.toLowerCase().includes(search.toLowerCase()));
+    
+    if (showAlertsOnly) {
+      if (!r.yesterdayPrice) return false;
+      const percentChange = Math.abs((r.modalPrice - r.yesterdayPrice) / r.yesterdayPrice * 100);
+      return matchesFilters && percentChange >= 10;
+    }
+    return matchesFilters;
+  });
 
   const findNearby = () => {
     if (!navigator.geolocation) return alert("Geolocation not supported");
@@ -119,7 +176,7 @@ export default function MandiRates() {
             <MapPin size={18}/>{t.mandi.nearby}
           </motion.button>
         </div>
-        <div className="flex gap-3 mb-4 flex-wrap">
+        <div className="flex gap-3 mb-4 flex-wrap items-center">
           <select value={stateFilter} onChange={e => { setStateFilter(e.target.value); setShowNearby(false); }}
             className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50">
             <option value="All">{t.mandi.state}: {t.mandi.all}</option>
@@ -129,8 +186,74 @@ export default function MandiRates() {
             className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50">
             {commodities.map(c => <option key={c} value={c}>{c === "All" ? `${t.mandi.commodity}: ${t.mandi.all}` : translateCropName(c, lang)}</option>)}
           </select>
+          
+          {/* Toggle Controls */}
+          <div className="flex items-center gap-4 ml-auto">
+            {/* Chart Toggle */}
+            <motion.div 
+              className="flex items-center gap-2 bg-secondary/60 px-3 py-2 rounded-xl border border-border/50"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              {showCharts ? <Eye size={14} className="text-primary" /> : <EyeOff size={14} className="text-muted-foreground" />}
+              <span className="text-xs text-muted-foreground">{t.mandi.showCharts || "Charts"}</span>
+              <Switch 
+                checked={showCharts} 
+                onCheckedChange={setShowCharts}
+                className="scale-75"
+              />
+            </motion.div>
+            
+            {/* Alerts Only Toggle */}
+            <motion.button
+              onClick={() => {
+                setShowAlertsOnly(!showAlertsOnly);
+                if (!showAlertsOnly && alertCount > 0) {
+                  toast({
+                    title: t.mandi.alertsEnabled || "Price Alerts Enabled",
+                    description: `${alertCount} ${t.mandi.significantChanges || "commodities with significant price changes (>10%)"}`,
+                  });
+                }
+              }}
+              className={`
+                flex items-center gap-2 px-3 py-2 rounded-xl border transition-all
+                ${showAlertsOnly 
+                  ? "bg-warning/20 border-warning/50 text-warning" 
+                  : "bg-secondary/60 border-border/50 text-muted-foreground hover:border-warning/30"
+                }
+              `}
+              whileTap={{ scale: 0.97 }}
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.25 }}
+            >
+              <Bell size={14} className={showAlertsOnly ? "animate-pulse" : ""} />
+              <span className="text-xs font-medium">{t.mandi.priceAlerts || "Alerts"}</span>
+              {alertCount > 0 && (
+                <motion.span 
+                  className="bg-warning text-warning-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                >
+                  {alertCount}
+                </motion.span>
+              )}
+            </motion.button>
+          </div>
         </div>
+        
         {showNearby && <p className="text-sm text-primary mb-3 font-medium">📍 {t.mandi.showingNearby} ({grouped.length})</p>}
+        {showAlertsOnly && (
+          <motion.p 
+            className="text-sm text-warning mb-3 font-medium flex items-center gap-2"
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <AlertTriangle size={14} /> {t.mandi.showingAlerts || "Showing only commodities with >10% price change"}
+          </motion.p>
+        )}
         <p className="text-sm text-muted-foreground mb-4">{grouped.length} {t.mandi.markets} • {displayData.length} {t.mandi.rates}</p>
         <div className="space-y-3">
           {grouped.map((group, i) => {
@@ -166,9 +289,13 @@ export default function MandiRates() {
                       <motion.div key={r.id}
                         initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
                         className="bg-secondary/40 rounded-xl p-4">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="font-semibold text-foreground text-sm">🌾 {translateCropName(r.commodity, lang)}</span>
-                          <span className="text-xs text-muted-foreground">{r.variety} • Per {r.unit}</span>
+                        <div className="flex justify-between items-start mb-2 gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-semibold text-foreground text-sm">🌾 {translateCropName(r.commodity, lang)}</span>
+                            {/* Price Alert Badge */}
+                            <PriceAlertBadge current={r.modalPrice} previous={r.yesterdayPrice} threshold={10} />
+                          </div>
+                          <span className="text-xs text-muted-foreground whitespace-nowrap">{r.variety} • Per {r.unit}</span>
                         </div>
                         <div className="grid grid-cols-3 gap-2 mb-3">
                           <motion.div 
@@ -221,8 +348,8 @@ export default function MandiRates() {
                           </motion.div>
                         </div>
                         
-                        {/* Weekly Price Chart */}
-                        {r.weeklyPrices && r.weeklyPrices.length > 0 && (
+                        {/* Weekly Price Chart - Conditionally rendered */}
+                        {showCharts && r.weeklyPrices && r.weeklyPrices.length > 0 && (
                           <motion.div 
                             className="bg-background/30 rounded-lg p-3 border border-border/30 mb-3"
                             initial={{ opacity: 0, y: 5 }}
