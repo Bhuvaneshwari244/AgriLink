@@ -480,25 +480,33 @@ export default function MandiRates() {
                             </motion.p>
                             <motion.p 
                               className="text-sm font-bold text-primary mt-0.5"
-                              initial={{ scale: 0.8 }}
-                              animate={{ scale: 1 }}
-                              transition={{ type: "spring", stiffness: 200, delay: 0.25 }}
+                              initial={{ scale: 0.5, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.25 }}
                             >
                               ₹{r.modalPrice.toLocaleString()}
                             </motion.p>
                           </motion.div>
                           <motion.div 
-                            className="bg-background/50 rounded-lg p-2 text-center hover-scale"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3, delay: 0.2 }}
+                            className="bg-background/50 rounded-lg p-2 text-center"
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ type: "spring", stiffness: 300, delay: 0.2 }}
+                            whileHover={{ y: -3, scale: 1.02 }}
                           >
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.maxPrice}</p>
+                            <motion.p 
+                              className="text-[10px] text-muted-foreground uppercase tracking-wider"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: 0.25 }}
+                            >
+                              {t.mandi.maxPrice}
+                            </motion.p>
                             <motion.p 
                               className="text-sm font-bold text-foreground mt-0.5"
-                              initial={{ scale: 0.8 }}
-                              animate={{ scale: 1 }}
-                              transition={{ type: "spring", stiffness: 200, delay: 0.3 }}
+                              initial={{ scale: 0.5, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.3 }}
                             >
                               ₹{r.maxPrice.toLocaleString()}
                             </motion.p>
