@@ -32,9 +32,6 @@ const PriceChange = ({ current, previous, label }: { current: number; previous?:
         {isUp ? "+" : ""}{percent}%
       </span>
     </div>
-        {isUp ? "+" : ""}{percent}%
-      </span>
-    </div>
   );
 };
 
