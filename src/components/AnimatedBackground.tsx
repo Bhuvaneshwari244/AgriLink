@@ -38,7 +38,7 @@ export default function AnimatedBackground() {
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-[50vw] h-[50vh] rounded-full blur-[150px] opacity-50"
           style={{ background: "radial-gradient(circle, hsl(142 60% 80% / 0.5), transparent 70%)" }} />
-        <div className="absolute bottom-0 right-0 w-[60vw] h-[50vh] rounded-full blur-[180px] opacity-25"
+        <div className="absolute bottom-0 right-0 w-[60vw] h-[50vh] rounded-full blur-[180px] opacity-45"
           style={{ background: "radial-gradient(circle, hsl(100 50% 85% / 0.4), transparent 70%)" }} />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40vw] h-[40vh] rounded-full blur-[120px] opacity-20"
           style={{ background: "radial-gradient(circle, hsl(38 80% 85% / 0.3), transparent 70%)" }} />
