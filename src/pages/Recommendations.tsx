@@ -12,11 +12,12 @@ export default function Recommendations() {
   const [selectedRegion, setSelectedRegion] = useState(locationRecommendations[0].region);
 
   const currentMonth = new Date().getMonth();
-  const currentSeason = currentMonth >= 5 && currentMonth <= 9 ? "Kharif" : currentMonth >= 10 || currentMonth <= 2 ? "Rabi" : "Zaid";
+  const defaultSeason = currentMonth >= 5 && currentMonth <= 9 ? "Kharif" : currentMonth >= 10 || currentMonth <= 2 ? "Rabi" : "Zaid";
+  const [selectedSeason, setSelectedSeason] = useState(defaultSeason);
 
   const soilData = soilRecommendations.find(s => s.soilType === selectedSoil);
   const locationData = locationRecommendations.find(l => l.region === selectedRegion);
-  const seasonData = seasonRecommendations.find(s => s.season === currentSeason);
+  const seasonData = seasonRecommendations.find(s => s.season === selectedSeason);
 
   const tabs = [
     { id: "soil" as const, label: t.recommendations.soilBased, icon: Layers },
@@ -95,8 +96,10 @@ export default function Recommendations() {
           <motion.div key="season" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="flex gap-2 mb-4">
               {seasonRecommendations.map(s => (
-                <button key={s.season} className={`px-4 py-2 rounded-xl text-sm font-semibold ${s.season === currentSeason ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}>
-                  {s.season} ({s.months})
+                <button key={s.season} onClick={() => setSelectedSeason(s.season)}
+                  className={`relative px-4 py-2 rounded-xl text-sm font-semibold transition-all ${s.season === selectedSeason ? "text-primary-foreground" : "text-secondary-foreground hover:bg-muted"}`}>
+                  <span className="relative z-10">{s.season} ({s.months})</span>
+                  {s.season === selectedSeason && <motion.div layoutId="season-pill" className="absolute inset-0 bg-primary rounded-xl" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
                 </button>
               ))}
             </div>
