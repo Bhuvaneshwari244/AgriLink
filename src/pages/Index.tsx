@@ -78,12 +78,16 @@ export default function Index() {
 
         {/* Stats Dashboard */}
         <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-12">
-          {stats.map(s => (
+          {stats.map((s, i) => (
             <StaggerItem key={s.label}>
               <div className="stat-card group hover:border-primary/30 transition-all duration-300">
                 <s.icon size={22} className={`${s.color} mb-3 group-hover:scale-110 transition-transform`} />
-                <p className="text-2xl md:text-3xl font-display font-bold text-foreground">{s.value}</p>
-                <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
+                <AnimatedLabel as="p" variant="bounce" delay={i * 0.05} className="text-2xl md:text-3xl font-display font-bold text-foreground">
+                  {s.value}
+                </AnimatedLabel>
+                <AnimatedLabel as="p" variant="fade" delay={i * 0.05 + 0.1} className="text-xs text-muted-foreground mt-1">
+                  {s.label}
+                </AnimatedLabel>
               </div>
             </StaggerItem>
           ))}
