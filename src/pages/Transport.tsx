@@ -135,7 +135,7 @@ export default function Transport() {
                         placeholder={field.placeholder}
                         disabled={!!generatedId}
                         className="w-full bg-secondary text-foreground px-4 py-3 rounded-2xl border border-border/50 outline-none focus:ring-2 focus:ring-primary transition-all disabled:opacity-60" />
-                    </div>
+                    </motion.div>
                   ))}
 
                   {/* Register Button — generates ID */}
