@@ -125,9 +125,11 @@ export default function Transport() {
                     { key: "pickup", label: tt.pickup, placeholder: tt.placeholderPickup, type: "text" },
                     { key: "destination", label: tt.destination, placeholder: tt.placeholderDest, type: "text" },
                     { key: "phone", label: "📱 Phone Number", placeholder: "e.g., 9876543210", type: "tel" },
-                  ].map(field => (
-                    <div key={field.key}>
-                      <label className="text-sm font-medium text-foreground mb-1.5 block">{field.label}</label>
+                  ].map((field, i) => (
+                    <motion.div key={field.key} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                      <AnimatedLabel as="label" variant="slide" delay={i * 0.06} className="text-sm font-medium text-foreground mb-1.5 block">
+                        {field.label}
+                      </AnimatedLabel>
                       <input type={field.type} value={(form as any)[field.key]}
                         onChange={e => setForm(prev => ({ ...prev, [field.key]: e.target.value }))}
                         placeholder={field.placeholder}
