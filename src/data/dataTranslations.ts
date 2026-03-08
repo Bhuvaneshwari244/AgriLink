@@ -1,10 +1,12 @@
-// Data-level translations for crop names, categories, plant parts, community categories etc.
+// Data-level translations for crop names, categories, plant parts, community categories, states, districts etc.
 
 type DataTranslations = {
   cropCategories: Record<string, string>;
   cropNames: Record<string, string>;
   communityCategories: Record<string, string>;
   plantParts: Record<string, string>;
+  stateNames?: Record<string, string>;
+  placeNames?: Record<string, string>;
 };
 
 const dataTranslations: Record<string, DataTranslations> = {
@@ -211,6 +213,108 @@ const shortNameTranslations: Record<string, Record<string, string>> = {
   pa: { Jaggery: "ਗੁੜ", Vegetables: "ਸਬਜ਼ੀਆਂ", Pulses: "ਦਾਲਾਂ", "Moong (Green Gram)": "ਮੂੰਗ" },
 };
 
+// State name translations
+const stateTranslations: Record<string, Record<string, string>> = {
+  hi: { "Andhra Pradesh": "आंध्र प्रदेश", "Arunachal Pradesh": "अरुणाचल प्रदेश", "Assam": "असम", "Bihar": "बिहार", "Chhattisgarh": "छत्तीसगढ़", "Goa": "गोवा", "Gujarat": "गुजरात", "Haryana": "हरियाणा", "Himachal Pradesh": "हिमाचल प्रदेश", "Jharkhand": "झारखंड", "Karnataka": "कर्नाटक", "Kerala": "केरल", "Madhya Pradesh": "मध्य प्रदेश", "Maharashtra": "महाराष्ट्र", "Manipur": "मणिपुर", "Meghalaya": "मेघालय", "Mizoram": "मिज़ोरम", "Nagaland": "नागालैंड", "Odisha": "ओडिशा", "Punjab": "पंजाब", "Rajasthan": "राजस्थान", "Sikkim": "सिक्किम", "Tamil Nadu": "तमिल नाडु", "Telangana": "तेलंगाना", "Tripura": "त्रिपुरा", "Uttar Pradesh": "उत्तर प्रदेश", "Uttarakhand": "उत्तराखंड", "West Bengal": "पश्चिम बंगाल", "Delhi": "दिल्ली", "Jammu & Kashmir": "जम्मू और कश्मीर" },
+  te: { "Andhra Pradesh": "ఆంధ్ర ప్రదేశ్", "Arunachal Pradesh": "అరుణాచల్ ప్రదేశ్", "Assam": "అస్సాం", "Bihar": "బీహార్", "Chhattisgarh": "ఛత్తీస్‌గఢ్", "Goa": "గోవా", "Gujarat": "గుజరాత్", "Haryana": "హర్యానా", "Himachal Pradesh": "హిమాచల్ ప్రదేశ్", "Jharkhand": "జార్ఖండ్", "Karnataka": "కర్ణాటక", "Kerala": "కేరళ", "Madhya Pradesh": "మధ్య ప్రదేశ్", "Maharashtra": "మహారాష్ట్ర", "Manipur": "మణిపూర్", "Meghalaya": "మేఘాలయ", "Mizoram": "మిజోరం", "Nagaland": "నాగాలాండ్", "Odisha": "ఒడిశా", "Punjab": "పంజాబ్", "Rajasthan": "రాజస్థాన్", "Sikkim": "సిక్కిం", "Tamil Nadu": "తమిళనాడు", "Telangana": "తెలంగాణ", "Tripura": "త్రిపుర", "Uttar Pradesh": "ఉత్తర ప్రదేశ్", "Uttarakhand": "ఉత్తరాఖండ్", "West Bengal": "పశ్చిమ బెంగాల్", "Delhi": "ఢిల్లీ", "Jammu & Kashmir": "జమ్మూ & కాశ్మీర్" },
+  ta: { "Andhra Pradesh": "ஆந்திர பிரதேசம்", "Arunachal Pradesh": "அருணாசல பிரதேசம்", "Assam": "அசாம்", "Bihar": "பீகார்", "Chhattisgarh": "சத்தீஸ்கர்", "Goa": "கோவா", "Gujarat": "குஜராத்", "Haryana": "ஹரியானா", "Himachal Pradesh": "இமாசல பிரதேசம்", "Jharkhand": "ஜார்கண்ட்", "Karnataka": "கர்நாடகா", "Kerala": "கேரளா", "Madhya Pradesh": "மத்திய பிரதேசம்", "Maharashtra": "மகாராஷ்டிரா", "Manipur": "மணிப்பூர்", "Meghalaya": "மேகாலயா", "Mizoram": "மிசோரம்", "Nagaland": "நாகாலாந்து", "Odisha": "ஒடிசா", "Punjab": "பஞ்சாப்", "Rajasthan": "ராஜஸ்தான்", "Sikkim": "சிக்கிம்", "Tamil Nadu": "தமிழ்நாடு", "Telangana": "தெலங்கானா", "Tripura": "திரிபுரா", "Uttar Pradesh": "உத்தர பிரதேசம்", "Uttarakhand": "உத்தரகண்ட்", "West Bengal": "மேற்கு வங்காளம்", "Delhi": "டெல்லி", "Jammu & Kashmir": "ஜம்மு & காஷ்மீர்" },
+  kn: { "Andhra Pradesh": "ಆಂಧ್ರ ಪ್ರದೇಶ", "Arunachal Pradesh": "ಅರುಣಾಚಲ ಪ್ರದೇಶ", "Assam": "ಅಸ್ಸಾಂ", "Bihar": "ಬಿಹಾರ", "Chhattisgarh": "ಛತ್ತೀಸ್‌ಗಢ", "Goa": "ಗೋವಾ", "Gujarat": "ಗುಜರಾತ್", "Haryana": "ಹರಿಯಾಣ", "Himachal Pradesh": "ಹಿಮಾಚಲ ಪ್ರದೇಶ", "Jharkhand": "ಜಾರ್ಖಂಡ್", "Karnataka": "ಕರ್ನಾಟಕ", "Kerala": "ಕೇರಳ", "Madhya Pradesh": "ಮಧ್ಯ ಪ್ರದೇಶ", "Maharashtra": "ಮಹಾರಾಷ್ಟ್ರ", "Manipur": "ಮಣಿಪುರ", "Meghalaya": "ಮೇಘಾಲಯ", "Mizoram": "ಮಿಜೋರಾಂ", "Nagaland": "ನಾಗಾಲ್ಯಾಂಡ್", "Odisha": "ಒಡಿಶಾ", "Punjab": "ಪಂಜಾಬ್", "Rajasthan": "ರಾಜಸ್ಥಾನ", "Sikkim": "ಸಿಕ್ಕಿಂ", "Tamil Nadu": "ತಮಿಳುನಾಡು", "Telangana": "ತೆಲಂಗಾಣ", "Tripura": "ತ್ರಿಪುರ", "Uttar Pradesh": "ಉತ್ತರ ಪ್ರದೇಶ", "Uttarakhand": "ಉತ್ತರಾಖಂಡ", "West Bengal": "ಪಶ್ಚಿಮ ಬಂಗಾಳ", "Delhi": "ದೆಹಲಿ", "Jammu & Kashmir": "ಜಮ್ಮು & ಕಾಶ್ಮೀರ" },
+  ml: { "Andhra Pradesh": "ആന്ധ്രപ്രദേശ്", "Arunachal Pradesh": "അരുണാചൽ പ്രദേശ്", "Assam": "ആസാം", "Bihar": "ബീഹാർ", "Chhattisgarh": "ഛത്തീസ്ഗഡ്", "Goa": "ഗോവ", "Gujarat": "ഗുജറാത്ത്", "Haryana": "ഹരിയാണ", "Himachal Pradesh": "ഹിമാചൽ പ്രദേശ്", "Jharkhand": "ജാർഖണ്ഡ്", "Karnataka": "കർണാടക", "Kerala": "കേരളം", "Madhya Pradesh": "മധ്യപ്രദേശ്", "Maharashtra": "മഹാരാഷ്ട്ര", "Tamil Nadu": "തമിഴ്‌നാട്", "Telangana": "തെലങ്കാന", "Uttar Pradesh": "ഉത്തർ പ്രദേശ്", "West Bengal": "പശ്ചിമ ബംഗാൾ", "Delhi": "ഡൽഹി", "Jammu & Kashmir": "ജമ്മു & കശ്മീർ" },
+  mr: { "Andhra Pradesh": "आंध्र प्रदेश", "Arunachal Pradesh": "अरुणाचल प्रदेश", "Assam": "आसाम", "Bihar": "बिहार", "Chhattisgarh": "छत्तीसगड", "Goa": "गोवा", "Gujarat": "गुजरात", "Haryana": "हरियाणा", "Himachal Pradesh": "हिमाचल प्रदेश", "Jharkhand": "झारखंड", "Karnataka": "कर्नाटक", "Kerala": "केरळ", "Madhya Pradesh": "मध्य प्रदेश", "Maharashtra": "महाराष्ट्र", "Odisha": "ओडिशा", "Punjab": "पंजाब", "Rajasthan": "राजस्थान", "Tamil Nadu": "तमिळनाडू", "Telangana": "तेलंगणा", "Uttar Pradesh": "उत्तर प्रदेश", "West Bengal": "पश्चिम बंगाल", "Delhi": "दिल्ली", "Jammu & Kashmir": "जम्मू आणि काश्मीर" },
+  bn: { "Andhra Pradesh": "অন্ধ্র প্রদেশ", "Assam": "আসাম", "Bihar": "বিহার", "Gujarat": "গুজরাট", "Jharkhand": "ঝাড়খণ্ড", "Karnataka": "কর্ণাটক", "Kerala": "কেরল", "Madhya Pradesh": "মধ্যপ্রদেশ", "Maharashtra": "মহারাষ্ট্র", "Odisha": "ওড়িশা", "Punjab": "পাঞ্জাব", "Rajasthan": "রাজস্থান", "Tamil Nadu": "তামিলনাড়ু", "Telangana": "তেলেঙ্গানা", "Uttar Pradesh": "উত্তর প্রদেশ", "West Bengal": "পশ্চিমবঙ্গ", "Delhi": "দিল্লি", "Jammu & Kashmir": "জম্মু ও কাশ্মীর" },
+  gu: { "Andhra Pradesh": "આંધ્ર પ્રદેશ", "Bihar": "બિહાર", "Chhattisgarh": "છત્તીસગઢ", "Goa": "ગોવા", "Gujarat": "ગુજરાત", "Haryana": "હરિયાણા", "Jharkhand": "ઝારખંડ", "Karnataka": "કર્ણાટક", "Kerala": "કેરળ", "Madhya Pradesh": "મધ્ય પ્રદેશ", "Maharashtra": "મહારાષ્ટ્ર", "Punjab": "પંજાબ", "Rajasthan": "રાજસ્થાન", "Tamil Nadu": "તમિલનાડુ", "Telangana": "તેલંગાણા", "Uttar Pradesh": "ઉત્તર પ્રદેશ", "West Bengal": "પશ્ચિમ બંગાળ", "Delhi": "દિલ્લી" },
+  pa: { "Andhra Pradesh": "ਆਂਧਰਾ ਪ੍ਰਦੇਸ਼", "Bihar": "ਬਿਹਾਰ", "Gujarat": "ਗੁਜਰਾਤ", "Haryana": "ਹਰਿਆਣਾ", "Himachal Pradesh": "ਹਿਮਾਚਲ ਪ੍ਰਦੇਸ਼", "Jharkhand": "ਝਾਰਖੰਡ", "Karnataka": "ਕਰਨਾਟਕ", "Kerala": "ਕੇਰਲ", "Madhya Pradesh": "ਮੱਧ ਪ੍ਰਦੇਸ਼", "Maharashtra": "ਮਹਾਰਾਸ਼ਟਰ", "Punjab": "ਪੰਜਾਬ", "Rajasthan": "ਰਾਜਸਥਾਨ", "Tamil Nadu": "ਤਮਿਲਨਾਡੂ", "Telangana": "ਤੇਲੰਗਾਨਾ", "Uttar Pradesh": "ਉੱਤਰ ਪ੍ਰਦੇਸ਼", "West Bengal": "ਪੱਛਮੀ ਬੰਗਾਲ", "Delhi": "ਦਿੱਲੀ", "Jammu & Kashmir": "ਜੰਮੂ ਤੇ ਕਸ਼ਮੀਰ" },
+};
+
+// District & market name translations (place names used across India)
+const placeTranslations: Record<string, Record<string, string>> = {
+  te: {
+    // AP
+    "Guntur": "గుంటూరు", "Kurnool": "కర్నూలు", "Krishna": "కృష్ణా", "Anantapur": "అనంతపురం", "West Godavari": "పశ్చిమ గోదావరి", "East Godavari": "తూర్పు గోదావరి", "Chittoor": "చిత్తూరు", "Prakasam": "ప్రకాశం", "Srikakulam": "శ్రీకాకుళం", "Vizianagaram": "విజయనగరం", "Nellore": "నెల్లూరు", "Kadapa": "కడప", "Visakhapatnam": "విశాఖపట్నం",
+    "Vijayawada": "విజయవాడ", "Eluru": "ఏలూరు", "Kakinada": "కాకినాడ", "Madanapalle": "మదనపల్లి", "Ongole": "ఒంగోలు", "Tirupati": "తిరుపతి", "Narasaraopet": "నరసరావుపేట", "Machilipatnam": "మచిలీపట్నం",
+    // Telangana
+    "Hyderabad": "హైదరాబాద్", "Nizamabad": "నిజామాబాద్", "Warangal": "వరంగల్", "Karimnagar": "కరీంనగర్", "Khammam": "ఖమ్మం", "Adilabad": "ఆదిలాబాద్", "Nalgonda": "నల్గొండ", "Medak": "మెదక్", "Mahbubnagar": "మహబూబ్‌నగర్", "Suryapet": "సూర్యాపేట", "Siddipet": "సిద్దిపేట",
+    "Bowenpally": "బోయిన్‌పల్లి", "Sangareddy": "సంగారెడ్డి",
+    // Major cities in other states
+    "New Delhi": "న్యూ ఢిల్లీ", "Azadpur": "ఆజాద్‌పూర్", "North Goa": "ఉత్తర గోవా", "South Goa": "దక్షిణ గోవా",
+  },
+  hi: {
+    // AP
+    "Guntur": "गुंटूर", "Kurnool": "कुरनूल", "Krishna": "कृष्णा", "Anantapur": "अनंतपुर", "West Godavari": "पश्चिम गोदावरी", "East Godavari": "पूर्वी गोदावरी", "Chittoor": "चित्तूर", "Prakasam": "प्रकाशम", "Srikakulam": "श्रीकाकुलम", "Vizianagaram": "विजयनगरम", "Nellore": "नेल्लोर", "Kadapa": "कडप्पा", "Visakhapatnam": "विशाखापत्तनम",
+    "Vijayawada": "विजयवाड़ा", "Eluru": "एलुरु", "Kakinada": "काकीनाडा", "Madanapalle": "मदनपल्ली", "Ongole": "ओंगोल", "Tirupati": "तिरुपति", "Narasaraopet": "नरसरावपेट", "Machilipatnam": "मछलीपट्टणम",
+    // Telangana
+    "Hyderabad": "हैदराबाद", "Nizamabad": "निजामाबाद", "Warangal": "वारंगल", "Karimnagar": "करीमनगर", "Khammam": "खम्मम", "Adilabad": "आदिलाबाद", "Nalgonda": "नालगोंडा", "Medak": "मेदक", "Mahbubnagar": "महबूबनगर", "Suryapet": "सूर्यापेट", "Siddipet": "सिद्दीपेट",
+    "Bowenpally": "बोवेनपल्ली", "Sangareddy": "संगारेड्डी",
+    // TN
+    "Coimbatore": "कोयम्बत्तूर", "Salem": "सलेम", "Madurai": "मदुरै", "Thanjavur": "तंजावुर", "Dindigul": "डिंडीगुल", "Erode": "इरोड", "Tirunelveli": "तिरुनेलवेली", "Theni": "तेनी", "Villupuram": "विल्लुपुरम", "Tirupur": "तिरुपुर", "Vellore": "वेल्लोर", "Kanyakumari": "कन्याकुमारी", "Nagercoil": "नागरकोइल", "Nagapattinam": "नागपट्टिनम", "Cuddalore": "कुड्डालोर",
+    // Karnataka
+    "Bengaluru": "बेंगलुरु", "Hassan": "हासन", "Dharwad": "धारवाड़", "Belgaum": "बेलगाम", "Shimoga": "शिमोगा", "Mysuru": "मैसूरु", "Raichur": "रायचूर", "Davangere": "दावणगेरे", "Chikmagalur": "चिकमंगलूर", "Kodagu": "कोडगु", "Tumkur": "तुमकूर", "Mandya": "मांड्या", "Gulbarga": "गुलबर्गा", "Bellary": "बेल्लारी", "Udupi": "उडुपी", "Bidar": "बीदर",
+    "Yeshwanthpur": "यशवंतपुर", "Hubli": "हुबली", "Madikeri": "मदिकेरी",
+    // Maharashtra
+    "Nashik": "नासिक", "Pune": "पुणे", "Nagpur": "नागपुर", "Solapur": "सोलापुर", "Sangli": "सांगली", "Kolhapur": "कोल्हापुर", "Ahmednagar": "अहमदनगर", "Jalgaon": "जळगाव", "Aurangabad": "औरंगाबाद", "Satara": "सातारा", "Yavatmal": "यवतमाल", "Ratnagiri": "रत्नागिरी", "Latur": "लातूर", "Wardha": "वर्धा", "Dhule": "धुळे",
+    "Lasalgaon": "लासलगाव",
+    // Gujarat
+    "Rajkot": "राजकोट", "Junagadh": "जूनागढ़", "Unjha": "ऊंझा", "Ahmedabad": "अहमदाबाद", "Bhavnagar": "भावनगर", "Surat": "सूरत", "Vadodara": "वडोदरा", "Amreli": "अमरेली", "Banaskantha": "बनासकांठा", "Kutch": "कच्छ", "Mehsana": "मेहसाणा", "Morbi": "मोरबी", "Sabarkantha": "साबरकांठा",
+    "Deesa": "डीसा", "Bhuj": "भुज", "Himmatnagar": "हिम्मतनगर",
+    // Rajasthan
+    "Jodhpur": "जोधपुर", "Kota": "कोटा", "Alwar": "अलवर", "Jaipur": "जयपुर", "Nagaur": "नागौर", "Barmer": "बाड़मेर", "Udaipur": "उदयपुर", "Bikaner": "बीकानेर", "Chittorgarh": "चित्तौड़गढ़", "Sikar": "सीकर", "Bundi": "बूंदी", "Tonk": "टोंक", "Jhalawar": "झालावाड़",
+    // MP
+    "Indore": "इंदौर", "Bhopal": "भोपाल", "Ujjain": "उज्जैन", "Neemuch": "नीमच", "Jabalpur": "जबलपुर", "Gwalior": "ग्वालियर", "Ratlam": "रतलाम", "Dewas": "देवास", "Chhindwara": "छिंदवाड़ा", "Sagar": "सागर", "Mandsaur": "मंदसौर", "Hoshangabad": "होशंगाबाद",
+    // UP
+    "Agra": "आगरा", "Lucknow": "लखनऊ", "Meerut": "मेरठ", "Varanasi": "वाराणसी", "Allahabad": "इलाहाबाद", "Kanpur": "कानपुर", "Bareilly": "बरेली", "Gorakhpur": "गोरखपुर", "Aligarh": "अलीगढ़", "Mathura": "मथुरा", "Jhansi": "झांसी", "Farrukhabad": "फर्रुखाबाद", "Muzaffarnagar": "मुजफ्फरनगर", "Firozabad": "फिरोजाबाद", "Moradabad": "मुरादाबाद", "Sultanpur": "सुल्तानपुर",
+    "Prayagraj": "प्रयागराज",
+    // Punjab
+    "Ludhiana": "लुधियाना", "Amritsar": "अमृतसर", "Bathinda": "बठिंडा", "Abohar": "अबोहर", "Patiala": "पटियाला", "Jalandhar": "जालंधर", "Sangrur": "संगरूर", "Mansa": "मानसा", "Muktsar": "मुक्तसर", "Fazilka": "फाजिल्का",
+    // Haryana
+    "Karnal": "करनाल", "Hisar": "हिसार", "Sonipat": "सोनीपत", "Sirsa": "सिरसा", "Panipat": "पानीपत", "Ambala": "अम्बाला", "Jind": "जींद", "Rohtak": "रोहतक", "Rewari": "रेवाड़ी", "Kurukshetra": "कुरुक्षेत्र",
+    // WB
+    "Kolkata": "कोलकाता", "Hooghly": "हुगली", "Murshidabad": "मुर्शिदाबाद", "Bardhaman": "बर्धमान", "Malda": "मालदा", "Nadia": "नदिया", "Midnapore": "मिदनापुर", "Siliguri": "सिलीगुड़ी", "Krishnanagar": "कृष्णनगर",
+    // Bihar
+    "Patna": "पटना", "Muzaffarpur": "मुजफ्फरपुर", "Nalanda": "नालंदा", "Bhagalpur": "भागलपुर", "Gaya": "गया", "Darbhanga": "दरभंगा", "Samastipur": "समस्तीपुर", "Vaishali": "वैशाली", "Begusarai": "बेगूसराय", "Hajipur": "हाजीपुर",
+    // Others
+    "Bhubaneswar": "भुवनेश्वर", "Sambalpur": "संबलपुर", "Cuttack": "कटक", "Berhampur": "बेरहमपुर", "Koraput": "कोरापुट", "Balasore": "बालासोर",
+    "Ernakulam": "एर्णाकुलम", "Kochi": "कोच्चि", "Wayanad": "वायनाड", "Idukki": "इडुक्की", "Thrissur": "त्रिशूर", "Palakkad": "पालक्काड", "Kozhikode": "कोझिकोड", "Kollam": "कोल्लम", "Kannur": "कन्नूर", "Kottayam": "कोट्टायम",
+    "Raipur": "रायपुर", "Durg": "दुर्ग", "Bilaspur": "बिलासपुर", "Rajnandgaon": "राजनांदगांव", "Korba": "कोरबा",
+    "Ranchi": "रांची", "Dumka": "दुमका", "Hazaribagh": "हजारीबाग", "Deoghar": "देवघर", "Dhanbad": "धनबाद",
+    "Guwahati": "गुवाहाटी", "Jorhat": "जोरहाट", "Nagaon": "नगांव", "Dibrugarh": "डिब्रूगढ़", "Silchar": "सिलचर", "Tinsukia": "तिनसुकिया",
+    "Shimla": "शिमला", "Kullu": "कुल्लू", "Mandi": "मंडी", "Solan": "सोलन", "Kinnaur": "किन्नौर",
+    "Dehradun": "देहरादून", "Haldwani": "हल्द्वानी", "Haridwar": "हरिद्वार", "Udham Singh Nagar": "उधम सिंह नगर", "Rudrapur": "रुद्रपुर",
+    "North Goa": "उत्तरी गोवा", "South Goa": "दक्षिणी गोवा", "Mapusa": "मापुसा", "Margao": "मडगांव",
+    "New Delhi": "नई दिल्ली", "Azadpur": "आज़ादपुर", "Okhla": "ओखला", "Ghazipur": "गाजीपुर",
+    "Srinagar": "श्रीनगर", "Shopian": "शोपियां", "Anantnag": "अनंतनाग", "Baramulla": "बारामूला", "Jammu": "जम्मू", "Pulwama": "पुलवामा",
+    "Imphal": "इम्फाल", "Bishnupur": "बिष्णुपुर", "Shillong": "शिलांग", "Jaintia Hills": "जयंतिया हिल्स", "Jowai": "जोवाई",
+    "Agartala": "अगरतला", "Dimapur": "दीमापुर", "Kohima": "कोहिमा", "Aizawl": "आइज़ोल", "Lunglei": "लुंगलेई",
+    "Itanagar": "ईटानगर", "Pasighat": "पासीघाट", "Gangtok": "गंगटोक", "Namchi": "नामची",
+  },
+  ta: {
+    "Coimbatore": "கோயம்புத்தூர்", "Salem": "சேலம்", "Madurai": "மதுரை", "Thanjavur": "தஞ்சாவூர்", "Dindigul": "திண்டுக்கல்", "Erode": "ஈரோடு", "Tirunelveli": "திருநெல்வேலி", "Theni": "தேனி", "Villupuram": "விழுப்புரம்", "Tirupur": "திருப்பூர்", "Vellore": "வேலூர்", "Kanyakumari": "கன்னியாகுமரி", "Nagercoil": "நாகர்கோவில்", "Nagapattinam": "நாகப்பட்டினம்", "Cuddalore": "கடலூர்",
+    "Hyderabad": "ஹைதராபாத்", "Bengaluru": "பெங்களூரு", "Kolkata": "கொல்கத்தா", "New Delhi": "புதுடெல்லி",
+    "Guntur": "குண்டூர்", "Vijayawada": "விஜயவாடா", "Nashik": "நாசிக்", "Pune": "புனே", "Ahmedabad": "அகமதாபாத்", "Jaipur": "ஜெய்ப்பூர்", "Lucknow": "லக்னோ", "Patna": "பட்னா",
+  },
+  kn: {
+    "Bengaluru": "ಬೆಂಗಳೂರು", "Hassan": "ಹಾಸನ", "Dharwad": "ಧಾರವಾಡ", "Belgaum": "ಬೆಳಗಾವಿ", "Shimoga": "ಶಿವಮೊಗ್ಗ", "Mysuru": "ಮೈಸೂರು", "Raichur": "ರಾಯಚೂರು", "Davangere": "ದಾವಣಗೆರೆ", "Chikmagalur": "ಚಿಕ್ಕಮಗಳೂರು", "Kodagu": "ಕೊಡಗು", "Tumkur": "ತುಮಕೂರು", "Mandya": "ಮಂಡ್ಯ", "Gulbarga": "ಕಲಬುರ್ಗಿ", "Bellary": "ಬಳ್ಳಾರಿ", "Udupi": "ಉಡುಪಿ", "Bidar": "ಬೀದರ್",
+    "Yeshwanthpur": "ಯಶವಂತಪುರ", "Hubli": "ಹುಬ್ಬಳ್ಳಿ", "Madikeri": "ಮಡಿಕೇರಿ",
+    "Hyderabad": "ಹೈದರಾಬಾದ್", "New Delhi": "ನವದೆಹಲಿ",
+  },
+  ml: {
+    "Ernakulam": "എറണാകുളം", "Kochi": "കൊച്ചി", "Wayanad": "വയനാട്", "Idukki": "ഇടുക്കി", "Thrissur": "തൃശൂർ", "Palakkad": "പാലക്കാട്", "Kozhikode": "കോഴിക്കോട്", "Kollam": "കൊല്ലം", "Kannur": "കണ്ണൂർ", "Kottayam": "കോട്ടയം",
+    "Hyderabad": "ഹൈദരാബാദ്", "Bengaluru": "ബെംഗളൂരു", "New Delhi": "ന്യൂ ഡൽഹി",
+  },
+  mr: {
+    "Nashik": "नाशिक", "Pune": "पुणे", "Nagpur": "नागपूर", "Solapur": "सोलापूर", "Sangli": "सांगली", "Kolhapur": "कोल्हापूर", "Ahmednagar": "अहमदनगर", "Jalgaon": "जळगाव", "Aurangabad": "औरंगाबाद", "Satara": "सातारा", "Yavatmal": "यवतमाळ", "Ratnagiri": "रत्नागिरी", "Latur": "लातूर", "Wardha": "वर्धा", "Dhule": "धुळे",
+    "Lasalgaon": "लासलगाव", "Mumbai": "मुंबई",
+    "Hyderabad": "हैदराबाद", "New Delhi": "नवी दिल्ली",
+  },
+  gu: {
+    "Rajkot": "રાજકોટ", "Junagadh": "જૂનાગઢ", "Unjha": "ઊંઝા", "Ahmedabad": "અમદાવાદ", "Bhavnagar": "ભાવનગર", "Surat": "સુરત", "Vadodara": "વડોદરા", "Amreli": "અમરેલી", "Banaskantha": "બનાસકાંઠા", "Kutch": "કચ્છ", "Mehsana": "મહેસાણા", "Morbi": "મોરબી", "Sabarkantha": "સાબરકાંઠા",
+    "Deesa": "ડીસા", "Bhuj": "ભુજ", "Himmatnagar": "હિંમતનગર",
+  },
+  pa: {
+    "Ludhiana": "ਲੁਧਿਆਣਾ", "Amritsar": "ਅੰਮ੍ਰਿਤਸਰ", "Bathinda": "ਬਠਿੰਡਾ", "Abohar": "ਅਬੋਹਰ", "Patiala": "ਪਟਿਆਲਾ", "Jalandhar": "ਜਲੰਧਰ", "Sangrur": "ਸੰਗਰੂਰ", "Mansa": "ਮਾਨਸਾ", "Muktsar": "ਮੁਕਤਸਰ", "Fazilka": "ਫ਼ਾਜ਼ਿਲਕਾ",
+    "Karnal": "ਕਰਨਾਲ", "Hisar": "ਹਿਸਾਰ", "New Delhi": "ਨਵੀਂ ਦਿੱਲੀ",
+  },
+};
+
 // Helper: get translated name with fallback to English (original name)
 export function getDataTranslation(lang: string): DataTranslations {
   return dataTranslations[lang] || dataTranslations.en;
@@ -243,4 +347,14 @@ export function translateCommunityCategory(category: string, lang: string): stri
 export function translatePlantPart(part: string, lang: string): string {
   const dt = dataTranslations[lang];
   return dt?.plantParts?.[part] || part;
+}
+
+export function translateStateName(state: string, lang: string): string {
+  if (lang === "en") return state;
+  return stateTranslations[lang]?.[state] || state;
+}
+
+export function translatePlaceName(place: string, lang: string): string {
+  if (lang === "en") return place;
+  return placeTranslations[lang]?.[place] || place;
 }

@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { mandiRates, states, MandiRate } from "@/data/mandiRates";
-import { translateCropName } from "@/data/dataTranslations";
+import { translateCropName, translateStateName, translatePlaceName } from "@/data/dataTranslations";
 import { Search, MapPin, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
@@ -85,7 +85,7 @@ export default function MandiRates() {
           <select value={stateFilter} onChange={e => { setStateFilter(e.target.value); setShowNearby(false); }}
             className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50">
             <option value="All">{t.mandi.state}: {t.mandi.all}</option>
-            {states.map(s => <option key={s} value={s}>{s}</option>)}
+            {states.map(s => <option key={s} value={s}>{translateStateName(s, lang)}</option>)}
           </select>
           <select value={commodityFilter} onChange={e => { setCommodityFilter(e.target.value); setShowNearby(false); }}
             className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50">
@@ -109,8 +109,8 @@ export default function MandiRates() {
                   onClick={() => hasMultiple && toggleMarket(key)}
                 >
                   <div>
-                    <h3 className="font-display font-semibold text-foreground text-lg">🏪 {group.market}</h3>
-                    <p className="text-sm text-muted-foreground">{group.district}, {group.state}</p>
+                    <h3 className="font-display font-semibold text-foreground text-lg">🏪 {translatePlaceName(group.market, lang)}</h3>
+                    <p className="text-sm text-muted-foreground">{translatePlaceName(group.district, lang)}, {translateStateName(group.state, lang)}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="bg-accent/15 text-accent text-xs px-2.5 py-1 rounded-xl font-medium">
