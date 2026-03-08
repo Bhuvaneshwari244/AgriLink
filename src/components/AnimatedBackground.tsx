@@ -36,7 +36,7 @@ export default function AnimatedBackground() {
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
       {/* Soft gradient blobs */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-[50vw] h-[50vh] rounded-full blur-[150px] opacity-30"
+        <div className="absolute top-0 left-0 w-[50vw] h-[50vh] rounded-full blur-[150px] opacity-50"
           style={{ background: "radial-gradient(circle, hsl(142 60% 80% / 0.5), transparent 70%)" }} />
         <div className="absolute bottom-0 right-0 w-[60vw] h-[50vh] rounded-full blur-[180px] opacity-25"
           style={{ background: "radial-gradient(circle, hsl(100 50% 85% / 0.4), transparent 70%)" }} />
