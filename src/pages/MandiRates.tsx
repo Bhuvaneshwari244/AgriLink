@@ -176,7 +176,7 @@ export default function MandiRates() {
             <MapPin size={18}/>{t.mandi.nearby}
           </motion.button>
         </div>
-        <div className="flex gap-3 mb-4 flex-wrap">
+        <div className="flex gap-3 mb-4 flex-wrap items-center">
           <select value={stateFilter} onChange={e => { setStateFilter(e.target.value); setShowNearby(false); }}
             className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50">
             <option value="All">{t.mandi.state}: {t.mandi.all}</option>
@@ -186,8 +186,74 @@ export default function MandiRates() {
             className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50">
             {commodities.map(c => <option key={c} value={c}>{c === "All" ? `${t.mandi.commodity}: ${t.mandi.all}` : translateCropName(c, lang)}</option>)}
           </select>
+          
+          {/* Toggle Controls */}
+          <div className="flex items-center gap-4 ml-auto">
+            {/* Chart Toggle */}
+            <motion.div 
+              className="flex items-center gap-2 bg-secondary/60 px-3 py-2 rounded-xl border border-border/50"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              {showCharts ? <Eye size={14} className="text-primary" /> : <EyeOff size={14} className="text-muted-foreground" />}
+              <span className="text-xs text-muted-foreground">{t.mandi.showCharts || "Charts"}</span>
+              <Switch 
+                checked={showCharts} 
+                onCheckedChange={setShowCharts}
+                className="scale-75"
+              />
+            </motion.div>
+            
+            {/* Alerts Only Toggle */}
+            <motion.button
+              onClick={() => {
+                setShowAlertsOnly(!showAlertsOnly);
+                if (!showAlertsOnly && alertCount > 0) {
+                  toast({
+                    title: t.mandi.alertsEnabled || "Price Alerts Enabled",
+                    description: `${alertCount} ${t.mandi.significantChanges || "commodities with significant price changes (>10%)"}`,
+                  });
+                }
+              }}
+              className={`
+                flex items-center gap-2 px-3 py-2 rounded-xl border transition-all
+                ${showAlertsOnly 
+                  ? "bg-warning/20 border-warning/50 text-warning" 
+                  : "bg-secondary/60 border-border/50 text-muted-foreground hover:border-warning/30"
+                }
+              `}
+              whileTap={{ scale: 0.97 }}
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.25 }}
+            >
+              <Bell size={14} className={showAlertsOnly ? "animate-pulse" : ""} />
+              <span className="text-xs font-medium">{t.mandi.priceAlerts || "Alerts"}</span>
+              {alertCount > 0 && (
+                <motion.span 
+                  className="bg-warning text-warning-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                >
+                  {alertCount}
+                </motion.span>
+              )}
+            </motion.button>
+          </div>
         </div>
+        
         {showNearby && <p className="text-sm text-primary mb-3 font-medium">📍 {t.mandi.showingNearby} ({grouped.length})</p>}
+        {showAlertsOnly && (
+          <motion.p 
+            className="text-sm text-warning mb-3 font-medium flex items-center gap-2"
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <AlertTriangle size={14} /> {t.mandi.showingAlerts || "Showing only commodities with >10% price change"}
+          </motion.p>
+        )}
         <p className="text-sm text-muted-foreground mb-4">{grouped.length} {t.mandi.markets} • {displayData.length} {t.mandi.rates}</p>
         <div className="space-y-3">
           {grouped.map((group, i) => {
