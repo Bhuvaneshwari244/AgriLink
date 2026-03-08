@@ -11,7 +11,7 @@ const container = {
 
 const item = {
   hidden: { opacity: 0, y: 16, scale: 0.97 },
-  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.35, ease: "easeOut" } },
+  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.35, ease: "easeOut" as const } },
 };
 
 export function StaggerContainer({ children, className }: { children: ReactNode; className?: string }) {
