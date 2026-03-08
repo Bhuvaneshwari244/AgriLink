@@ -4,6 +4,7 @@ import { BookOpen, Users, BarChart3, Truck, Stethoscope, Star, ChevronRight, Spa
 import { motion } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 import { StaggerContainer, StaggerItem } from "@/components/StaggerChildren";
+import { AnimatedLabel } from "@/components/AnimatedLabel";
 
 export default function Index() {
   const { t } = useLanguage();
