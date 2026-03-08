@@ -1,19 +1,29 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { mandiRates, states } from "@/data/mandiRates";
-import { Search, MapPin } from "lucide-react";
-import { motion } from "framer-motion";
+import { mandiRates, states, MandiRate } from "@/data/mandiRates";
+import { Search, MapPin, ChevronDown, ChevronUp } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
+
+interface MarketGroup {
+  market: string;
+  district: string;
+  state: string;
+  lat?: number;
+  lng?: number;
+  items: MandiRate[];
+}
 
 export default function MandiRates() {
   const { t } = useLanguage();
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("All");
   const [commodityFilter, setCommodityFilter] = useState("All");
-  const [nearbyResults, setNearbyResults] = useState<typeof mandiRates>([]);
+  const [nearbyResults, setNearbyResults] = useState<MandiRate[]>([]);
   const [showNearby, setShowNearby] = useState(false);
+  const [expandedMarkets, setExpandedMarkets] = useState<Set<string>>(new Set());
 
-  const commodities = ["All", ...Array.from(new Set(mandiRates.map(r => r.commodity)))];
+  const commodities = ["All", ...Array.from(new Set(mandiRates.map(r => r.commodity))).sort()];
 
   const filtered = mandiRates.filter(r =>
     (stateFilter === "All" || r.state === stateFilter) &&
@@ -29,12 +39,33 @@ export default function MandiRates() {
         ...r,
         dist: Math.sqrt(Math.pow((r.lat! - latitude) * 111, 2) + Math.pow((r.lng! - longitude) * 111 * Math.cos(latitude * Math.PI / 180), 2))
       })).sort((a, b) => a.dist - b.dist);
-      setNearbyResults(withDist.slice(0, 20));
+      setNearbyResults(withDist.slice(0, 40));
       setShowNearby(true);
     }, () => alert("Location access denied. Please enable location."));
   };
 
   const displayData = showNearby ? nearbyResults : filtered;
+
+  // Group by market
+  const grouped = useMemo(() => {
+    const map = new Map<string, MarketGroup>();
+    displayData.forEach(r => {
+      const key = `${r.market}-${r.district}-${r.state}`;
+      if (!map.has(key)) {
+        map.set(key, { market: r.market, district: r.district, state: r.state, lat: r.lat, lng: r.lng, items: [] });
+      }
+      map.get(key)!.items.push(r);
+    });
+    return Array.from(map.values());
+  }, [displayData]);
+
+  const toggleMarket = (key: string) => {
+    setExpandedMarkets(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  };
 
   return (
     <PageTransition>
@@ -61,36 +92,78 @@ export default function MandiRates() {
             {commodities.map(c => <option key={c} value={c}>{c === "All" ? `${t.mandi.commodity}: All` : c}</option>)}
           </select>
         </div>
-        {showNearby && <p className="text-sm text-primary mb-3 font-medium">📍 Showing {nearbyResults.length} nearest markets based on your location</p>}
-        <p className="text-sm text-muted-foreground mb-4">{displayData.length} results</p>
+        {showNearby && <p className="text-sm text-primary mb-3 font-medium">📍 Showing {grouped.length} nearest markets based on your location</p>}
+        <p className="text-sm text-muted-foreground mb-4">{grouped.length} markets • {displayData.length} rates</p>
         <div className="space-y-3">
-          {displayData.map((r, i) => (
-            <motion.div key={r.id} className="glass-card p-5"
-              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i * 0.03, 0.3) }}>
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <h3 className="font-display font-semibold text-foreground">{r.market}</h3>
-                  <p className="text-sm text-muted-foreground">{r.district}, {r.state}</p>
+          {grouped.map((group, i) => {
+            const key = `${group.market}-${group.district}-${group.state}`;
+            const isExpanded = expandedMarkets.has(key);
+            const hasMultiple = group.items.length > 1;
+            const previewItems = isExpanded ? group.items : group.items.slice(0, 1);
+
+            return (
+              <motion.div key={key} className="glass-card overflow-hidden"
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i * 0.03, 0.3) }}>
+                {/* Market Header */}
+                <div
+                  className={`flex justify-between items-center p-5 pb-3 ${hasMultiple ? "cursor-pointer" : ""}`}
+                  onClick={() => hasMultiple && toggleMarket(key)}
+                >
+                  <div>
+                    <h3 className="font-display font-semibold text-foreground text-lg">🏪 {group.market}</h3>
+                    <p className="text-sm text-muted-foreground">{group.district}, {group.state}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-accent/15 text-accent text-xs px-2.5 py-1 rounded-xl font-medium">
+                      {group.items.length} {group.items.length === 1 ? "crop" : "crops"}
+                    </span>
+                    {hasMultiple && (
+                      isExpanded ? <ChevronUp size={18} className="text-muted-foreground" /> : <ChevronDown size={18} className="text-muted-foreground" />
+                    )}
+                  </div>
                 </div>
-                <span className="bg-primary/15 text-primary text-xs px-2.5 py-1 rounded-xl font-medium">{r.commodity} — {r.variety}</span>
-              </div>
-              <div className="grid grid-cols-3 gap-3 mt-3">
-                <div className="bg-secondary/50 rounded-xl p-3 text-center">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.minPrice}</p>
-                  <p className="text-base font-bold text-foreground mt-1">₹{r.minPrice.toLocaleString()}</p>
+
+                {/* Crop Rates */}
+                <div className="px-5 pb-4 space-y-3">
+                  <AnimatePresence initial={false}>
+                    {previewItems.map(r => (
+                      <motion.div key={r.id}
+                        initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+                        className="bg-secondary/40 rounded-xl p-4">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-semibold text-foreground text-sm">🌾 {r.commodity}</span>
+                          <span className="text-xs text-muted-foreground">{r.variety} • Per {r.unit}</span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="bg-background/50 rounded-lg p-2 text-center">
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.minPrice}</p>
+                            <p className="text-sm font-bold text-foreground mt-0.5">₹{r.minPrice.toLocaleString()}</p>
+                          </div>
+                          <div className="bg-primary/10 rounded-lg p-2 text-center border border-primary/20">
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.modalPrice}</p>
+                            <p className="text-sm font-bold text-primary mt-0.5">₹{r.modalPrice.toLocaleString()}</p>
+                          </div>
+                          <div className="bg-background/50 rounded-lg p-2 text-center">
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.maxPrice}</p>
+                            <p className="text-sm font-bold text-foreground mt-0.5">₹{r.maxPrice.toLocaleString()}</p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+
+                  {hasMultiple && !isExpanded && (
+                    <button onClick={() => toggleMarket(key)} className="w-full text-center text-xs text-primary font-medium py-1 hover:underline">
+                      + {group.items.length - 1} more crops — tap to expand
+                    </button>
+                  )}
                 </div>
-                <div className="bg-primary/10 rounded-xl p-3 text-center border border-primary/20">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.modalPrice}</p>
-                  <p className="text-base font-bold text-primary mt-1">₹{r.modalPrice.toLocaleString()}</p>
+                <div className="px-5 pb-3">
+                  <p className="text-[10px] text-muted-foreground">{group.items[0].date}</p>
                 </div>
-                <div className="bg-secondary/50 rounded-xl p-3 text-center">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.maxPrice}</p>
-                  <p className="text-base font-bold text-foreground mt-1">₹{r.maxPrice.toLocaleString()}</p>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground mt-3">Per {r.unit} • {r.date}</p>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </PageTransition>
