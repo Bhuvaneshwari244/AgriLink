@@ -109,8 +109,12 @@ export default function Transport() {
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-12 h-12 bg-primary/15 rounded-2xl flex items-center justify-center"><Truck size={24} className="text-primary" /></div>
                   <div>
-                    <h2 className="font-display font-semibold text-foreground">{tt.requestPickup}</h2>
-                    <p className="text-sm text-muted-foreground">{tt.fillDetails}</p>
+                    <AnimatedLabel as="h2" variant="slide" delay={0.1} className="font-display font-semibold text-foreground">
+                      {tt.requestPickup}
+                    </AnimatedLabel>
+                    <AnimatedLabel as="p" variant="fade" delay={0.15} className="text-sm text-muted-foreground">
+                      {tt.fillDetails}
+                    </AnimatedLabel>
                   </div>
                 </div>
 
