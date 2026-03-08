@@ -35,7 +35,7 @@ export const states = [
   "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi", "Jammu & Kashmir"
 ];
 
-export const mandiRates: MandiRate[] = [
+const rawMandiRates: Omit<MandiRate, 'yesterdayPrice' | 'previousPrice'>[] = [
   // ANDHRA PRADESH
   { id: "ap1", state: "Andhra Pradesh", district: "Guntur", market: "Guntur", commodity: "Chilli", variety: "Teja", minPrice: 12000, maxPrice: 18000, modalPrice: 15000, unit: "Quintal", date: "2026-03-08", lat: 16.3067, lng: 80.4365 },
   { id: "ap2", state: "Andhra Pradesh", district: "Kurnool", market: "Kurnool", commodity: "Cotton", variety: "Hybrid", minPrice: 6500, maxPrice: 7200, modalPrice: 6800, unit: "Quintal", date: "2026-03-08", lat: 15.8281, lng: 78.0373 },
