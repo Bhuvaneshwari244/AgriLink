@@ -5,6 +5,7 @@ import { Home, BookOpen, Users, BarChart3, Truck, Stethoscope, Star, Menu, X, Me
 import { useState } from "react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { motion, AnimatePresence } from "framer-motion";
+import AnimatedBackground from "./AnimatedBackground";
 
 const navItems = [
   { path: "/", icon: Home, key: "home" as const },
