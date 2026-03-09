@@ -134,7 +134,7 @@ export default function MandiRates() {
     if (!navigator.geolocation) return alert("Geolocation not supported");
     navigator.geolocation.getCurrentPosition(pos => {
       const { latitude, longitude } = pos.coords;
-      const withDist = mandiRates.filter(r => r.lat && r.lng).map(r => ({
+      const withDist = allRates.filter(r => r.lat && r.lng).map(r => ({
         ...r,
         dist: Math.sqrt(Math.pow((r.lat! - latitude) * 111, 2) + Math.pow((r.lng! - longitude) * 111 * Math.cos(latitude * Math.PI / 180), 2))
       })).sort((a, b) => a.dist - b.dist);
