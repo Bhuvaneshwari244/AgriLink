@@ -1,14 +1,15 @@
 import { useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { mandiRates, states, MandiRate } from "@/data/mandiRates";
+import { states, MandiRate } from "@/data/mandiRates";
 import { translateCropName, translateStateName, translatePlaceName } from "@/data/dataTranslations";
-import { Search, MapPin, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Minus, BarChart3, Eye, EyeOff, AlertTriangle, Bell } from "lucide-react";
+import { Search, MapPin, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Minus, BarChart3, Eye, EyeOff, AlertTriangle, Bell, RefreshCw, Wifi, WifiOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 import { Sparkline } from "@/components/ui/sparkline";
 import { AnimatedLabel } from "@/components/AnimatedLabel";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import { useLiveMandiRates } from "@/hooks/useLiveMandiRates";
 
 interface MarketGroup {
   market: string;
@@ -102,18 +103,20 @@ export default function MandiRates() {
   const [showCharts, setShowCharts] = useState(true);
   const [showAlertsOnly, setShowAlertsOnly] = useState(false);
 
+  const { rates: allRates, isLive, isLoading, source, lastUpdated, refresh } = useLiveMandiRates();
+
   // Count significant price changes (>10%)
   const alertCount = useMemo(() => {
-    return mandiRates.filter(r => {
+    return allRates.filter(r => {
       if (!r.yesterdayPrice) return false;
       const percentChange = Math.abs((r.modalPrice - r.yesterdayPrice) / r.yesterdayPrice * 100);
       return percentChange >= 10;
     }).length;
-  }, []);
+  }, [allRates]);
 
-  const commodities = ["All", ...Array.from(new Set(mandiRates.map(r => r.commodity))).sort()];
+  const commodities: string[] = ["All", ...Array.from(new Set(allRates.map(r => r.commodity))).sort()];
 
-  const filtered = mandiRates.filter(r => {
+  const filtered = allRates.filter(r => {
     const matchesFilters = 
       (stateFilter === "All" || r.state === stateFilter) &&
       (commodityFilter === "All" || r.commodity === commodityFilter) &&
@@ -131,7 +134,7 @@ export default function MandiRates() {
     if (!navigator.geolocation) return alert("Geolocation not supported");
     navigator.geolocation.getCurrentPosition(pos => {
       const { latitude, longitude } = pos.coords;
-      const withDist = mandiRates.filter(r => r.lat && r.lng).map(r => ({
+      const withDist = allRates.filter(r => r.lat && r.lng).map(r => ({
         ...r,
         dist: Math.sqrt(Math.pow((r.lat! - latitude) * 111, 2) + Math.pow((r.lng! - longitude) * 111 * Math.cos(latitude * Math.PI / 180), 2))
       })).sort((a, b) => a.dist - b.dist);
@@ -178,7 +181,29 @@ export default function MandiRates() {
         >
           {t.mandi.title}
         </motion.h1>
-        <motion.div 
+        {/* Live Status Indicator */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${isLive ? 'bg-success/15 text-success border border-success/30' : 'bg-muted text-muted-foreground border border-border/50'}`}>
+            {isLive ? <Wifi size={12} /> : <WifiOff size={12} />}
+            {isLive ? `Live • ${source}` : isLoading ? 'Fetching live data...' : 'Static Data'}
+          </div>
+          {lastUpdated && (
+            <span className="text-[10px] text-muted-foreground">
+              Updated: {new Date(lastUpdated).toLocaleTimeString()}
+            </span>
+          )}
+          <motion.button
+            onClick={refresh}
+            disabled={isLoading}
+            className="p-1.5 rounded-lg bg-secondary hover:bg-secondary/80 text-muted-foreground transition-colors"
+            whileTap={{ scale: 0.9 }}
+            animate={isLoading ? { rotate: 360 } : {}}
+            transition={isLoading ? { repeat: Infinity, duration: 1, ease: 'linear' } : {}}
+          >
+            <RefreshCw size={14} />
+          </motion.button>
+        </div>
+        <motion.div
           className="flex flex-col md:flex-row gap-3 mb-4"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
