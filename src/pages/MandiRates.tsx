@@ -107,16 +107,16 @@ export default function MandiRates() {
 
   // Count significant price changes (>10%)
   const alertCount = useMemo(() => {
-    return mandiRates.filter(r => {
+    return allRates.filter(r => {
       if (!r.yesterdayPrice) return false;
       const percentChange = Math.abs((r.modalPrice - r.yesterdayPrice) / r.yesterdayPrice * 100);
       return percentChange >= 10;
     }).length;
-  }, []);
+  }, [allRates]);
 
-  const commodities = ["All", ...Array.from(new Set(mandiRates.map(r => r.commodity))).sort()];
+  const commodities: string[] = ["All", ...Array.from(new Set(allRates.map(r => r.commodity))).sort()];
 
-  const filtered = mandiRates.filter(r => {
+  const filtered = allRates.filter(r => {
     const matchesFilters = 
       (stateFilter === "All" || r.state === stateFilter) &&
       (commodityFilter === "All" || r.commodity === commodityFilter) &&
