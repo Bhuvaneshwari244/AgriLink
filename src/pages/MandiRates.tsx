@@ -103,6 +103,8 @@ export default function MandiRates() {
   const [showCharts, setShowCharts] = useState(true);
   const [showAlertsOnly, setShowAlertsOnly] = useState(false);
 
+  const { rates: allRates, isLive, isLoading, source, lastUpdated, refresh } = useLiveMandiRates();
+
   // Count significant price changes (>10%)
   const alertCount = useMemo(() => {
     return mandiRates.filter(r => {
