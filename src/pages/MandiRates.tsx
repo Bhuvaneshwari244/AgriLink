@@ -1,14 +1,15 @@
 import { useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { mandiRates, states, MandiRate } from "@/data/mandiRates";
+import { states, MandiRate } from "@/data/mandiRates";
 import { translateCropName, translateStateName, translatePlaceName } from "@/data/dataTranslations";
-import { Search, MapPin, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Minus, BarChart3, Eye, EyeOff, AlertTriangle, Bell } from "lucide-react";
+import { Search, MapPin, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Minus, BarChart3, Eye, EyeOff, AlertTriangle, Bell, RefreshCw, Wifi, WifiOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 import { Sparkline } from "@/components/ui/sparkline";
 import { AnimatedLabel } from "@/components/AnimatedLabel";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import { useLiveMandiRates } from "@/hooks/useLiveMandiRates";
 
 interface MarketGroup {
   market: string;
