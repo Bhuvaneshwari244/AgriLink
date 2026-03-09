@@ -181,7 +181,29 @@ export default function MandiRates() {
         >
           {t.mandi.title}
         </motion.h1>
-        <motion.div 
+        {/* Live Status Indicator */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${isLive ? 'bg-success/15 text-success border border-success/30' : 'bg-muted text-muted-foreground border border-border/50'}`}>
+            {isLive ? <Wifi size={12} /> : <WifiOff size={12} />}
+            {isLive ? `Live • ${source}` : isLoading ? 'Fetching live data...' : 'Static Data'}
+          </div>
+          {lastUpdated && (
+            <span className="text-[10px] text-muted-foreground">
+              Updated: {new Date(lastUpdated).toLocaleTimeString()}
+            </span>
+          )}
+          <motion.button
+            onClick={refresh}
+            disabled={isLoading}
+            className="p-1.5 rounded-lg bg-secondary hover:bg-secondary/80 text-muted-foreground transition-colors"
+            whileTap={{ scale: 0.9 }}
+            animate={isLoading ? { rotate: 360 } : {}}
+            transition={isLoading ? { repeat: Infinity, duration: 1, ease: 'linear' } : {}}
+          >
+            <RefreshCw size={14} />
+          </motion.button>
+        </div>
+        <motion.div
           className="flex flex-col md:flex-row gap-3 mb-4"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
