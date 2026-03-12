@@ -121,21 +121,45 @@ export default function MandiRates() {
     }).length;
   }, [allRates]);
 
+  // Derive districts from selected state
+  const districts = useMemo(() => {
+    if (stateFilter === "All") return [];
+    return ["All", ...Array.from(new Set(allRates.filter(r => r.state === stateFilter).map(r => r.district))).sort()];
+  }, [allRates, stateFilter]);
+
   const commodities: string[] = ["All", ...Array.from(new Set(allRates.map(r => r.commodity))).sort()];
 
-  const filtered = allRates.filter(r => {
-    const matchesFilters = 
-      (stateFilter === "All" || r.state === stateFilter) &&
-      (commodityFilter === "All" || r.commodity === commodityFilter) &&
-      (search === "" || r.market.toLowerCase().includes(search.toLowerCase()) || r.district.toLowerCase().includes(search.toLowerCase()) || r.state.toLowerCase().includes(search.toLowerCase()) || r.commodity.toLowerCase().includes(search.toLowerCase()));
-    
-    if (showAlertsOnly) {
-      if (!r.yesterdayPrice) return false;
-      const percentChange = Math.abs((r.modalPrice - r.yesterdayPrice) / r.yesterdayPrice * 100);
-      return matchesFilters && percentChange >= 10;
-    }
-    return matchesFilters;
-  });
+  // Category-matched commodities
+  const categoryKeywords = categoryFilter !== "All" ? COMMODITY_CATEGORIES[categoryFilter] || [] : [];
+
+  const filtered = useMemo(() => {
+    let result = allRates.filter(r => {
+      const matchState = stateFilter === "All" || r.state === stateFilter;
+      const matchDistrict = districtFilter === "All" || r.district === districtFilter;
+      const matchCommodity = commodityFilter === "All" || r.commodity === commodityFilter;
+      const matchCategory = categoryFilter === "All" || categoryKeywords.some(kw => 
+        r.commodity.toLowerCase().includes(kw.toLowerCase()) || kw.toLowerCase().includes(r.commodity.toLowerCase())
+      );
+      const matchSearch = search === "" || 
+        r.market.toLowerCase().includes(search.toLowerCase()) || 
+        r.district.toLowerCase().includes(search.toLowerCase()) || 
+        r.state.toLowerCase().includes(search.toLowerCase()) || 
+        r.commodity.toLowerCase().includes(search.toLowerCase());
+      
+      if (showAlertsOnly) {
+        if (!r.yesterdayPrice) return false;
+        const percentChange = Math.abs((r.modalPrice - r.yesterdayPrice) / r.yesterdayPrice * 100);
+        return matchState && matchDistrict && matchCommodity && matchCategory && matchSearch && percentChange >= 10;
+      }
+      return matchState && matchDistrict && matchCommodity && matchCategory && matchSearch;
+    });
+
+    // Sort
+    if (sortBy === "price-asc") result = [...result].sort((a, b) => a.modalPrice - b.modalPrice);
+    if (sortBy === "price-desc") result = [...result].sort((a, b) => b.modalPrice - a.modalPrice);
+
+    return result;
+  }, [allRates, stateFilter, districtFilter, commodityFilter, categoryFilter, categoryKeywords, search, showAlertsOnly, sortBy]);
 
   const findNearby = () => {
     if (!navigator.geolocation) return alert("Geolocation not supported");
