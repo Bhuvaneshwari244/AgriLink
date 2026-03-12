@@ -99,11 +99,16 @@ export default function MandiRates() {
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("All");
   const [commodityFilter, setCommodityFilter] = useState("All");
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [districtFilter, setDistrictFilter] = useState("All");
   const [nearbyResults, setNearbyResults] = useState<MandiRate[]>([]);
   const [showNearby, setShowNearby] = useState(false);
   const [expandedMarkets, setExpandedMarkets] = useState<Set<string>>(new Set());
   const [showCharts, setShowCharts] = useState(true);
   const [showAlertsOnly, setShowAlertsOnly] = useState(false);
+  const [sortBy, setSortBy] = useState<"default" | "price-asc" | "price-desc">("default");
+  const [groupByState, setGroupByState] = useState(false);
+  const [expandedStates, setExpandedStates] = useState<Set<string>>(new Set());
 
   const { rates: allRates, isLive, isLoading, source, lastUpdated, refresh } = useLiveMandiRates();
 
