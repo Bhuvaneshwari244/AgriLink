@@ -308,147 +308,103 @@ export default function MandiRates() {
             </motion.span>
           </motion.button>
         </motion.div>
+        {/* Category Quick Filters */}
+        <div className="mb-4">
+          <CommodityCategoryChips selected={categoryFilter} onSelect={(cat) => { setCategoryFilter(cat); setCommodityFilter("All"); setShowNearby(false); }} />
+        </div>
+
         <div className="flex gap-3 mb-4 flex-wrap items-center">
           <motion.select 
             value={stateFilter} 
-            onChange={e => { setStateFilter(e.target.value); setShowNearby(false); }}
+            onChange={e => { setStateFilter(e.target.value); setDistrictFilter("All"); setShowNearby(false); }}
             className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50 cursor-pointer"
-            initial={{ opacity: 0, y: 25, scale: 0.8 }}
-            animate={{ opacity: 1, y: [0, -6, 0], scale: 1 }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 400, 
-              damping: 12, 
-              delay: 0.25,
-              y: { repeat: 1, duration: 0.3, delay: 0.3 }
-            }}
-            whileHover={{ y: -5, scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.1 }}
           >
             <option value="All">{t.mandi.state}: {t.mandi.all}</option>
             {states.map(s => <option key={s} value={s}>{translateStateName(s, lang)}</option>)}
           </motion.select>
+
+          {/* District filter */}
+          {stateFilter !== "All" && districts.length > 1 && (
+            <motion.select
+              value={districtFilter}
+              onChange={e => { setDistrictFilter(e.target.value); setShowNearby(false); }}
+              className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50 cursor-pointer"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
+            >
+              {districts.map(d => <option key={d} value={d}>{d === "All" ? `District: ${t.mandi.all}` : translatePlaceName(d, lang)}</option>)}
+            </motion.select>
+          )}
+
           <motion.select 
             value={commodityFilter} 
             onChange={e => { setCommodityFilter(e.target.value); setShowNearby(false); }}
             className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50 cursor-pointer"
-            initial={{ opacity: 0, y: 25, scale: 0.8 }}
-            animate={{ opacity: 1, y: [0, -6, 0], scale: 1 }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 400, 
-              damping: 12, 
-              delay: 0.3,
-              y: { repeat: 1, duration: 0.3, delay: 0.35 }
-            }}
-            whileHover={{ y: -5, scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.15 }}
           >
             {commodities.map(c => <option key={c} value={c}>{c === "All" ? `${t.mandi.commodity}: ${t.mandi.all}` : translateCropName(c, lang)}</option>)}
           </motion.select>
+
+          {/* Sort */}
+          <motion.select
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value as any)}
+            className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50 cursor-pointer"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.2 }}
+          >
+            <option value="default">Sort: Default</option>
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
+          </motion.select>
           
           {/* Toggle Controls */}
-          <div className="flex items-center gap-4 ml-auto">
-            {/* Chart Toggle */}
-            <motion.div 
-              className="flex items-center gap-2 bg-secondary/60 px-3 py-2 rounded-xl border border-border/50 cursor-pointer"
-              initial={{ opacity: 0, x: 20, scale: 0.8 }}
-              animate={{ opacity: 1, x: 0, scale: [1, 1.08, 1] }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 400, 
-                damping: 12, 
-                delay: 0.35,
-                scale: { repeat: 1, duration: 0.25, delay: 0.4 }
+          <div className="flex items-center gap-3 ml-auto flex-wrap">
+            {/* Group by State */}
+            <motion.button
+              onClick={() => {
+                setGroupByState(!groupByState);
+                if (!groupByState) setExpandedStates(new Set(Array.from(new Set(displayData.map(r => r.state)))));
               }}
-              whileHover={{ y: -5, scale: 1.08 }}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-medium transition-all ${groupByState ? "bg-primary/15 border-primary/30 text-primary" : "bg-secondary/60 border-border/50 text-muted-foreground hover:border-primary/30"}`}
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.25 }}
             >
-              <motion.span
-                animate={{ 
-                  rotate: showCharts ? [0, 15, -15, 10, -10, 0] : [0, -10, 10, 0],
-                  scale: [1, 1.2, 1]
-                }}
-                transition={{ duration: 0.5 }}
-              >
-                {showCharts ? <Eye size={14} className="text-primary" /> : <EyeOff size={14} className="text-muted-foreground" />}
-              </motion.span>
-              <motion.span 
-                className="text-xs text-muted-foreground"
-                animate={{ y: [0, -3, 0] }}
-                transition={{ repeat: Infinity, duration: 2, delay: 0.5 }}
-              >
-                {t.mandi.showCharts || "Charts"}
-              </motion.span>
-              <Switch 
-                checked={showCharts} 
-                onCheckedChange={setShowCharts}
-                className="scale-75"
-              />
-            </motion.div>
+              <Layers size={13} />
+              By State
+            </motion.button>
+
+            {/* Chart Toggle */}
+            <div className="flex items-center gap-2 bg-secondary/60 px-3 py-2 rounded-xl border border-border/50">
+              {showCharts ? <Eye size={13} className="text-primary" /> : <EyeOff size={13} className="text-muted-foreground" />}
+              <span className="text-xs text-muted-foreground">{t.mandi.showCharts || "Charts"}</span>
+              <Switch checked={showCharts} onCheckedChange={setShowCharts} className="scale-75" />
+            </div>
             
-            {/* Alerts Only Toggle */}
+            {/* Alerts */}
             <motion.button
               onClick={() => {
                 setShowAlertsOnly(!showAlertsOnly);
                 if (!showAlertsOnly && alertCount > 0) {
-                  toast({
-                    title: t.mandi.alertsEnabled || "Price Alerts Enabled",
-                    description: `${alertCount} ${t.mandi.significantChanges || "commodities with significant price changes (>10%)"}`,
-                  });
+                  toast({ title: t.mandi.alertsEnabled || "Price Alerts Enabled", description: `${alertCount} ${t.mandi.significantChanges || "commodities with significant price changes (>10%)"}` });
                 }
               }}
-              className={`
-                flex items-center gap-2 px-3 py-2 rounded-xl border transition-all
-                ${showAlertsOnly 
-                  ? "bg-warning/20 border-warning/50 text-warning" 
-                  : "bg-secondary/60 border-border/50 text-muted-foreground hover:border-warning/30"
-                }
-              `}
-              whileTap={{ scale: 0.9 }}
-              whileHover={{ y: -5, scale: 1.08 }}
-              initial={{ opacity: 0, x: 20, scale: 0.8 }}
-              animate={{ opacity: 1, x: 0, scale: [1, 1.1, 1] }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 400, 
-                damping: 12, 
-                delay: 0.4,
-                scale: { repeat: 1, duration: 0.25, delay: 0.45 }
-              }}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-medium transition-all ${showAlertsOnly ? "bg-warning/20 border-warning/50 text-warning" : "bg-secondary/60 border-border/50 text-muted-foreground hover:border-warning/30"}`}
+              whileTap={{ scale: 0.95 }}
             >
-              <motion.span
-                animate={{ 
-                  rotate: showAlertsOnly ? [0, 20, -20, 15, -15, 0] : [0],
-                  y: [0, -5, 0, -3, 0]
-                }}
-                transition={{ 
-                  rotate: { duration: 0.5 },
-                  y: { repeat: Infinity, duration: 1.5 }
-                }}
-              >
-                <Bell size={14} className={showAlertsOnly ? "animate-pulse" : ""} />
-              </motion.span>
-              <motion.span 
-                className="text-xs font-medium"
-                animate={{ y: [0, -3, 0] }}
-                transition={{ repeat: Infinity, duration: 2, delay: 0.3 }}
-              >
-                {t.mandi.priceAlerts || "Alerts"}
-              </motion.span>
+              <Bell size={13} className={showAlertsOnly ? "animate-pulse" : ""} />
+              {t.mandi.priceAlerts || "Alerts"}
               {alertCount > 0 && (
-                <motion.span 
-                  className="bg-warning text-warning-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: [1, 1.3, 1], y: [0, -6, 0, -4, 0] }}
-                  transition={{ 
-                    type: "spring", 
-                    stiffness: 500,
-                    scale: { repeat: Infinity, duration: 1.5 },
-                    y: { repeat: Infinity, duration: 1, ease: "easeInOut" }
-                  }}
-                >
-                  {alertCount}
-                </motion.span>
+                <span className="bg-warning text-warning-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center">{alertCount}</span>
               )}
             </motion.button>
           </div>
