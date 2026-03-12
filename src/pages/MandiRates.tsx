@@ -188,6 +188,25 @@ export default function MandiRates() {
     return Array.from(map.values());
   }, [displayData]);
 
+  // State-wise grouping
+  const stateGroups = useMemo(() => {
+    if (!groupByState) return null;
+    const map = new Map<string, MarketGroup[]>();
+    grouped.forEach(g => {
+      if (!map.has(g.state)) map.set(g.state, []);
+      map.get(g.state)!.push(g);
+    });
+    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
+  }, [grouped, groupByState]);
+
+  const toggleState = (state: string) => {
+    setExpandedStates(prev => {
+      const next = new Set(prev);
+      next.has(state) ? next.delete(state) : next.add(state);
+      return next;
+    });
+  };
+
   const toggleMarket = (key: string) => {
     setExpandedMarkets(prev => {
       const next = new Set(prev);
