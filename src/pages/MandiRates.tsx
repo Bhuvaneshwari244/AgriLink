@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { states, MandiRate } from "@/data/mandiRates";
 import { translateCropName, translateStateName, translatePlaceName } from "@/data/dataTranslations";
-import { Search, MapPin, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Minus, BarChart3, Eye, EyeOff, AlertTriangle, Bell, RefreshCw, Wifi, WifiOff } from "lucide-react";
+import { Search, MapPin, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Minus, BarChart3, Eye, EyeOff, AlertTriangle, Bell, RefreshCw, Wifi, WifiOff, ArrowUpDown, Layers } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/PageTransition";
 import { Sparkline } from "@/components/ui/sparkline";
@@ -10,6 +10,8 @@ import { AnimatedLabel } from "@/components/AnimatedLabel";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useLiveMandiRates } from "@/hooks/useLiveMandiRates";
+import { CommodityCategoryChips, COMMODITY_CATEGORIES } from "@/components/mandi/CommodityCategoryChips";
+import { StateGroupHeader } from "@/components/mandi/StateGroupHeader";
 
 interface MarketGroup {
   market: string;
@@ -97,11 +99,16 @@ export default function MandiRates() {
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("All");
   const [commodityFilter, setCommodityFilter] = useState("All");
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [districtFilter, setDistrictFilter] = useState("All");
   const [nearbyResults, setNearbyResults] = useState<MandiRate[]>([]);
   const [showNearby, setShowNearby] = useState(false);
   const [expandedMarkets, setExpandedMarkets] = useState<Set<string>>(new Set());
   const [showCharts, setShowCharts] = useState(true);
   const [showAlertsOnly, setShowAlertsOnly] = useState(false);
+  const [sortBy, setSortBy] = useState<"default" | "price-asc" | "price-desc">("default");
+  const [groupByState, setGroupByState] = useState(false);
+  const [expandedStates, setExpandedStates] = useState<Set<string>>(new Set());
 
   const { rates: allRates, isLive, isLoading, source, lastUpdated, refresh } = useLiveMandiRates();
 
@@ -114,21 +121,45 @@ export default function MandiRates() {
     }).length;
   }, [allRates]);
 
+  // Derive districts from selected state
+  const districts = useMemo(() => {
+    if (stateFilter === "All") return [];
+    return ["All", ...Array.from(new Set(allRates.filter(r => r.state === stateFilter).map(r => r.district))).sort()];
+  }, [allRates, stateFilter]);
+
   const commodities: string[] = ["All", ...Array.from(new Set(allRates.map(r => r.commodity))).sort()];
 
-  const filtered = allRates.filter(r => {
-    const matchesFilters = 
-      (stateFilter === "All" || r.state === stateFilter) &&
-      (commodityFilter === "All" || r.commodity === commodityFilter) &&
-      (search === "" || r.market.toLowerCase().includes(search.toLowerCase()) || r.district.toLowerCase().includes(search.toLowerCase()) || r.state.toLowerCase().includes(search.toLowerCase()) || r.commodity.toLowerCase().includes(search.toLowerCase()));
-    
-    if (showAlertsOnly) {
-      if (!r.yesterdayPrice) return false;
-      const percentChange = Math.abs((r.modalPrice - r.yesterdayPrice) / r.yesterdayPrice * 100);
-      return matchesFilters && percentChange >= 10;
-    }
-    return matchesFilters;
-  });
+  // Category-matched commodities
+  const categoryKeywords = categoryFilter !== "All" ? COMMODITY_CATEGORIES[categoryFilter] || [] : [];
+
+  const filtered = useMemo(() => {
+    let result = allRates.filter(r => {
+      const matchState = stateFilter === "All" || r.state === stateFilter;
+      const matchDistrict = districtFilter === "All" || r.district === districtFilter;
+      const matchCommodity = commodityFilter === "All" || r.commodity === commodityFilter;
+      const matchCategory = categoryFilter === "All" || categoryKeywords.some(kw => 
+        r.commodity.toLowerCase().includes(kw.toLowerCase()) || kw.toLowerCase().includes(r.commodity.toLowerCase())
+      );
+      const matchSearch = search === "" || 
+        r.market.toLowerCase().includes(search.toLowerCase()) || 
+        r.district.toLowerCase().includes(search.toLowerCase()) || 
+        r.state.toLowerCase().includes(search.toLowerCase()) || 
+        r.commodity.toLowerCase().includes(search.toLowerCase());
+      
+      if (showAlertsOnly) {
+        if (!r.yesterdayPrice) return false;
+        const percentChange = Math.abs((r.modalPrice - r.yesterdayPrice) / r.yesterdayPrice * 100);
+        return matchState && matchDistrict && matchCommodity && matchCategory && matchSearch && percentChange >= 10;
+      }
+      return matchState && matchDistrict && matchCommodity && matchCategory && matchSearch;
+    });
+
+    // Sort
+    if (sortBy === "price-asc") result = [...result].sort((a, b) => a.modalPrice - b.modalPrice);
+    if (sortBy === "price-desc") result = [...result].sort((a, b) => b.modalPrice - a.modalPrice);
+
+    return result;
+  }, [allRates, stateFilter, districtFilter, commodityFilter, categoryFilter, categoryKeywords, search, showAlertsOnly, sortBy]);
 
   const findNearby = () => {
     if (!navigator.geolocation) return alert("Geolocation not supported");
@@ -157,12 +188,155 @@ export default function MandiRates() {
     return Array.from(map.values());
   }, [displayData]);
 
+  // State-wise grouping
+  const stateGroups = useMemo(() => {
+    if (!groupByState) return null;
+    const map = new Map<string, MarketGroup[]>();
+    grouped.forEach(g => {
+      if (!map.has(g.state)) map.set(g.state, []);
+      map.get(g.state)!.push(g);
+    });
+    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
+  }, [grouped, groupByState]);
+
+  const toggleState = (state: string) => {
+    setExpandedStates(prev => {
+      const next = new Set(prev);
+      next.has(state) ? next.delete(state) : next.add(state);
+      return next;
+    });
+  };
+
   const toggleMarket = (key: string) => {
     setExpandedMarkets(prev => {
       const next = new Set(prev);
       next.has(key) ? next.delete(key) : next.add(key);
       return next;
     });
+  };
+  const renderMarketCard = (group: MarketGroup, i: number) => {
+    const key = `${group.market}-${group.district}-${group.state}`;
+    const isExpanded = expandedMarkets.has(key);
+    const hasMultiple = group.items.length > 1;
+    const previewItems = isExpanded ? group.items : group.items.slice(0, 1);
+
+    return (
+      <motion.div key={key} className="glass-card overflow-hidden"
+        initial={{ opacity: 0, y: 20, scale: 0.97 }} 
+        animate={{ opacity: 1, y: 0, scale: 1 }} 
+        transition={{ type: "spring", stiffness: 350, damping: 15, delay: Math.min(i * 0.05, 0.4) }}
+        whileHover={{ y: -4, scale: 1.005 }}
+      >
+        <div
+          className={`flex justify-between items-center p-5 pb-3 ${hasMultiple ? "cursor-pointer" : ""}`}
+          onClick={() => hasMultiple && toggleMarket(key)}
+        >
+          <div>
+            <h3 className="font-display font-semibold text-foreground text-lg">
+              🏪 {translatePlaceName(group.market, lang)}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              {translatePlaceName(group.district, lang)}, {translateStateName(group.state, lang)}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="bg-accent/15 text-accent text-xs px-2.5 py-1 rounded-xl font-medium">
+              {group.items.length} {group.items.length === 1 ? t.mandi.crop : t.mandi.crops}
+            </span>
+            {hasMultiple && (
+              isExpanded ? <ChevronUp size={18} className="text-muted-foreground" /> : <ChevronDown size={18} className="text-muted-foreground" />
+            )}
+          </div>
+        </div>
+
+        <div className="px-5 pb-4 space-y-3">
+          <AnimatePresence initial={false}>
+            {previewItems.map((r, rIndex) => (
+              <motion.div key={r.id}
+                initial={{ opacity: 0, height: 0 }} 
+                animate={{ opacity: 1, height: "auto" }} 
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ type: "spring", stiffness: 350, damping: 20 }}
+                className="bg-secondary/40 rounded-xl p-4">
+                <div className="flex justify-between items-start mb-2 gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-semibold text-foreground text-sm">
+                      🌾 {translateCropName(r.commodity, lang)}
+                    </span>
+                    <PriceAlertBadge current={r.modalPrice} previous={r.yesterdayPrice} threshold={10} />
+                  </div>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">
+                    {r.variety} • Per {r.unit}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="bg-background/50 rounded-lg p-2 text-center">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.minPrice}</p>
+                    <p className="text-sm font-bold text-foreground mt-0.5">₹{r.minPrice.toLocaleString()}</p>
+                  </div>
+                  <div className="bg-primary/10 rounded-lg p-2 text-center border border-primary/20">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.modalPrice}</p>
+                    <p className="text-sm font-bold text-primary mt-0.5">₹{r.modalPrice.toLocaleString()}</p>
+                  </div>
+                  <div className="bg-background/50 rounded-lg p-2 text-center">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.maxPrice}</p>
+                    <p className="text-sm font-bold text-foreground mt-0.5">₹{r.maxPrice.toLocaleString()}</p>
+                  </div>
+                </div>
+                
+                {showCharts && r.weeklyPrices && r.weeklyPrices.length > 0 && (
+                  <div className="bg-background/30 rounded-lg p-3 border border-border/30 mb-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <BarChart3 size={12} className="text-muted-foreground" />
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                        {t.mandi.weeklyTrend || "7-Day Price Trend"}
+                      </span>
+                    </div>
+                    <Sparkline data={r.weeklyPrices} height={50} />
+                    <div className="flex justify-between mt-1">
+                      <span className="text-[9px] text-muted-foreground">{t.mandi.weekAgo || "7 days ago"}</span>
+                      <span className="text-[9px] text-muted-foreground">{t.mandi.today || "Today"}</span>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="bg-background/30 rounded-lg p-2.5 border border-border/30">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-3">
+                      {r.yesterdayPrice && (
+                        <div className="text-[10px]">
+                          <span className="text-muted-foreground">{t.mandi.yesterday || "Yesterday"}:</span>
+                          <span className="font-medium text-foreground ml-1">₹{r.yesterdayPrice.toLocaleString()}</span>
+                        </div>
+                      )}
+                      {r.previousPrice && (
+                        <div className="text-[10px]">
+                          <span className="text-muted-foreground">{t.mandi.before || "Before"}:</span>
+                          <span className="font-medium text-foreground ml-1">₹{r.previousPrice.toLocaleString()}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <PriceChange current={r.modalPrice} previous={r.yesterdayPrice} label={t.mandi.vsYesterday || "vs Yesterday"} delay={0} />
+                      <PriceChange current={r.modalPrice} previous={r.previousPrice} label={t.mandi.vsBefore || "vs Before"} delay={0.1} />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          {hasMultiple && !isExpanded && (
+            <button onClick={() => toggleMarket(key)} className="w-full text-center text-xs text-primary font-medium py-1 hover:underline">
+              + {group.items.length - 1} {t.mandi.tapExpand}
+            </button>
+          )}
+        </div>
+        <div className="px-5 pb-3">
+          <p className="text-[10px] text-muted-foreground">{group.items[0].date}</p>
+        </div>
+      </motion.div>
+    );
   };
 
   return (
@@ -258,147 +432,103 @@ export default function MandiRates() {
             </motion.span>
           </motion.button>
         </motion.div>
+        {/* Category Quick Filters */}
+        <div className="mb-4">
+          <CommodityCategoryChips selected={categoryFilter} onSelect={(cat) => { setCategoryFilter(cat); setCommodityFilter("All"); setShowNearby(false); }} />
+        </div>
+
         <div className="flex gap-3 mb-4 flex-wrap items-center">
           <motion.select 
             value={stateFilter} 
-            onChange={e => { setStateFilter(e.target.value); setShowNearby(false); }}
+            onChange={e => { setStateFilter(e.target.value); setDistrictFilter("All"); setShowNearby(false); }}
             className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50 cursor-pointer"
-            initial={{ opacity: 0, y: 25, scale: 0.8 }}
-            animate={{ opacity: 1, y: [0, -6, 0], scale: 1 }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 400, 
-              damping: 12, 
-              delay: 0.25,
-              y: { repeat: 1, duration: 0.3, delay: 0.3 }
-            }}
-            whileHover={{ y: -5, scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.1 }}
           >
             <option value="All">{t.mandi.state}: {t.mandi.all}</option>
             {states.map(s => <option key={s} value={s}>{translateStateName(s, lang)}</option>)}
           </motion.select>
+
+          {/* District filter */}
+          {stateFilter !== "All" && districts.length > 1 && (
+            <motion.select
+              value={districtFilter}
+              onChange={e => { setDistrictFilter(e.target.value); setShowNearby(false); }}
+              className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50 cursor-pointer"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
+            >
+              {districts.map(d => <option key={d} value={d}>{d === "All" ? `District: ${t.mandi.all}` : translatePlaceName(d, lang)}</option>)}
+            </motion.select>
+          )}
+
           <motion.select 
             value={commodityFilter} 
             onChange={e => { setCommodityFilter(e.target.value); setShowNearby(false); }}
             className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50 cursor-pointer"
-            initial={{ opacity: 0, y: 25, scale: 0.8 }}
-            animate={{ opacity: 1, y: [0, -6, 0], scale: 1 }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 400, 
-              damping: 12, 
-              delay: 0.3,
-              y: { repeat: 1, duration: 0.3, delay: 0.35 }
-            }}
-            whileHover={{ y: -5, scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.15 }}
           >
             {commodities.map(c => <option key={c} value={c}>{c === "All" ? `${t.mandi.commodity}: ${t.mandi.all}` : translateCropName(c, lang)}</option>)}
           </motion.select>
+
+          {/* Sort */}
+          <motion.select
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value as any)}
+            className="bg-secondary text-secondary-foreground text-sm rounded-xl px-3 py-2.5 border border-border/50 cursor-pointer"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.2 }}
+          >
+            <option value="default">Sort: Default</option>
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
+          </motion.select>
           
           {/* Toggle Controls */}
-          <div className="flex items-center gap-4 ml-auto">
-            {/* Chart Toggle */}
-            <motion.div 
-              className="flex items-center gap-2 bg-secondary/60 px-3 py-2 rounded-xl border border-border/50 cursor-pointer"
-              initial={{ opacity: 0, x: 20, scale: 0.8 }}
-              animate={{ opacity: 1, x: 0, scale: [1, 1.08, 1] }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 400, 
-                damping: 12, 
-                delay: 0.35,
-                scale: { repeat: 1, duration: 0.25, delay: 0.4 }
+          <div className="flex items-center gap-3 ml-auto flex-wrap">
+            {/* Group by State */}
+            <motion.button
+              onClick={() => {
+                setGroupByState(!groupByState);
+                if (!groupByState) setExpandedStates(new Set(Array.from(new Set(displayData.map(r => r.state)))));
               }}
-              whileHover={{ y: -5, scale: 1.08 }}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-medium transition-all ${groupByState ? "bg-primary/15 border-primary/30 text-primary" : "bg-secondary/60 border-border/50 text-muted-foreground hover:border-primary/30"}`}
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.25 }}
             >
-              <motion.span
-                animate={{ 
-                  rotate: showCharts ? [0, 15, -15, 10, -10, 0] : [0, -10, 10, 0],
-                  scale: [1, 1.2, 1]
-                }}
-                transition={{ duration: 0.5 }}
-              >
-                {showCharts ? <Eye size={14} className="text-primary" /> : <EyeOff size={14} className="text-muted-foreground" />}
-              </motion.span>
-              <motion.span 
-                className="text-xs text-muted-foreground"
-                animate={{ y: [0, -3, 0] }}
-                transition={{ repeat: Infinity, duration: 2, delay: 0.5 }}
-              >
-                {t.mandi.showCharts || "Charts"}
-              </motion.span>
-              <Switch 
-                checked={showCharts} 
-                onCheckedChange={setShowCharts}
-                className="scale-75"
-              />
-            </motion.div>
+              <Layers size={13} />
+              By State
+            </motion.button>
+
+            {/* Chart Toggle */}
+            <div className="flex items-center gap-2 bg-secondary/60 px-3 py-2 rounded-xl border border-border/50">
+              {showCharts ? <Eye size={13} className="text-primary" /> : <EyeOff size={13} className="text-muted-foreground" />}
+              <span className="text-xs text-muted-foreground">{t.mandi.showCharts || "Charts"}</span>
+              <Switch checked={showCharts} onCheckedChange={setShowCharts} className="scale-75" />
+            </div>
             
-            {/* Alerts Only Toggle */}
+            {/* Alerts */}
             <motion.button
               onClick={() => {
                 setShowAlertsOnly(!showAlertsOnly);
                 if (!showAlertsOnly && alertCount > 0) {
-                  toast({
-                    title: t.mandi.alertsEnabled || "Price Alerts Enabled",
-                    description: `${alertCount} ${t.mandi.significantChanges || "commodities with significant price changes (>10%)"}`,
-                  });
+                  toast({ title: t.mandi.alertsEnabled || "Price Alerts Enabled", description: `${alertCount} ${t.mandi.significantChanges || "commodities with significant price changes (>10%)"}` });
                 }
               }}
-              className={`
-                flex items-center gap-2 px-3 py-2 rounded-xl border transition-all
-                ${showAlertsOnly 
-                  ? "bg-warning/20 border-warning/50 text-warning" 
-                  : "bg-secondary/60 border-border/50 text-muted-foreground hover:border-warning/30"
-                }
-              `}
-              whileTap={{ scale: 0.9 }}
-              whileHover={{ y: -5, scale: 1.08 }}
-              initial={{ opacity: 0, x: 20, scale: 0.8 }}
-              animate={{ opacity: 1, x: 0, scale: [1, 1.1, 1] }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 400, 
-                damping: 12, 
-                delay: 0.4,
-                scale: { repeat: 1, duration: 0.25, delay: 0.45 }
-              }}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-medium transition-all ${showAlertsOnly ? "bg-warning/20 border-warning/50 text-warning" : "bg-secondary/60 border-border/50 text-muted-foreground hover:border-warning/30"}`}
+              whileTap={{ scale: 0.95 }}
             >
-              <motion.span
-                animate={{ 
-                  rotate: showAlertsOnly ? [0, 20, -20, 15, -15, 0] : [0],
-                  y: [0, -5, 0, -3, 0]
-                }}
-                transition={{ 
-                  rotate: { duration: 0.5 },
-                  y: { repeat: Infinity, duration: 1.5 }
-                }}
-              >
-                <Bell size={14} className={showAlertsOnly ? "animate-pulse" : ""} />
-              </motion.span>
-              <motion.span 
-                className="text-xs font-medium"
-                animate={{ y: [0, -3, 0] }}
-                transition={{ repeat: Infinity, duration: 2, delay: 0.3 }}
-              >
-                {t.mandi.priceAlerts || "Alerts"}
-              </motion.span>
+              <Bell size={13} className={showAlertsOnly ? "animate-pulse" : ""} />
+              {t.mandi.priceAlerts || "Alerts"}
               {alertCount > 0 && (
-                <motion.span 
-                  className="bg-warning text-warning-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: [1, 1.3, 1], y: [0, -6, 0, -4, 0] }}
-                  transition={{ 
-                    type: "spring", 
-                    stiffness: 500,
-                    scale: { repeat: Infinity, duration: 1.5 },
-                    y: { repeat: Infinity, duration: 1, ease: "easeInOut" }
-                  }}
-                >
-                  {alertCount}
-                </motion.span>
+                <span className="bg-warning text-warning-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center">{alertCount}</span>
               )}
             </motion.button>
           </div>
@@ -469,347 +599,44 @@ export default function MandiRates() {
           </motion.span>
           {" "}{t.mandi.rates}
         </motion.p>
-        <div className="space-y-3">
-          {grouped.map((group, i) => {
-            const key = `${group.market}-${group.district}-${group.state}`;
-            const isExpanded = expandedMarkets.has(key);
-            const hasMultiple = group.items.length > 1;
-            const previewItems = isExpanded ? group.items : group.items.slice(0, 1);
-
-            return (
-              <motion.div key={key} className="glass-card overflow-hidden"
-                initial={{ opacity: 0, y: 30, scale: 0.9, rotate: -1 }} 
-                animate={{ opacity: 1, y: [0, -8, 0], scale: 1, rotate: 0 }} 
-                transition={{ 
-                  type: "spring", 
-                  stiffness: 350, 
-                  damping: 15, 
-                  delay: Math.min(i * 0.08, 0.5),
-                  y: { repeat: 1, duration: 0.25, delay: Math.min(i * 0.08, 0.5) + 0.1 }
-                }}
-                whileHover={{ y: -6, scale: 1.01 }}
-              >
-                <div
-                  className={`flex justify-between items-center p-5 pb-3 ${hasMultiple ? "cursor-pointer" : ""}`}
-                  onClick={() => hasMultiple && toggleMarket(key)}
-                >
-                  <div>
-                    <motion.h3 
-                      className="font-display font-semibold text-foreground text-lg"
-                      initial={{ opacity: 0, x: -20, scale: 0.9 }}
-                      animate={{ opacity: 1, x: 0, scale: 1, y: [0, -5, 0] }}
-                      transition={{ 
-                        type: "spring", 
-                        stiffness: 400, 
-                        delay: Math.min(i * 0.08, 0.5) + 0.15,
-                        y: { repeat: 1, duration: 0.2, delay: Math.min(i * 0.08, 0.5) + 0.2 }
-                      }}
-                    >
-                      <motion.span
-                        animate={{ y: [0, -4, 0], rotate: [0, 5, -5, 0] }}
-                        transition={{ repeat: Infinity, duration: 2 }}
-                        className="inline-block"
-                      >
-                        🏪
-                      </motion.span>
-                      {" "}{translatePlaceName(group.market, lang)}
-                    </motion.h3>
-                    <motion.p 
-                      className="text-sm text-muted-foreground"
-                      initial={{ opacity: 0, x: -15 }}
-                      animate={{ opacity: 1, x: 0, y: [0, -3, 0] }}
-                      transition={{ 
-                        type: "spring", 
-                        stiffness: 400, 
-                        delay: Math.min(i * 0.08, 0.5) + 0.2,
-                        y: { repeat: 1, duration: 0.2, delay: Math.min(i * 0.08, 0.5) + 0.25 }
-                      }}
-                    >
-                      {translatePlaceName(group.district, lang)}, {translateStateName(group.state, lang)}
-                    </motion.p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <motion.span 
-                      className="bg-accent/15 text-accent text-xs px-2.5 py-1 rounded-xl font-medium"
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      animate={{ opacity: 1, scale: [1, 1.15, 1], y: [0, -5, 0] }}
-                      transition={{ 
-                        type: "spring", 
-                        stiffness: 500, 
-                        delay: Math.min(i * 0.08, 0.5) + 0.25,
-                        scale: { repeat: 1, duration: 0.2 },
-                        y: { repeat: 1, duration: 0.2 }
-                      }}
-                      whileHover={{ scale: 1.15, y: -5 }}
-                    >
-                      {group.items.length} {group.items.length === 1 ? t.mandi.crop : t.mandi.crops}
-                    </motion.span>
-                    {hasMultiple && (
-                      <motion.span
-                        animate={{ y: isExpanded ? [0, -3, 0] : [0, 6, 0, 4, 0] }}
-                        transition={{ repeat: Infinity, duration: 1.2 }}
-                      >
-                        {isExpanded ? <ChevronUp size={18} className="text-muted-foreground" /> : <ChevronDown size={18} className="text-muted-foreground" />}
-                      </motion.span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="px-5 pb-4 space-y-3">
+        {/* Market Cards - with optional state grouping */}
+        {groupByState && stateGroups ? (
+          <div className="space-y-4">
+            {stateGroups.map(([stateName, markets], si) => {
+              const isStateExpanded = expandedStates.has(stateName);
+              const totalRates = markets.reduce((sum, m) => sum + m.items.length, 0);
+              return (
+                <div key={stateName} className="space-y-2">
+                  <StateGroupHeader
+                    state={translateStateName(stateName, lang)}
+                    marketCount={markets.length}
+                    rateCount={totalRates}
+                    isExpanded={isStateExpanded}
+                    onToggle={() => toggleState(stateName)}
+                    index={si}
+                  />
                   <AnimatePresence initial={false}>
-                    {previewItems.map((r, rIndex) => (
-                      <motion.div key={r.id}
-                        initial={{ opacity: 0, height: 0, y: 20, scale: 0.95 }} 
-                        animate={{ opacity: 1, height: "auto", y: 0, scale: 1 }} 
-                        exit={{ opacity: 0, height: 0, scale: 0.95 }}
-                        transition={{ type: "spring", stiffness: 350, damping: 20 }}
-                        className="bg-secondary/40 rounded-xl p-4">
-                        <div className="flex justify-between items-start mb-2 gap-2">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <motion.span 
-                              className="font-semibold text-foreground text-sm"
-                              initial={{ opacity: 0, y: 10, scale: 0.8 }}
-                              animate={{ opacity: 1, y: [0, -4, 0], scale: 1 }}
-                              transition={{ 
-                                type: "spring", 
-                                stiffness: 400, 
-                                delay: rIndex * 0.08,
-                                y: { repeat: 1, duration: 0.2 }
-                              }}
-                            >
-                              <motion.span
-                                animate={{ y: [0, -5, 0], rotate: [0, 8, -8, 0] }}
-                                transition={{ repeat: Infinity, duration: 1.8 }}
-                                className="inline-block"
-                              >
-                                🌾
-                              </motion.span>
-                              {" "}{translateCropName(r.commodity, lang)}
-                            </motion.span>
-                            {/* Price Alert Badge */}
-                            <PriceAlertBadge current={r.modalPrice} previous={r.yesterdayPrice} threshold={10} />
-                          </div>
-                          <motion.span 
-                            className="text-xs text-muted-foreground whitespace-nowrap"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.2 }}
-                          >
-                            {r.variety} • Per {r.unit}
-                          </motion.span>
-                        </div>
-                        <div className="grid grid-cols-3 gap-2 mb-3">
-                          <motion.div 
-                            className="bg-background/50 rounded-lg p-2 text-center cursor-pointer"
-                            initial={{ opacity: 0, y: 25, scale: 0.8, rotate: -3 }}
-                            animate={{ opacity: 1, y: [0, -8, 0], scale: 1, rotate: 0 }}
-                            transition={{ 
-                              type: "spring", 
-                              stiffness: 400, 
-                              damping: 12, 
-                              delay: 0.1,
-                              y: { repeat: 1, duration: 0.25, delay: 0.15 }
-                            }}
-                            whileHover={{ y: -8, scale: 1.08, rotate: 2 }}
-                            whileTap={{ scale: 0.95 }}
-                          >
-                            <motion.p 
-                              className="text-[10px] text-muted-foreground uppercase tracking-wider"
-                              animate={{ y: [0, -2, 0] }}
-                              transition={{ repeat: Infinity, duration: 2, delay: 0.2 }}
-                            >
-                              {t.mandi.minPrice}
-                            </motion.p>
-                            <motion.p 
-                              className="text-sm font-bold text-foreground mt-0.5"
-                              initial={{ scale: 0.3, opacity: 0, y: 10 }}
-                              animate={{ scale: [1, 1.15, 1], opacity: 1, y: 0 }}
-                              transition={{ 
-                                type: "spring", 
-                                stiffness: 500, 
-                                damping: 12, 
-                                delay: 0.2,
-                                scale: { repeat: 1, duration: 0.2 }
-                              }}
-                            >
-                              ₹{r.minPrice.toLocaleString()}
-                            </motion.p>
-                          </motion.div>
-                          <motion.div 
-                            className="bg-primary/10 rounded-lg p-2 text-center border border-primary/20 cursor-pointer"
-                            initial={{ opacity: 0, y: 25, scale: 0.8 }}
-                            animate={{ opacity: 1, y: [0, -10, 0], scale: [1, 1.05, 1] }}
-                            transition={{ 
-                              type: "spring", 
-                              stiffness: 400, 
-                              damping: 12, 
-                              delay: 0.15,
-                              y: { repeat: 1, duration: 0.25, delay: 0.2 },
-                              scale: { repeat: 1, duration: 0.25, delay: 0.2 }
-                            }}
-                            whileHover={{ y: -10, scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
-                          >
-                            <motion.p 
-                              className="text-[10px] text-muted-foreground uppercase tracking-wider"
-                              animate={{ y: [0, -2, 0] }}
-                              transition={{ repeat: Infinity, duration: 2, delay: 0.4 }}
-                            >
-                              {t.mandi.modalPrice}
-                            </motion.p>
-                            <motion.p 
-                              className="text-sm font-bold text-primary mt-0.5"
-                              initial={{ scale: 0.3, opacity: 0, y: 10 }}
-                              animate={{ scale: [1, 1.2, 1], opacity: 1, y: [0, -5, 0] }}
-                              transition={{ 
-                                type: "spring", 
-                                stiffness: 500, 
-                                damping: 10, 
-                                delay: 0.25,
-                                scale: { repeat: 2, duration: 0.2 },
-                                y: { repeat: 2, duration: 0.2 }
-                              }}
-                            >
-                              ₹{r.modalPrice.toLocaleString()}
-                            </motion.p>
-                          </motion.div>
-                          <motion.div 
-                            className="bg-background/50 rounded-lg p-2 text-center cursor-pointer"
-                            initial={{ opacity: 0, y: 25, scale: 0.8, rotate: 3 }}
-                            animate={{ opacity: 1, y: [0, -8, 0], scale: 1, rotate: 0 }}
-                            transition={{ 
-                              type: "spring", 
-                              stiffness: 400, 
-                              damping: 12, 
-                              delay: 0.2,
-                              y: { repeat: 1, duration: 0.25, delay: 0.25 }
-                            }}
-                            whileHover={{ y: -8, scale: 1.08, rotate: -2 }}
-                            whileTap={{ scale: 0.95 }}
-                          >
-                            <motion.p 
-                              className="text-[10px] text-muted-foreground uppercase tracking-wider"
-                              animate={{ y: [0, -2, 0] }}
-                              transition={{ repeat: Infinity, duration: 2, delay: 0.6 }}
-                            >
-                              {t.mandi.maxPrice}
-                            </motion.p>
-                            <motion.p 
-                              className="text-sm font-bold text-foreground mt-0.5"
-                              initial={{ scale: 0.3, opacity: 0, y: 10 }}
-                              animate={{ scale: [1, 1.15, 1], opacity: 1, y: 0 }}
-                              transition={{ 
-                                type: "spring", 
-                                stiffness: 500, 
-                                damping: 12, 
-                                delay: 0.3,
-                                scale: { repeat: 1, duration: 0.2 }
-                              }}
-                            >
-                              ₹{r.maxPrice.toLocaleString()}
-                            </motion.p>
-                          </motion.div>
-                        </div>
-                        
-                        {/* Weekly Price Chart - Conditionally rendered */}
-                        {showCharts && r.weeklyPrices && r.weeklyPrices.length > 0 && (
-                          <motion.div 
-                            className="bg-background/30 rounded-lg p-3 border border-border/30 mb-3"
-                            initial={{ opacity: 0, y: 5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3, delay: 0.25 }}
-                          >
-                            <div className="flex items-center gap-2 mb-2">
-                              <BarChart3 size={12} className="text-muted-foreground" />
-                              <AnimatedLabel variant="slide" delay={0.3} className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                                {t.mandi.weeklyTrend || "7-Day Price Trend"}
-                              </AnimatedLabel>
-                            </div>
-                            <Sparkline data={r.weeklyPrices} height={50} />
-                            <div className="flex justify-between mt-1">
-                              <AnimatedLabel variant="fade" delay={0.4} className="text-[9px] text-muted-foreground">
-                                {t.mandi.weekAgo || "7 days ago"}
-                              </AnimatedLabel>
-                              <AnimatedLabel variant="fade" delay={0.45} className="text-[9px] text-muted-foreground">
-                                {t.mandi.today || "Today"}
-                              </AnimatedLabel>
-                            </div>
-                          </motion.div>
-                        )}
-                        
-                        {/* Price History Section */}
-                        <motion.div 
-                          className="bg-background/30 rounded-lg p-2.5 border border-border/30"
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3, delay: 0.35 }}
-                        >
-                          <div className="flex items-center justify-between flex-wrap gap-2">
-                            <div className="flex items-center gap-3">
-                              {r.yesterdayPrice && (
-                                <motion.div 
-                                  className="text-[10px]"
-                                  initial={{ opacity: 0, x: -10 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ duration: 0.3, delay: 0.4 }}
-                                >
-                                  <AnimatedLabel variant="fade" delay={0.42} className="text-muted-foreground">
-                                    {t.mandi.yesterday || "Yesterday"}:
-                                  </AnimatedLabel>
-                                  <motion.span 
-                                    className="font-medium text-foreground ml-1"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ duration: 0.2, delay: 0.5 }}
-                                  >
-                                    ₹{r.yesterdayPrice.toLocaleString()}
-                                  </motion.span>
-                                </motion.div>
-                              )}
-                              {r.previousPrice && (
-                                <motion.div 
-                                  className="text-[10px]"
-                                  initial={{ opacity: 0, x: -10 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ duration: 0.3, delay: 0.45 }}
-                                >
-                                  <AnimatedLabel variant="fade" delay={0.47} className="text-muted-foreground">
-                                    {t.mandi.before || "Before"}:
-                                  </AnimatedLabel>
-                                  <motion.span 
-                                    className="font-medium text-foreground ml-1"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ duration: 0.2, delay: 0.55 }}
-                                  >
-                                    ₹{r.previousPrice.toLocaleString()}
-                                  </motion.span>
-                                </motion.div>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <PriceChange current={r.modalPrice} previous={r.yesterdayPrice} label={t.mandi.vsYesterday || "vs Yesterday"} delay={0.5} />
-                              <PriceChange current={r.modalPrice} previous={r.previousPrice} label={t.mandi.vsBefore || "vs Before"} delay={0.6} />
-                            </div>
-                          </div>
-                        </motion.div>
+                    {isStateExpanded && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        className="space-y-3 pl-2 border-l-2 border-primary/10 ml-2"
+                      >
+                        {markets.map((group, i) => renderMarketCard(group, i))}
                       </motion.div>
-                    ))}
+                    )}
                   </AnimatePresence>
-
-                  {hasMultiple && !isExpanded && (
-                    <button onClick={() => toggleMarket(key)} className="w-full text-center text-xs text-primary font-medium py-1 hover:underline">
-                      + {group.items.length - 1} {t.mandi.tapExpand}
-                    </button>
-                  )}
                 </div>
-                <div className="px-5 pb-3">
-                  <p className="text-[10px] text-muted-foreground">{group.items[0].date}</p>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {grouped.map((group, i) => renderMarketCard(group, i))}
+          </div>
+        )}
       </div>
     </PageTransition>
   );
