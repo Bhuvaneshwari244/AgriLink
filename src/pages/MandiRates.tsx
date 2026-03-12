@@ -214,8 +214,132 @@ export default function MandiRates() {
       return next;
     });
   };
+  const renderMarketCard = (group: MarketGroup, i: number) => {
+    const key = `${group.market}-${group.district}-${group.state}`;
+    const isExpanded = expandedMarkets.has(key);
+    const hasMultiple = group.items.length > 1;
+    const previewItems = isExpanded ? group.items : group.items.slice(0, 1);
 
-  return (
+    return (
+      <motion.div key={key} className="glass-card overflow-hidden"
+        initial={{ opacity: 0, y: 20, scale: 0.97 }} 
+        animate={{ opacity: 1, y: 0, scale: 1 }} 
+        transition={{ type: "spring", stiffness: 350, damping: 15, delay: Math.min(i * 0.05, 0.4) }}
+        whileHover={{ y: -4, scale: 1.005 }}
+      >
+        <div
+          className={`flex justify-between items-center p-5 pb-3 ${hasMultiple ? "cursor-pointer" : ""}`}
+          onClick={() => hasMultiple && toggleMarket(key)}
+        >
+          <div>
+            <h3 className="font-display font-semibold text-foreground text-lg">
+              🏪 {translatePlaceName(group.market, lang)}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              {translatePlaceName(group.district, lang)}, {translateStateName(group.state, lang)}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="bg-accent/15 text-accent text-xs px-2.5 py-1 rounded-xl font-medium">
+              {group.items.length} {group.items.length === 1 ? t.mandi.crop : t.mandi.crops}
+            </span>
+            {hasMultiple && (
+              isExpanded ? <ChevronUp size={18} className="text-muted-foreground" /> : <ChevronDown size={18} className="text-muted-foreground" />
+            )}
+          </div>
+        </div>
+
+        <div className="px-5 pb-4 space-y-3">
+          <AnimatePresence initial={false}>
+            {previewItems.map((r, rIndex) => (
+              <motion.div key={r.id}
+                initial={{ opacity: 0, height: 0 }} 
+                animate={{ opacity: 1, height: "auto" }} 
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ type: "spring", stiffness: 350, damping: 20 }}
+                className="bg-secondary/40 rounded-xl p-4">
+                <div className="flex justify-between items-start mb-2 gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-semibold text-foreground text-sm">
+                      🌾 {translateCropName(r.commodity, lang)}
+                    </span>
+                    <PriceAlertBadge current={r.modalPrice} previous={r.yesterdayPrice} threshold={10} />
+                  </div>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">
+                    {r.variety} • Per {r.unit}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="bg-background/50 rounded-lg p-2 text-center">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.minPrice}</p>
+                    <p className="text-sm font-bold text-foreground mt-0.5">₹{r.minPrice.toLocaleString()}</p>
+                  </div>
+                  <div className="bg-primary/10 rounded-lg p-2 text-center border border-primary/20">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.modalPrice}</p>
+                    <p className="text-sm font-bold text-primary mt-0.5">₹{r.modalPrice.toLocaleString()}</p>
+                  </div>
+                  <div className="bg-background/50 rounded-lg p-2 text-center">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.mandi.maxPrice}</p>
+                    <p className="text-sm font-bold text-foreground mt-0.5">₹{r.maxPrice.toLocaleString()}</p>
+                  </div>
+                </div>
+                
+                {showCharts && r.weeklyPrices && r.weeklyPrices.length > 0 && (
+                  <div className="bg-background/30 rounded-lg p-3 border border-border/30 mb-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <BarChart3 size={12} className="text-muted-foreground" />
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                        {t.mandi.weeklyTrend || "7-Day Price Trend"}
+                      </span>
+                    </div>
+                    <Sparkline data={r.weeklyPrices} height={50} />
+                    <div className="flex justify-between mt-1">
+                      <span className="text-[9px] text-muted-foreground">{t.mandi.weekAgo || "7 days ago"}</span>
+                      <span className="text-[9px] text-muted-foreground">{t.mandi.today || "Today"}</span>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="bg-background/30 rounded-lg p-2.5 border border-border/30">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-3">
+                      {r.yesterdayPrice && (
+                        <div className="text-[10px]">
+                          <span className="text-muted-foreground">{t.mandi.yesterday || "Yesterday"}:</span>
+                          <span className="font-medium text-foreground ml-1">₹{r.yesterdayPrice.toLocaleString()}</span>
+                        </div>
+                      )}
+                      {r.previousPrice && (
+                        <div className="text-[10px]">
+                          <span className="text-muted-foreground">{t.mandi.before || "Before"}:</span>
+                          <span className="font-medium text-foreground ml-1">₹{r.previousPrice.toLocaleString()}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <PriceChange current={r.modalPrice} previous={r.yesterdayPrice} label={t.mandi.vsYesterday || "vs Yesterday"} delay={0} />
+                      <PriceChange current={r.modalPrice} previous={r.previousPrice} label={t.mandi.vsBefore || "vs Before"} delay={0.1} />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          {hasMultiple && !isExpanded && (
+            <button onClick={() => toggleMarket(key)} className="w-full text-center text-xs text-primary font-medium py-1 hover:underline">
+              + {group.items.length - 1} {t.mandi.tapExpand}
+            </button>
+          )}
+        </div>
+        <div className="px-5 pb-3">
+          <p className="text-[10px] text-muted-foreground">{group.items[0].date}</p>
+        </div>
+      </motion.div>
+    );
+  };
+
+
     <PageTransition>
       <div className="container mx-auto px-4 py-6">
         <motion.h1 
