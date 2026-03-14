@@ -16,7 +16,7 @@ export default function Diagnosis() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [plantPart, setPlantPart] = useState("Leaf");
-  const [mode, setMode] = useState<"disease" | "soil">("disease");
+  const [mode, setMode] = useState<"disease" | "soil" | "fertilizer">("disease");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const compressImage = (file: File, maxWidth = 1024, quality = 0.7): Promise<string> => {
