@@ -37,6 +37,7 @@ IMPORTANT: Respond ONLY in valid JSON format with this exact structure:
   "suitableCrops": "List of crops this fertilizer is best suited for",
   "applicationMethod": "How to apply — broadcasting, side dressing, foliar spray, fertigation, etc.",
   "dosage": "Recommended dosage per acre/hectare for common crops",
+  "waterQuantity": "Recommended water quantity for mixing/dissolving/applying this fertilizer — liters per acre or per kg of fertilizer, irrigation needs after application, and any water-related instructions",
   "bestSeason": "Best season or growth stage to apply this fertilizer",
   "soilSuitability": "Which soil types benefit most from this fertilizer",
   "precautions": "Safety precautions, storage instructions, and handling warnings",
