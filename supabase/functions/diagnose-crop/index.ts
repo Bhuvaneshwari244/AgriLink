@@ -86,6 +86,7 @@ IMPORTANT: Respond ONLY in valid JSON format with this exact structure:
   "affectedPart": "${plantPart || "Unknown"}",
   "confidence": number between 0 and 100,
   "treatment": "Detailed treatment recommendations including specific chemicals/doses",
+  "waterQuantity": "Recommended water quantity for the affected plant — liters per plant per day, irrigation frequency, whether to increase or reduce watering, and water management tips to help recovery",
   "prevention": "Preventive measures to avoid recurrence",
   "organicTreatment": "Organic/natural treatment alternatives",
   "symptoms": "Key symptoms observed in the image",
