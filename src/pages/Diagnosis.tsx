@@ -394,6 +394,15 @@ export default function Diagnosis() {
                     <p className="text-sm text-foreground">{result.soilCare}</p>
                   </motion.div>
                 )}
+                {result.waterQuantity && (
+                  <motion.div 
+                    className="bg-info/10 rounded-2xl p-4 border border-info/20"
+                    whileHover={{ y: -2 }}
+                  >
+                    <h4 className="font-semibold text-info mb-2 flex items-center gap-2"><Droplets size={16} /> 💧 Water Requirement</h4>
+                    <p className="text-sm text-foreground">{result.waterQuantity}</p>
+                  </motion.div>
+                )}
               </div>
               <motion.a 
                 whileTap={{ scale: 0.97 }}
@@ -476,6 +485,13 @@ export default function Diagnosis() {
                 <h4 className="font-semibold text-info mb-2 flex items-center gap-2"><Droplets size={16} /> Dosage</h4>
                 <p className="text-sm text-foreground">{result.dosage}</p>
               </motion.div>
+
+              {result.waterQuantity && (
+                <motion.div className="bg-info/15 rounded-2xl p-4 border border-info/25" whileHover={{ y: -2 }}>
+                  <h4 className="font-semibold text-info mb-2 flex items-center gap-2"><Droplets size={16} /> 💧 Water Requirement</h4>
+                  <p className="text-sm text-foreground">{result.waterQuantity}</p>
+                </motion.div>
+              )}
 
               <motion.div className="bg-success/5 rounded-2xl p-4 border border-success/10" whileHover={{ y: -2 }}>
                 <h4 className="font-semibold text-success mb-2 flex items-center gap-2"><Leaf size={16} /> Organic Alternatives</h4>
@@ -587,6 +603,16 @@ export default function Diagnosis() {
                 <h4 className="font-semibold text-info mb-2 flex items-center gap-2"><Leaf size={16} /> Suitable Crops</h4>
                 <p className="text-sm text-foreground">{result.suitableCrops}</p>
               </motion.div>
+
+              {result.waterQuantity && (
+                <motion.div 
+                  className="bg-info/15 rounded-2xl p-4 border border-info/25"
+                  whileHover={{ y: -2 }}
+                >
+                  <h4 className="font-semibold text-info mb-2 flex items-center gap-2"><Droplets size={16} /> 💧 Irrigation Water Requirement</h4>
+                  <p className="text-sm text-foreground">{result.waterQuantity}</p>
+                </motion.div>
+              )}
 
               <motion.div 
                 className="bg-accent/10 rounded-2xl p-4 border border-accent/20"
