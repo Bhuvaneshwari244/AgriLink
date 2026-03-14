@@ -65,6 +65,7 @@ IMPORTANT: Respond ONLY in valid JSON format with this exact structure:
   "fertilityTips": "Detailed advice on how to improve and maintain soil fertility",
   "soilMaintenance": "Detailed soil maintenance practices — mulching, composting, crop rotation, cover cropping, etc.",
   "suitableCrops": "List of crops best suited for this soil type",
+  "waterQuantity": "Recommended irrigation water quantity for this soil type — liters per acre per watering, frequency of watering, best irrigation method (drip, flood, sprinkler), and water retention tips",
   "waterRetention": "Poor" or "Moderate" or "Good" or "Excellent",
   "drainage": "Poor" or "Moderate" or "Good" or "Excessive",
   "improvements": "Specific amendments and improvements recommended (lime, gypsum, organic matter, etc.)",
