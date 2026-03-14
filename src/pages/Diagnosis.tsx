@@ -180,7 +180,7 @@ export default function Diagnosis() {
                   animate={{ y: [0, -6, 0], scale: [1, 1.1, 1] }}
                   transition={{ repeat: Infinity, duration: 2 }}
                 >
-                  {mode === "soil" ? <Mountain size={32} className="text-primary" /> : <Camera size={32} className="text-primary" />}
+                  {mode === "soil" ? <Mountain size={32} className="text-primary" /> : mode === "fertilizer" ? <FlaskConical size={32} className="text-primary" /> : <Camera size={32} className="text-primary" />}
                 </motion.div>
                 <motion.p 
                   className="text-foreground font-semibold text-lg"
