@@ -125,6 +125,7 @@ export default function Diagnosis() {
           {[
             { id: "disease" as const, label: "🌿 Plant Disease", icon: Bug },
             { id: "soil" as const, label: "🪨 Soil Detection", icon: Mountain },
+            { id: "fertilizer" as const, label: "🧪 Fertilizer", icon: FlaskConical },
           ].map((m, i) => (
             <motion.button 
               key={m.id}
