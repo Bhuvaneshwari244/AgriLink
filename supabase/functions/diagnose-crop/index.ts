@@ -25,7 +25,31 @@ serve(async (req) => {
     let systemPrompt: string;
     let userPrompt: string;
 
-    if (mode === "soil") {
+    if (mode === "fertilizer") {
+      systemPrompt = `You are an expert agricultural chemist and fertilizer specialist. Analyze the uploaded image of a fertilizer product, fertilizer bag, or fertilizer sample and provide a comprehensive assessment.
+
+IMPORTANT: Respond ONLY in valid JSON format with this exact structure:
+{
+  "fertilizerName": "Name/brand of the fertilizer if visible, or type identified",
+  "fertilizerType": "Chemical / Organic / Bio-fertilizer / Mixed / Unknown",
+  "composition": "NPK ratio or key nutrient composition (e.g., 10-26-26, Urea 46-0-0)",
+  "nutrients": "Key nutrients provided (Nitrogen, Phosphorus, Potassium, Micronutrients, etc.)",
+  "suitableCrops": "List of crops this fertilizer is best suited for",
+  "applicationMethod": "How to apply — broadcasting, side dressing, foliar spray, fertigation, etc.",
+  "dosage": "Recommended dosage per acre/hectare for common crops",
+  "bestSeason": "Best season or growth stage to apply this fertilizer",
+  "soilSuitability": "Which soil types benefit most from this fertilizer",
+  "precautions": "Safety precautions, storage instructions, and handling warnings",
+  "alternatives": "Organic or alternative fertilizer options that provide similar benefits",
+  "quality": "Good / Average / Poor / Cannot Determine — visual quality assessment if possible",
+  "warnings": "Any concerns — over-application risks, environmental impact, expiry signs, contamination"
+}
+
+If the image doesn't show a fertilizer, still respond with JSON but set fertilizerName to "Not a fertilizer image" and provide general fertilizer advice.
+${langName ? `IMPORTANT: ALL text field values in the JSON MUST be written in ${langName} language. The JSON keys must remain in English, but ALL values must be in ${langName}.` : ""}`;
+
+      userPrompt = "Analyze this fertilizer image. Identify the fertilizer type, composition, suitable crops, application method, dosage, and provide safety precautions and organic alternatives.";
+    } else if (mode === "soil") {
       systemPrompt = `You are an expert soil scientist and agricultural advisor. Analyze the uploaded soil image and provide a comprehensive soil assessment.
 
 IMPORTANT: Respond ONLY in valid JSON format with this exact structure:
