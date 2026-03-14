@@ -407,6 +407,105 @@ export default function Diagnosis() {
             </motion.div>
           )}
 
+          {/* Fertilizer Detection Results */}
+          {result && isFertilizerResult && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="glass-card p-6 space-y-4">
+              <motion.h2 
+                className="text-xl font-display font-bold text-foreground flex items-center gap-2"
+                animate={{ y: [0, -3, 0] }}
+                transition={{ repeat: 2, duration: 0.3 }}
+              >
+                <motion.span animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+                  <CheckCircle size={24} className="text-primary" />
+                </motion.span>
+                🧪 Fertilizer Analysis Report
+              </motion.h2>
+
+              <motion.div className="bg-secondary/50 rounded-2xl p-4" whileHover={{ scale: 1.01 }}>
+                <motion.h3 className="font-bold text-foreground text-lg mb-1" animate={{ y: [0, -2, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
+                  {result.fertilizerName}
+                </motion.h3>
+                <p className="text-sm text-muted-foreground">Type: {result.fertilizerType}</p>
+                {result.quality && result.quality !== "Cannot Determine" && (
+                  <motion.span 
+                    className={`inline-block mt-2 px-3 py-1 rounded-xl text-xs font-bold ${
+                      result.quality === "Good" ? "bg-success/20 text-success" :
+                      result.quality === "Poor" ? "bg-destructive/20 text-destructive" :
+                      "bg-warning/20 text-warning"
+                    }`}
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ repeat: Infinity, duration: 1.5 }}
+                  >
+                    {result.quality} Quality
+                  </motion.span>
+                )}
+              </motion.div>
+
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: "🧬 Composition", value: result.composition },
+                  { label: "🌿 Nutrients", value: result.nutrients },
+                  { label: "📅 Best Season", value: result.bestSeason },
+                  { label: "🪨 Soil Suitability", value: result.soilSuitability },
+                ].map((stat, i) => (
+                  <motion.div 
+                    key={stat.label} 
+                    className="bg-card border border-border/50 rounded-xl p-3"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    whileHover={{ y: -3, scale: 1.02 }}
+                  >
+                    <p className="text-xs text-muted-foreground">{stat.label}</p>
+                    <p className="font-bold text-sm mt-0.5 text-foreground">{stat.value}</p>
+                  </motion.div>
+                ))}
+              </div>
+
+              <motion.div className="bg-success/10 rounded-2xl p-4 border border-success/20" whileHover={{ y: -2 }}>
+                <h4 className="font-semibold text-success mb-2 flex items-center gap-2"><Sprout size={16} /> Suitable Crops</h4>
+                <p className="text-sm text-foreground">{result.suitableCrops}</p>
+              </motion.div>
+
+              <motion.div className="bg-primary/10 rounded-2xl p-4 border border-primary/20" whileHover={{ y: -2 }}>
+                <h4 className="font-semibold text-primary mb-2 flex items-center gap-2"><FlaskConical size={16} /> Application Method</h4>
+                <p className="text-sm text-foreground">{result.applicationMethod}</p>
+              </motion.div>
+
+              <motion.div className="bg-info/10 rounded-2xl p-4 border border-info/20" whileHover={{ y: -2 }}>
+                <h4 className="font-semibold text-info mb-2 flex items-center gap-2"><Droplets size={16} /> Dosage</h4>
+                <p className="text-sm text-foreground">{result.dosage}</p>
+              </motion.div>
+
+              <motion.div className="bg-success/5 rounded-2xl p-4 border border-success/10" whileHover={{ y: -2 }}>
+                <h4 className="font-semibold text-success mb-2 flex items-center gap-2"><Leaf size={16} /> Organic Alternatives</h4>
+                <p className="text-sm text-foreground">{result.alternatives}</p>
+              </motion.div>
+
+              <motion.div className="bg-warning/10 rounded-2xl p-4 border border-warning/20" whileHover={{ y: -2 }}>
+                <h4 className="font-semibold text-warning mb-2 flex items-center gap-2"><ShieldAlert size={16} /> ⚠️ Precautions</h4>
+                <p className="text-sm text-foreground">{result.precautions}</p>
+              </motion.div>
+
+              {result.warnings && result.warnings !== "None" && result.warnings !== "None detected" && (
+                <motion.div className="bg-destructive/10 rounded-2xl p-4 border border-destructive/20" whileHover={{ y: -2 }}>
+                  <h4 className="font-semibold text-destructive mb-2 flex items-center gap-2"><AlertTriangle size={16} /> Warnings</h4>
+                  <p className="text-sm text-foreground">{result.warnings}</p>
+                </motion.div>
+              )}
+
+              <motion.a 
+                whileTap={{ scale: 0.97 }}
+                whileHover={{ y: -4, scale: 1.02 }}
+                href={buildWhatsAppLink(`🧪 AI Fertilizer Analysis:\n\nFertilizer: ${result.fertilizerName}\nType: ${result.fertilizerType}\nComposition: ${result.composition}\n\nPlease advise on usage.`)}
+                target="_blank" rel="noopener noreferrer"
+                className="w-full bg-success hover:bg-success/90 text-success-foreground py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-colors"
+              >
+                💬 Ask Expert on WhatsApp
+              </motion.a>
+            </motion.div>
+          )}
+
           {/* Soil Detection Results */}
           {result && isSoilResult && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="glass-card p-6 space-y-4">

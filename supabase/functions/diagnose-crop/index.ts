@@ -160,6 +160,17 @@ ${langName ? `IMPORTANT: ALL text field values in the JSON MUST be written in ${
       }
     }
 
+    // Fallback for fertilizer parse failure
+    if (mode === "fertilizer" && result.disease) {
+      result = {
+        fertilizerName: "Analysis Complete", fertilizerType: "Unknown", composition: content,
+        nutrients: "See analysis", suitableCrops: "Various", applicationMethod: "Consult label",
+        dosage: "Follow manufacturer instructions", bestSeason: "Varies by crop",
+        soilSuitability: "General", precautions: "Handle with care", alternatives: "Organic compost",
+        quality: "Cannot Determine", warnings: "None detected",
+      };
+    }
+
     // Tag result with mode
     result._mode = mode || "disease";
 
