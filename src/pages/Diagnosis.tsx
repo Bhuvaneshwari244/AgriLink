@@ -187,10 +187,10 @@ export default function Diagnosis() {
                   animate={{ y: [0, -3, 0] }}
                   transition={{ repeat: Infinity, duration: 2, delay: 0.2 }}
                 >
-                  {mode === "soil" ? "Upload Soil Photo" : t.diagnosis.upload}
+                  {mode === "soil" ? "Upload Soil Photo" : mode === "fertilizer" ? "Upload Fertilizer Photo" : t.diagnosis.upload}
                 </motion.p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {mode === "soil" ? "Take a clear photo of your soil sample" : t.diagnosis.photoHint}
+                  {mode === "soil" ? "Take a clear photo of your soil sample" : mode === "fertilizer" ? "Take a photo of fertilizer bag or sample" : t.diagnosis.photoHint}
                 </p>
               </motion.button>
             ) : (
