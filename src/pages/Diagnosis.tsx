@@ -87,6 +87,7 @@ export default function Diagnosis() {
   ];
 
   const isSoilResult = result?._mode === "soil";
+  const isFertilizerResult = result?._mode === "fertilizer";
 
   return (
     <PageTransition>
