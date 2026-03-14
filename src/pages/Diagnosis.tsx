@@ -288,7 +288,7 @@ export default function Diagnosis() {
 
         {/* Results */}
         <AnimatePresence>
-          {result && !isSoilResult && (
+          {result && !isSoilResult && !isFertilizerResult && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="glass-card p-6 space-y-4">
               <motion.h2 
                 className="text-xl font-display font-bold text-foreground flex items-center gap-2"
