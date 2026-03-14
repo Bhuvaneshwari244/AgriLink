@@ -278,7 +278,7 @@ export default function Diagnosis() {
                     >
                       <Sparkles size={20} />
                     </motion.span>
-                    {mode === "soil" ? "Analyze Soil" : t.diagnosis.analyze}
+                    {mode === "soil" ? "Analyze Soil" : mode === "fertilizer" ? "Analyze Fertilizer" : t.diagnosis.analyze}
                   </>
                 )}
               </motion.button>
