@@ -604,6 +604,17 @@ export default function Diagnosis() {
                 <p className="text-sm text-foreground">{result.suitableCrops}</p>
               </motion.div>
 
+              {result.waterQuantity && (
+                <motion.div 
+                  className="bg-info/15 rounded-2xl p-4 border border-info/25"
+                  whileHover={{ y: -2 }}
+                >
+                  <h4 className="font-semibold text-info mb-2 flex items-center gap-2"><Droplets size={16} /> 💧 Irrigation Water Requirement</h4>
+                  <p className="text-sm text-foreground">{result.waterQuantity}</p>
+                </motion.div>
+              )}
+              </motion.div>
+
               <motion.div 
                 className="bg-accent/10 rounded-2xl p-4 border border-accent/20"
                 whileHover={{ y: -2 }}
