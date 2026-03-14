@@ -394,6 +394,15 @@ export default function Diagnosis() {
                     <p className="text-sm text-foreground">{result.soilCare}</p>
                   </motion.div>
                 )}
+                {result.waterQuantity && (
+                  <motion.div 
+                    className="bg-info/10 rounded-2xl p-4 border border-info/20"
+                    whileHover={{ y: -2 }}
+                  >
+                    <h4 className="font-semibold text-info mb-2 flex items-center gap-2"><Droplets size={16} /> 💧 Water Requirement</h4>
+                    <p className="text-sm text-foreground">{result.waterQuantity}</p>
+                  </motion.div>
+                )}
               </div>
               <motion.a 
                 whileTap={{ scale: 0.97 }}
