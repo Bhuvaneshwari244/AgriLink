@@ -613,7 +613,6 @@ export default function Diagnosis() {
                   <p className="text-sm text-foreground">{result.waterQuantity}</p>
                 </motion.div>
               )}
-              </motion.div>
 
               <motion.div 
                 className="bg-accent/10 rounded-2xl p-4 border border-accent/20"
